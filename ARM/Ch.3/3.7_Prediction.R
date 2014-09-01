@@ -1,3 +1,4 @@
+set.seed(1818251039);
 library(rstan)
 library(ggplot2)
 
@@ -10,6 +11,13 @@ data.list <- c("N", "kid_score", "mom_hs", "mom_iq", "mom_hs_new", "mom_iq_new")
 kidiq_prediction.sf <- stan(file='kidiq_prediction.stan', data=data.list,
                             iter=1000, chains=4)
 print(kidiq_prediction.sf, pars = c("kid_score_pred"), prob = c(0.025, 0.975))
+
+
+### compare to model fit and prediction using R functions lm, predict 
+fit.3 <- lm (kid_score ~ mom_hs + mom_iq)
+x.new <- data.frame (mom_hs=1, mom_iq=100)
+predict (fit.3, x.new, interval="prediction", level=0.95)
+
 
 
 ### Data

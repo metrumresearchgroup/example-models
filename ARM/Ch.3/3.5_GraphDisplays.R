@@ -1,3 +1,4 @@
+set.seed(1818251039);
 library(rstan)
 library(grid)
 library(ggplot2)
