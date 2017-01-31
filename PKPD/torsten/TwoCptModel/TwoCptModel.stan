@@ -21,11 +21,23 @@ data{
 }
 
 transformed data{
-  vector[nObs] logCObs;
-  int nTheta;
+  vector[nObs] logCObs = log(cObs);
+  int nTheta = 5;  # number of ODE parameters in Two Compartment Model
+  int nCmt = 3;  # number of compartments in model
+
+  # Since we're not trying to evaluate the bio-variability (F) and 
+  # the lag times, we declare them as data.
+  real biovar[nCmt];
+  real tlag[nCmt];
+
+  biovar[1] = 1;
+  biovar[2] = 1;
+  biovar[3] = 1;
+
+  tlag[1] = 0;
+  tlag[2] = 0;
+  tlag[3] = 0;
   
-  logCObs = log(cObs);
-  nTheta = 11; # number of parameters in Two Compartment Model
 }
 
 parameters{
@@ -39,27 +51,22 @@ parameters{
 }
 
 transformed parameters{
-  vector<lower = 0>[nTheta] theta[1]; # The [1] indicates the parameters are constant
+  real theta[nTheta];  # ODE parameters
   vector<lower = 0>[nt] cHat;
   vector<lower = 0>[nObs] cHatObs;
   matrix<lower = 0>[nt, 3] x; 
 
-  theta[1][1] = CL;
-  theta[1][2] = Q;
-  theta[1][3] = V1;
-  theta[1][4] = V2;
-  theta[1][5] = ka;
-  theta[1][6] = 1; # F1
-  theta[1][7] = 1; # F2
-  theta[1][8] = 1; # F3
-  theta[1][9] = 0; # tlag1
-  theta[1][10] = 0; # tlag2
-  theta[1][11] = 0; # tlag3
+  theta[1] = CL;
+  theta[2] = Q;
+  theta[3] = V1;
+  theta[4] = V2;
+  theta[5] = ka;
 
-  # PKModelTwoCpt takes in the parameters matrix and the NONMEM data,
-  # and returns a matrix with the predicted amount in each compartment 
-  # at each event.
-  x = PKModelTwoCpt(theta, time, amt, rate, ii, evid, cmt, addl, ss);
+  # PKModelTwoCpt takes in the NONMEM data, followed by the parameter
+  # arrays abd returns a matrix with the predicted amount in each 
+  # compartment at each event.
+  x = PKModelTwoCpt(time, amt, rate, ii, evid, cmt, addl, ss,
+                   theta, biovar, tlag);
 
   cHat = col(x, 2) ./ V1; # we're interested in the amount in the second compartment 
 

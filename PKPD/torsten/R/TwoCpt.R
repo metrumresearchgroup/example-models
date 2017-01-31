@@ -21,6 +21,7 @@ library(ggplot2)
 library(plyr)
 library(dplyr)
 library(tidyr)
+library(parallel)
 
 source(file.path(toolsDir, "stanTools.R"))
 source(file.path(toolsDir, "cmdStanTools.R"))
@@ -49,7 +50,7 @@ nIter <- (nPost + nBurn) * nThin
 nBurnin <- nBurn * nThin
 
 RNGkind("L'Ecuyer-CMRG")
-mc.reset.stream()
+# mc.reset.stream() # CHECK
 
 compileModel(model = file.path(modelDir, modelName), stanDir = stanDir)
 
