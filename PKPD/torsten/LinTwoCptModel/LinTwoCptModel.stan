@@ -21,9 +21,15 @@ data{
 }
 
 transformed data{
-  vector[nObs] logCObs;
+  vector[nObs] logCObs = log(cObs);
+  int nCmt = 3;
+  real biovar[nCmt];
+  real tlag[nCmt];
 
-  logCObs = log(cObs);
+  for (i in 1:nCmt) {
+    biovar[i] = 1;
+    tlag[i] = 0;
+  }
 }
 
 parameters{
@@ -38,18 +44,13 @@ parameters{
 
 transformed parameters{
   matrix[3, 3] K;
-  real k10;
-  real k12;
-  real k21;
-  vector<lower = 0>[6] theta[1]; # The [1] indicates the parameters are constant
+  real k10 = CL / V1;
+  real k12 = Q / V1;
+  real k21 = Q / V2;
   vector<lower = 0>[nt] cHat;
   vector<lower = 0>[nObs] cHatObs;
   matrix<lower = 0>[nt, 3] x;
 
-  k10 = CL / V1;
-  k12 = Q / V1;
-  k21 = Q / V2;
-  
   K = rep_matrix(0, 3, 3);
   
   K[1, 1] = -ka;
@@ -59,17 +60,11 @@ transformed parameters{
   K[3, 2] = k12;
   K[3, 3] = -k21;
 
-  theta[1][1] = 1; # F1
-  theta[1][2] = 1; # F2
-  theta[1][3] = 1; # F3
-  theta[1][4] = 0; # tlag1
-  theta[1][5] = 0; # tlag2
-  theta[1][6] = 0; # tlag3
-
   # linCptModel takes in the constant rate matrix, the object theta which
   # contains the biovariability fraction and the lag time of each compartment,
   # and the NONMEM data.
-  x = linCptModel(K, theta, time, amt, rate, ii, evid, cmt, addl, ss);
+  x = linOdeModel(time, amt, rate, ii, evid, cmt, addl, ss,
+                  K, biovar, tlag);
 
   cHat = col(x, 2) ./ V1;
 
@@ -96,5 +91,4 @@ generated quantities{
   for(i in 1:nObs){
       cObsPred[i] = exp(normal_rng(log(cHatObs[i]), sigma));
     }
-			 
 }

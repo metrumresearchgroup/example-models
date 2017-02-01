@@ -1,9 +1,9 @@
 rm(list = ls())
 gc()
 
-modelName <- "TwoCptModel"
+# modelName <- "TwoCptModel"
 # modelName <- "LinTwoCptModel"
-# modelName <- "GenTwoCptModel"
+modelName <- "GenTwoCptModel"
 
 ## Adjust directories to your settings.
 scriptDir <- getwd()
