@@ -65,7 +65,7 @@ transformed parameters{
   # PKModelTwoCpt takes in the NONMEM data, followed by the parameter
   # arrays abd returns a matrix with the predicted amount in each 
   # compartment at each event.
-  x = PKModelTwoCpt(time, amt, rate, ii, evid, cmt, addl, ss,
+  x = PKModelOneCpt(time, amt, rate, ii, evid, cmt, addl, ss,
                    theta, biovar, tlag);
 
   cHat = col(x, 2) ./ V1; # we're interested in the amount in the second compartment 

@@ -8,6 +8,18 @@ Carpenter, B., Gelman, A., Hoffman, M., Lee, D., Goodrich, B., Betancourt, M.,
 \newblock Stan: A probablistic programming language.
 \newblock \emph{Journal of Statistical Software (in press)}  (2016).
 
+\bibitem{nuts}
+Hoffman, M.D. and Gelman, A.
+\newblock The no-u-turn sampler: Adaptively setting path lengths in hamiltonian
+  monte carlo.
+\newblock \emph{Journal of Machine Learning Research}  (2014):1593--1623.
+
+\bibitem{AD}
+Carpenter, B., Hoffman, M.D., Brubaker, M.A., Lee, D., Li, P. and Betancourt,
+  M.J.
+\newblock The stan math library: Reverse-mode automatic differentiation in c++.
+\newblock \emph{arXiv 1509.07164.}  (2015).
+
 \bibitem{matrixExp}
 Moler, C. and Van~Loan, C.
 \newblock Nineteen dubious ways to compute the exponential of a matrix,

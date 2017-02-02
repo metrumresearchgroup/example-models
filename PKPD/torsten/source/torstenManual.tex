@@ -45,28 +45,70 @@ Phone: 860.735.7043 \` Tariffville, CT 06081 \\
 charlesm@metrumrg.com \` metrumrg.com \\
 \end{tabbing}
 }
-{\Huge Torsten: A Prototype Model Library for Bayesian PKPD Modeling in Stan \\ \ \\
-User Manual: Version 0.81 \\ \ \\
-\large Charles Margossian and Bill Gillespie}
+{\Huge \textbf{Torsten} \\ \ \\  \huge A Prototype Library for Bayesian Pharmacometrics Modeling in Stan \\ \ \\
+User Manual \\ \ \\ 
+\Large Charles Margossian and Bill Gillespie \\ \ \\ \ \\ \ \\ \ \\
+Torsten Version 0.82 \\ for Stan Version 2.14.0 \\ \ \\ 
+\large Tuesday January 31st }
 \end{center}
 
-\section*{Development}
-This project is open-source. We have received extensive help and advice from Stan's development team, as well as insightful feedbacks from the broader Stan community. We are active contributors to Stan's core language, and our focus is on tools for differential equations based models, with the goal to support applications in pharmacometrics. Metrum Research Group's collaboration with Columbia University for the development of tools for \textit{Fast and Flexible Differential Equation Model Fitting with Application to Pharmacometrics} is supported by the Small Business Technology Transfer grant from the Office of Naval Research.
+\section{Introduction}
 
-\subsection*{Licensing}
+\subsection{Preface} \ \\ \ \\ Stan is an open source probabilistic language designed primarily to do Bayesian data analysis \cite{stan}. Several of its features make it a powerful tool to specify and fit complex models. Notably, its language is extremely flexible and its No U-Turn Sampler (NUTS), an adaptative Hamiltonian Monte Carlo algorithm, has proven more efficient than commonly used Monte Carlo Markov Chains (MCMC) samplers for complex high dimensional problems \cite{nuts}. Our goal is to harness these innovative features and make Stan a better software for pharmacometrics modeling. Our efforts are twofold:
+\begin{enumerate}
+  \item We contribute to the development of new mathematical tools, such as functions that support differential equations based models, and implement them directly into Stan's core language.
+  \item We develop Torsten, an extension with specialized pharmacometrics functions.
+\end{enumerate}
+
+Throughout the process, we have been working very closely with Stan's development team. We have benefited immensely from their mentoring, advice, and feedback. Just like Stan, Torsten is an open source project that fosters collaborative work. Interested in contributing? Shoot us an e-mail and we will help you help us (\url{charlesm@metrumrg.com} and \url{billg@metrumrg.com})!
+
 Torsten is licensed under the BSD 3-clause license.
 
-\section{Introduction}
-Metrum Research Group has developed a prototype Pharmacokinetic/Pharmacodynamic (PKPD) model library for use in Stan 2.12. The current version includes:
+\begin{fmpage}{\textwidth}
+{\bf WARNING:} The current version of Torsten is a {\em prototype}. It is being released for review and comment, and to support limited research applications. It has not been rigorously tested and should not be used for critical applications without further testing or cross-checking by comparison with other methods. \\ \ \\
+We encourage interested users to try Torsten out and are happy to assist. Please report issues, bugs, and feature requests on our GitHub page: \url{https://github.com/charlesm93/stan}.
+\end{fmpage}
+
+\subsection{Installing Torsten}  \ \\ \ \\  
+Installation files are available on GitHub: \url{https://github.com/charlesm93/example-models/tree/torsten-0.82/PKPD/torsten}
+
+There is currently no mechanism to install Torsten on top of your version of Stan. This is still work in progress. In the meantime, we offer a version of Stan with Torsten built inside of it. Torsten 0.82 works with Stan 2.14.0. Torsten is built inside the Stan and Stan-math repositories and is agnostic to the interface the users use. We offer support for installing Stan with CmdStan\footnote{If you need assistance to set up Torsten with another interface, shoot me an e-mail at charlesm@metrumrg.com. I'm happy to help.}.
+
+The easiest way to install the CmdStan interface with Stan and Torsten is to run the bash file \texttt{setupTorsten.sh}. You can also do it manually on a terminal window:
+
+Download CmdStan: \\
+\texttt{git clone https://github.com/stan-dev/cmdstan.git \\
+cd cmdstan \\
+git checkout release/v2.14.0
+} \\
+
+Download Stan with Torsten: \\
+\texttt{git clone https://github.com/charlesm93/stan.git \\
+rm -r stan\_2.14.0 \\
+mv stan stan\_2.14.0 \\
+cd stan\_2.14.0 \\
+git checkout torsten-master
+} \\
+
+Download Stan\_math with Torsten:
+\texttt{cd lib \\
+git clone https://github.com/charlesm93/math.git \\
+mv math stan\_math\_2.14.0 \\
+cd stan\_math\_2.14.0 \\
+git checkout torsten-master
+}
+
+\subsection{Overview} \ \\ \ \\
+Torsten is a prototype Pharmacokinetic/Pharmacodynamic (PKPD) model library for use in Stan 2.14.0. The current version includes:
 \begin{itemize}
   \item Specific linear compartmental models:
   \begin{itemize}
     \item One compartment model with first order absorption
     \item Two compartment model with elimination from and first order absorption into central compartment
   \end{itemize}
-  \item General linear compartmental model described by a matrix exponential
-  \item General compartmental model described by a system of first order Ordinary Differential Equations (ODEs)
-\end{itemize}
+  \item General linear compartmental model described by a system of first-order linear Ordinary Differential Equations (ODEs).
+  \item General compartmental model described by a system of first order ODEs 
+ \end{itemize}
 
 The models and data format are based on NONMEM\textregistered\footnote{NONMEM\textregistered\ is licensed and distributed by ICON Development Solutions.}/NMTRAN/PREDPP conventions including:
 \begin{itemize}
@@ -79,78 +121,77 @@ The models and data format are based on NONMEM\textregistered\footnote{NONMEM\te
   \item Handles steady-state dosing histories for specific and general \underline{linear} models
   \item Implemented NMTRAN data items include: TIME, EVID, CMT, AMT, RATE, ADDL, II, SS
 \end{itemize}
-This library provides Stan language functions that calculate amounts in each compartment.
+
+This library provides Stan language functions that calculate amounts in each compartment, given an event schedule and an ODE system.
     
-\subsection*{Implementation details}
+\subsection{Implementation details}
 \begin{itemize}
-  \item Stan (\url http://mc-stan.org/) \cite{stan}
-  \item All functions are programmed in C++ and are compatible with the Stan-math autodiff library
+  \item Stan version 2.14.0 (\url{http://mc-stan.org/})
+  \item All functions are programmed in C++ and are compatible with the Stan-math automatic differentiation library \cite{AD}
   \item All functions can be called directly in a Stan file in a manner identical to other built-in functions
-  \item One and two compartment models: coded analytical caclulations
-  \item General linear compartment models with semi-analytical solutions using built-in (still in development) Matrix Exponential function (Pade approximation coupled with scaling and squaring \cite{matrixExp})
-  \item General compartment models with numerical solutions to ODEs using built-in ODE integrators in Stan (Runge-Kutta 4th/5th and CVODES), with adjustable tuning parameters
+  \item One and two compartment models: hand-coded analytical solutions
+  \item General linear compartment models with semi-analytical solutions using a built-in Matrix Exponential function (Pade approximation coupled with scaling and squaring \cite{matrixExp})
+  \item General compartment models with numerical solutions to ODEs using built-in ODE integrators in Stan (Runge-Kutta 4th/5th and backward differentiation methods from CVODES library), with adjustable tuning parameters
 \end{itemize}
 
-\begin{fmpage}{\textwidth}
-{\bf WARNING:} The current version of Torsten is a {\em prototype}. It is being released for review and comment, and to support limited research applications. It has not been rigorously tested and should not be used for critical applications without further testing or cross-checking by comparison with other methods. 
-\end{fmpage}
 
 
-\subsection*{Development plans} Our current plans for future development of Torsten include the following:
+\subsection{Development plans} \ \\ \ \\
+Our current plans for future development of Torsten include the following:
 \begin{itemize}
   \item A system to easily share packages of Stan functions (written in C++ or in the Stan language)
-  \item Extend formal tests
-  \begin{itemize}
-    \item C++ Google unit tests
-    \item Comparison with simulations from the R package \textit{mrgsolve}
-  \end{itemize}
   \item Steady state calculation for the General compartment model
   \begin{itemize}
-    \item This will require the developer of a solver for nonlinear algebraic equations (aka root solver)
+    \item This requires a solver for nonlinear algebraic equations (aka a root solver)
   \end{itemize}
-  \item Allow user to provide time-varying constant rate matrix in \texttt{linCptModel}
   \item Optimize Matrix exponential functions
   \begin{itemize}
-    \item Function for action of Matrix Exponential on a vector
-    \item Coded gradients
+    \item Function for the action of Matrix Exponential on a vector
+    \item Hand-coded gradients
     \item Special algorithm for matrices with special properties
   \end{itemize}
-  \item Google C++ unit tests
-  \item R tests comparing simulations with the R package \textit{mrgsolve}
-  \item Conduct beta testing
+  \item Fix issue that arises when computing the adjoint of the lag time parameter (in a dosing compartment) evaluated at $t_{lag} = 0$. 
+  \item Make the following arguments optional
+  \begin{itemize}
+    \item \texttt{biovar} and \texttt{tlag}, respectively used for the biovariability fraction and the lag times in each compartment
+    \item Tuning parameters of the ODE integrators for the general compartmental function.
+  \end{itemize}
+  \item Extend formal tests
+  \begin{itemize}
+    \item We want more C++ Google unit tests to address cases users may encounter 
+    \item Comparison with simulations from the R package \textit{mrgsolve} and the software NONMEM\textregistered
+    \item Recruit non-developer users to conduct beta testing
+  \end{itemize}
 \end{itemize}
 
-\section{Install Stan and Torsten}    
-Installation files are available on GitHub: \url{https://github.com/charlesm93/example-models/tree/feature/issue-70-PKPDexamples-torsten/PKPD/torsten} \\
-Torsten uses a development version of Stan, that follows the 2.12 release, in order to implement the matrix exponential function required for the general linear compartment model. The easiest way to install Stan with the CmdStan interface is to run the bash file \texttt{setupTorsten.sh}. CmdStan-dev is set to the last version Torsten was tested on. \\ \\
-Download CmdStan: \\
-\texttt{git clone https://github.com/stan-dev/cmdstan.git \\
-cd cmdstan \\
-git reset --hard 53b4041} \\
+\subsection{Updates since Torsten 0.81}
+\begin{itemize}
+  \item Torsten is now up to date with Stan version 2.14.0
+  \item We split the parameter argument into three arguments: \texttt{pMatrix} (parameters for ODEs), \texttt{biovar} (parameters for the biovariability), and \texttt{tlag} (parameters for lag times). This gives the users more control over which arguments get passed as data and as parameters. The model is most efficient when all fixed values are passed as data.
+  \item We changed the order of the arguments: the user first passes the data arguments and then the parameter arguments. This is because in future versions we will want optional arguments to be passed last.
+  \item The user can now pass parameter arguments as 1D or 2D arrays, depending on whether the parameters are constant or change from one event to the other.
+  \item We have significantly increased the number of unit tests -- but we still have more to do!
+  \item The unit tests now check automatic differentiation against finite differentiation calculations.
+  \item Fixed minor bugs and report issues.
+\end{itemize}
+ 
 
-Download Stan with Torsten: \\
-\texttt{git clone https://github.com/charlesm93/stan.git} \\
-
-Download Stan\_math with Torsten: \\
-\texttt{cd stan \\
-cd lib \\
-rm -r stan\_math \\
-git clone https://github.com/charlesm93/math.git \\
-mv math stan\_math} \\
 
 \section{Using Torsten}
 
-In this section we go through the different functions Torsten adds to Stan. It will be helpful to apply these functions to a simple example.
+The reader should have a basic understanding of how Stan works before tackling this chapter. There are excellent resources online to get started with Stan (\url{http://mc-stan.org/documentation/}). 
+
+In this section we go through the different functions Torsten adds to Stan. It will be helpful to apply these functions to a simple example. We have uploaded code and data on \url{https://github.com/charlesm93/example-models/tree/torsten-0.82/PKPD/torsten}.
 
 \subsection*{Example 1: Two Compartment Model}
-We modeled drug absorption in a single patient and simulated plasma drug concentrations:
+We model drug absorption in a single patient and simulate plasma drug concentrations:
 \begin{itemize}
   \item Single Dose: 5000 mg
   \item PK: plasma concentration of parent drug ($c$)
   \item PK measured at 0, 0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75, 2, 4, 6, 8, 10, 12, 14, 16, 18, and 20 hours after dosing
 \end{itemize}
 
-The plasma concentration ($c$) were simulated according to the following equations:
+The plasma concentration ($c$) are simulated according to the following equations:
 \begin{eqnarray*}
 \log\left(c\right) &\sim& N\left(\log\left(\widehat{c}\right),\sigma^2\right) \\
  \widehat{c} &=& f_{2cpt}\left(t, CL, Q, V_2, V_3, k_a\right) \\
@@ -161,20 +202,23 @@ The plasma concentration ($c$) were simulated according to the following equatio
 
 The data are generated using the R package \textit{mrgsolve}, see \texttt{TwoCptModelSimulation.R}. We show the results obtained when using the function \texttt{PKModelTwoCpt}, which computes solutions to the ODEs analytically.
 
-\subsection*{Linear One and Two Compartment Model}
+\subsection{Linear One and Two Compartment Model} \ \\
 
-The one and two compartment model functions have the form: \\
+The one and two compartment model functions have the form:
 
-\texttt{<model name>(theta, time, amt, rate, ii, evid, cmt, addl, ss)} \\
+\texttt{<model name>(time, amt, rate, ii, evid, cmt, addl, ss,\\
+\phantom{<model name>} theta,  biovar, tlag)} \\
 
-where \texttt{time, amt, rate, ii} are arrays of real and \texttt{evid, cmt, addl, ss} arrays of integers. All arrays have the same length, which corresponds to the number of events. \texttt{theta}, also known as the \textit{parameter matrix}, is an array of vectors. If the parameters are constant for all events, \texttt{theta} should be an array of length 1, else its length should be the number of events. In the latter case, the \textit{ith} row contains a vector parameters for the time interval [\texttt{time[i-1], time[i]}].
+There is no need to skip a line, but we do so to separate what we call \textit{event} arguments and \textit{model} arguments. The event arguments describe the event schedule of the clinical trial. \texttt{time, amt, rate, ii} are arrays of real and \texttt{evid, cmt, addl, ss} arrays of integers. All arrays have the same length, which corresponds to the number of events.
+
+Next we have the \textit{model} arguments: \texttt{theta} contains the ODE parameters, \texttt{biovar} the biovariability fraction in each compartment (sometimes denoted as \textit{F}), and \texttt{tlag} the lag times in each compartment. The model arguments are 2-dimensional arrays. The first dimension provides a container for the parameters and the length of that container is simply the number of parameters. The second dimension allows for variations in the parameters from one event to the other. The length of the 2D container is the number of events. The \textit{ith} row contains an array of parameters for the time interval [\texttt{time[i-1], time[i]}]. Often times, the parameters are constant for all events and the user can then pass a 2D array of length 1 or, even better, a 1D array.
 
 The options for \textit{model name} are:
 \begin{itemize}
   \item PKModelOneCpt
   \item PKModelTwoCpt
 \end{itemize}
-which respectively correspond to the one and two compartment model with first order absorption (figure~\ref{cptModels}). A vector in \texttt{thetha} is expected to contain parameters $CL$, $V2$, and $ka$ for the one compartment case, and $CL$, $Q$, $V2$, $V3$, and $ka$ for the two compartments case, \underline{in this order}, followed by the bioavailability fraction of each compartment (non-effective if set to 1) and the lag time in each compartment (non-effective if set to 0). Note that setting $ka$ to 0 eliminates the fist-order absoprtion.
+which respectively correspond to the one and two compartment model with first order absorption (figure~\ref{cptModels}). A vector in \texttt{thetha} is expected to contain parameters $CL$, $V2$, and $ka$ for the one compartment case, and $CL$, $Q$, $V2$, $V3$, and $ka$ for the two compartments case, \underline{in this order}. Setting $ka$ to 0 eliminates the fist-order absoprtion. \texttt{biovar} contains the bioavailability fraction of each compartment (non-effective if set to 1) and \texttt{tlag} the lag time in each compartment (non-effective if set to 0).
 
 \begin{figure}[htbp]
 \includegraphics[width=3.5in,trim=0in 0in 0 0in]{graphics/cptModels.png}
@@ -182,7 +226,7 @@ which respectively correspond to the one and two compartment model with first or
 \label{cptModels}
 \end{figure}
 
-\texttt{PKModelTwoCpt} can be used to fit example 1, see \texttt{TwoCptModelExample.stan}. Four MCMC chains of 2000 iterations were simulated. The first 1000 iteration of each chain were discarded. Thus 1000 MCMC samples were used for the subsequent analyses.
+\texttt{PKModelTwoCpt} can be used to fit example 1, see \texttt{TwoCptModel.stan}. We are interested in evaluating the ODE parameters, stored in \texttt{theta}. The biovariability fraction and the lag times on the other hand are fixed, and we therefore declare \texttt{biovar} and \texttt{tlag} in the transformed data block. Four MCMC chains of 2000 iterations were simulated. The first 1000 iteration of each chain were discarded. Thus 1000 MCMC samples were used for the subsequent analyses.
 
 \begin{figure}
 \caption{Stan language for fitting a two compartment model using the \texttt{PKModelTwoCpt} function (abstract)}
@@ -205,6 +249,19 @@ which respectively correspond to the one and two compartment model with first or
   
   vector<lower = 0>[nObs] cObs; `\textcolor{gray}{\#  observed concentration (Dependent Variable)}'
 }
+
+`\bf{transformed data}' {
+                                    $\vdots$
+  biovar[1] = 1;
+  biovar[2] = 1;
+  biovar[3] = 1;
+  
+  tlag[1] = 0;
+  tlag[2] = 0;
+  tlag[3] = 0;                                    
+                                    
+                                     
+}
                                     $\vdots$ 
 `\bf{parameters}' {
   real<lower = 0> CL;
@@ -217,19 +274,14 @@ which respectively correspond to the one and two compartment model with first or
 
 `\bf{transformed parameters}' {
                                     $\vdots$ 
-  theta[1][1] = CL;
-  theta[1][2] = Q;
-  theta[1][3] = V2;
-  theta[1][4] = V3;
-  theta[1][5] = ka;
-  theta[1][6] = 1; `\textcolor{gray}{\#  F1}'
-  theta[1][7] = 1; `\textcolor{gray}{\#  F2}'
-  theta[1][8] = 1; `\textcolor{gray}{\#  F3}'
-  theta[1][9] = 0; `\textcolor{gray}{\#  tlag1}'
-  theta[1][10] = 0; `\textcolor{gray}{\#  tlag2}'
-  theta[1][11] = 0; `\textcolor{gray}{\#  tlag3}'
+  theta[1] = CL;
+  theta[2] = Q;
+  theta[3] = V2;
+  theta[4] = V3;
+  theta[5] = ka;
 
-  x = `\textcolor{red}{PKModelTwoCpt}'(theta, time, amt, rate, ii, evid, cmt, addl, ss);
+  x = `\textcolor{red}{PKModelTwoCpt}'(time, amt, rate, ii, evid, cmt, addl, ss, 
+                          theta, biovar, tlag);
 
   cHat = col(x, 2) ./ V2; `\textcolor{gray}{\#  get concentration in the central compartment}'
 
@@ -237,18 +289,7 @@ which respectively correspond to the one and two compartment model with first or
     cHatObs[i] = cHat[iObs[i]];`\textcolor{gray}{\# predictions for observed data records}'
   }
  }
-
-`\bf{model}' {
-  # priors
-  CL ~ lognormal(log(10), 0.25);
-  Q ~ lognormal(log(15), 0.5);
-  V2 ~ lognormal(log(35), 0.25);
-  V3 ~ lognormal(log(105), 0.5);
-  ka ~ lognormal(log(2.5), 1);
-  sigma ~ cauchy(0, 1);
-
-  logCObs ~ normal(log(cHatObs), sigma);
-}                                             
+                                    $\vdots$ 
 \end{lstlisting}
 \end{fmpage}
 \end{small}
@@ -297,9 +338,10 @@ CL & 5.19 & 0.01 & 0.25 & 4.60 & 5.05 & 5.21 & 5.35 & 5.62 & 971.04 & 1.00 \\
 \end{tabular}
 \end{table}
 
-\subsection*{General Linear Compartment Model}
-A general linear compartment model refers to a model that may be described in terms of a system of first order linear differential equations with (piecewise) constant coefficients, i.e., a differential equation of the form:
-$$ x^\prime\left(t\right) = Kx\left(t\right) $$
+\subsection{General Linear ODE Model} \ \\
+
+A general linear ODE model refers to a model that may be described in terms of a system of first order linear differential equations with (piecewise) constant coefficients, i.e., a differential equation of the form:
+$$ y^\prime\left(t\right) = Ky\left(t\right) $$
 where $K$ is a matrix. For example $K$ for a two compartment model with first order absorption is:
 $$   K = \left[\begin{array}{ccc}
 	-k_a & 0 & 0 \\
@@ -308,11 +350,12 @@ $$   K = \left[\begin{array}{ccc}
 	\end{array}\right] $$ \\
 where $k_{10} = CL / V2 $, $ k_{12} = Q / V2 $, and $k_{21} = Q / V2 $.
 
-The linear compartment model has the form:
+The linear ODE model function has the form:
 
-\texttt{linCptModel(K, theta, time, amt, rate, ii, evid, cmt, addl, ss)}
+\texttt{linOdeModel(time, amt, rate, ii, evid, cmt, addl, ss,\\
+\phantom{linOdeModel} system, biovar, tlag)}
 
-where \texttt{K} is the matrix describing the ODE system. Since most of the parameters appear in \texttt{K}, it is not necessary to specify them again in \texttt{theta}. Instead, we only specify in \texttt{theta} parameters left out of \texttt{K}, namely the bioavailability fractions and the lag times.
+where \texttt{system} is an array of constant rate matrices. The length of the array is the number of events. If the rate matrix is constant for all events, the user may pass an array of length 1 or directly the matrix \texttt{K}.  \texttt{system} contains all the ODE parameters, so we no longer need \texttt{theta}.
 
 \begin{figure}
 \caption{Stan language for fitting a two compartment model using the \texttt{linCptModel} function (abstract)}
@@ -322,17 +365,13 @@ where \texttt{K} is the matrix describing the ODE system. Since most of the para
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily,mathescape=true,flexiblecolumns=true,frame=single,escapeinside=`']
 `\bf{transformed parameters}' {
   `\textcolor{red}{matrix[3, 3] K;}'
-  real k10;
-  real k12;
-  real k21;
+  real k10 = CL / V2;
+  real k12 = Q / V2;
+  real k21 = Q / V3;
   vector<lower = 0>[nTheta] theta[1];
   vector<lower = 0>[nt] cHat;
   vector<lower = 0>[nObs] cHatObs;
   matrix<lower = 0>[nt, 3] x;
-  
-  k10 = CL / V2;
-  k12 = Q / V2;
-  k21 = Q / V3;
  
   `\textcolor{red}{K = rep\_matrix(0, 3, 3);}'
 
@@ -343,14 +382,8 @@ where \texttt{K} is the matrix describing the ODE system. Since most of the para
   `\textcolor{red}{K[3, 2] = k12;}' 
   `\textcolor{red}{K[3, 3] = -k21;}'
 
-  theta[1][1] = 1; # F1
-  theta[1][2] = 1; # F2
-  theta[1][3] = 1; # F3
-  theta[1][4] = 0; # tlag1
-  theta[1][5] = 0; # tlag2
-  theta[1][6] = 0; # tlag3
-
-  x = `\textcolor{red}{linCptModel}'(`\textcolor{red}{K}', theta, time, amt, rate, ii, evid, cmt, addl, ss);
+  x = `\textcolor{red}{linOdeModel}'(time, amt, rate, ii, evid, cmt, addl, ss,
+                       K, biovar, tlag);
 
   cHat = col(x, 2) ./ V1;
 
@@ -369,30 +402,31 @@ where \texttt{K} is the matrix describing the ODE system. Since most of the para
 \label{LinTwoCptCode}
 \end{figure}
 
-\subsection*{General Compartment Model}
+\subsection{General ODE Model} \ \\
 
 Torsten may be used to fit models described by a system of first-order ODEs, i.e., differential equations of the form:
-$$ x^\prime\left(t\right) = f\left(t, x\left(t\right)\right) $$
-where $x$ and $f$ are vector-valued functions.
+$$ y^\prime\left(t\right) = f\left(t, y\left(t\right)\right) $$
+where $y$ and $f$ are vector-valued functions.
 
-The general compartment model functions have the form:
+The general ODE model functions have the form:
 
 \texttt{<model\_name>(ODE\_system, nCmt, \\
-                              theta, time, amt, rate, ii, evid, cmt, addl, ss, \\
-                              rel\_tol, abs\_tol, max\_step)}
+\phantom{<model\_name>} time, amt, rate, ii, evid, cmt, addl, ss, \\
+\phantom{<model\_name>} theta, biovar, tlag, \\                              
+\phantom{<model\_name>} rel\_tol, abs\_tol, max\_step)}
                               
-where \texttt{ODE\_system} is a system of first-order ODEs defined in the function block of Stan (see section 19.2 of the Stan reference manual) and \texttt{nCmt} is the number of compartments in the model. \texttt{rel\_tol}, \texttt{abs\_tol}, and \texttt{max\_step} are the tuning parameters for the ODE integrator, respectively the relative tolerance, the absolute tolerance, and the maximum number of steps. It is difficult to recommend values for the tuning parameters, though the authors typically use $rel\_tol = 1e-8$, $abs\_tol = 1e-8$ and $max\_step = 1e+8$. For more details see Stan's reference manual.
+where \texttt{ODE\_system} is a system of first-order ODEs defined in the function block of Stan (see section 19.2 of the Stan reference manual) and \texttt{nCmt} is the number of compartments (or, equivalently, of ODEs) in the model. \texttt{rel\_tol}, \texttt{abs\_tol}, and \texttt{max\_step} are the tuning parameters for the ODE integrator: respectively the relative tolerance, the absolute tolerance, and the maximum number of steps. Which value to pick for the tuning parameters depends on the specifics of the ODEs. Reducing the tolerance parameters and increasing the number of steps make for a more robust integrator but can significantly slow down the algorithm. We recommend default values we would use, but users should be prepared to adjust these parameters. As a starting point, we suggest:  \texttt{rel\_tol} = 1e-8, \texttt{abs\_tol} = 1e-8 and \texttt{max\_step} = 1e+8. For more details see Stan's reference manual.
 
 The options for \texttt{model\_name} are:
 \begin{itemize}
-  \item generalCptModel\_rk45
-  \item generalCptModel\_CVODES
+  \item generalOdeModel\_rk45
+  \item generalOdeModel\_bdf
 \end{itemize}
 
-They respectively call the built-in Runge-Kutta 4th/5th integrator, recommended for non-stiff ODEs, and CVODES integrator, recommended for stiff ODEs.
+They respectively call the built-in Runge-Kutta 4th/5th integrator, recommended for non-stiff ODEs, and BDF integrator, recommended for stiff ODEs.
 
 \begin{figure}
-\caption{Stan language for fitting a two compartment model using the \texttt{genCptModel\_rk45} function (abstract)}
+\caption{Stan language for fitting a two compartment model using the \texttt{genOdeModel\_rk45} function (abstract)}
 \begin{center}
 \begin{small}
 \begin{fmpage}{\textwidth - .75in}
@@ -402,30 +436,21 @@ They respectively call the built-in Runge-Kutta 4th/5th integrator, recommended 
   real[] `\textcolor{red}{twoCptModelODE}'(real t,
 			       real[] x,
 			       real[] theta,
-			       real[] rate, # in this example, rate is treated as data
-			       int[] dummy){
-    real Q;
-    real CL;
-    real V1;
-    real V2;
-    real ka;
-    real k12;
-    real k21;
-    real k10;
+			       real[] dummy_real,
+			       int[] dummy_int){
+    real Q = theta[1];
+    real CL = theta[2];
+    real V2 = theta[3];
+    real V3 = theta[4];
+    real ka = theta[5];
+    real k12 = Q / V2;
+    real k21 = Q / V3;
+    real k10 = CL / V2;
     real y[3]; 
-    
-    CL = theta[1];
-    Q = theta[2];
-    V1 = theta[3];
-    V2 = theta[4];
-    ka = theta[5];
-    k10 = CL / V1;
-    k12 = Q / V1;
-    k21 = Q / V2;
 
-    y[1] = -ka*x[1];
-    y[2] = ka*x[1] - (k10 + k12)*x[2] + k21*x[3];
-    y[3] = k12*x[2] - k21*x[3];
+    y[1] = -ka * x[1];
+    y[2] = ka * x[1] - (k10 + k12)*x[2] + k21*x[3];
+    y[3] = k12 * x[2] - k21 * x[3];
 
     return y;
   }
@@ -433,21 +458,16 @@ They respectively call the built-in Runge-Kutta 4th/5th integrator, recommended 
                                     $\vdots$
 `\bf{transformed parameters}' {
                                     $\vdots$
-  theta[1][1] = CL;
-  theta[1][2] = Q;
-  theta[1][3] = V1;
-  theta[1][4] = V2;
-  theta[1][5] = ka;
-  theta[1][6] = 1; # F1
-  theta[1][7] = 1; # F2
-  theta[1][8] = 1; # F3
-  theta[1][9] = 0; # tlag1
-  theta[1][10] = 0; # tlag2
-  theta[1][11] = 0; # tlag3
+  theta[1] = CL;
+  theta[2] = Q;
+  theta[3] = V1;
+  theta[4] = V2;
+  theta[5] = ka;
 
-  x = `\textcolor{red}{generalCptModel\_bdf}'( `\textcolor{red}{twoCptModelODE}', 3,
-                          theta, time, amt, rate, ii, evid, cmt, addl, ss,
-                          1e-8, 1e-8, 1e8);
+  x = `\textcolor{red}{generalCptModel\_rk45}'(`\textcolor{red}{twoCptModelODE}', 3,
+                                  time, amt, rate, ii, evid, cmt, addl, ss,
+                                  theta, biovar, tlag, 
+                                  1e-8, 1e-8, 1e8);
                                     $\vdots$
 \end{lstlisting}
 \end{fmpage}
@@ -456,54 +476,43 @@ They respectively call the built-in Runge-Kutta 4th/5th integrator, recommended 
 \label{GenTwoCptModelCode}
 \end{figure}
 
-\subsection*{Summary}
-
 \begin{table} %[htdp]
-\caption{Arguments of Torsten functions.}
+\caption{Summary: Arguments of Torsten functions.}
 \begin{center}
 \begin{minipage}{\textwidth - 1in}
 \begin{tabular}{p{1.5in}cp{1.5in}p{1.5in}} 
 \hline\hline
- & & & model \\
- & function & argument & parameters \\
-model & name & names & in {\tt theta} \\ 
+& function & argument & parameters \\
+model & name & names & in {\tt theta}\\ 
 \hline
-{\raggedright one compartment\\ model with first order\\ absorption
-  $\left(k_a > \frac{CL}{V_2}\right)$} & {\tt PKModelOneCpt} &  
-	{\tt time}, {\tt amt}, {\tt rate}, {\tt ii}, {\tt evid}, {\tt cmt}, {\tt addl}, {\tt ss} &
-	$CL$, $V_2$, $k_a$, $F_1$, $F_2$, $t_{lag1}$, $t_{lag2}$ \\
+{\raggedright one compartment\\ model with first order\\ absorption} 
+   & {\tt PKModelOneCpt} &  
+	{\tt time}, {\tt amt}, {\tt rate}, {\tt ii}, {\tt evid}, {\tt cmt}, {\tt addl}, {\tt ss}, {\tt theta}, {\tt biovar}, {\tt tlag} &
+	$CL$, $V_2$, $k_a$ \\
 \hline
-{\raggedright two compartment\\ model with first order\\ absorption $\left(k_a > \lambda_1\footnote{
-	$\lambda_1 = \frac{k_{10}+k_{12}+k_{21} - \sqrt{\left(k_{10}+k_{12}+k_{21}\right)^2 - 4k_{10}k_{21}}}{2}$ where $k_{10} = \frac{CL}{V_2}$,
-	$k_{12} = \frac{Q}{V_2}$ and $k_{21} = \frac{Q}{V_3}$.}\right)$} & {\tt PKModelTwoCpt} &  
-	{\tt time}, {\tt amt}, {\tt rate}, {\tt ii}, {\tt evid}, {\tt cmt}, {\tt addl}, {\tt ss} &
-	$CL$, $Q$, $V_2$, $V_3$, $k_a$,
-	$F_1$, $F_2$, $F_3$, $t_{lag1}$, $t_{lag2}$, $t_{lag2}$ \\ 
+{\raggedright two compartment\\ model with first order\\ absorption}
+   & {\tt PKModelTwoCpt} &  
+	{\tt time}, {\tt amt}, {\tt rate}, {\tt ii}, {\tt evid}, {\tt cmt}, {\tt addl}, {\tt ss}, {\tt theta}, {\tt biovar}, {\tt tlag} &
+	$CL$, $Q$, $V_2$, $V_3$, $k_a$ \\ 
 \hline
-{\raggedright general linear \\ compartment model} & {\tt linCptModel} &  
-	{\tt K}, {\tt time}, {\tt amt}, {\tt rate}, {\tt ii}, {\tt evid}, {\tt cmt}, {\tt addl}, {\tt ss} &
-	$F_1$ to $F_n$, $t_{lag1}$ to $t_{lagn}$ \\
+{\raggedright general linear \\ compartment model} & {\tt linOdeModel} &  
+	{\tt time}, {\tt amt}, {\tt rate}, {\tt ii}, {\tt evid}, {\tt cmt}, {\tt addl}, {\tt ss}, {\tt system}, {\tt biovar}, {\tt tlag} &
+	NA: pass in constant rate matrix instead of {\tt theta} \\
 \hline
-{\raggedright general compartment \\ models} & {\tt genCptModel\_*} &  
+{\raggedright general compartment \\ models} & {\tt genOdeModel\_*} &  
 	{\tt ODE\_system}, {\tt nCmt}, {\tt time}, {\tt amt}, {\tt rate}, {\tt ii}, {\tt evid},
-        {\tt cmt}, {\tt addl}, {\tt ss}, {\tt rel\_tol}, {\tt abs\_tol}, {\tt max\_num\_steps}  &
-	Parameters in ODE system, $F_1$ to $F_n$, $t_{lag1}$ to $t_{lagn}$
+        {\tt cmt}, {\tt addl}, {\tt ss}, {\tt theta}, {\tt biovar}, {\tt tlag}, {\tt rel\_tol}, {\tt abs\_tol}, {\tt max\_num\_steps}  &
+	Parameters that get passed to ODE system
 \end{tabular}
 \end{minipage}
 \end{center}
 \label{precompiledModels}
 \end{table}
 
-Table 2 summarizes how to call Torsten functions.
-
-It is key to understand which type of models each function works for, and which method optimizes model fitting. An analytical method will always be fastest, but only applies to a few simple cases. Numerical methods that use an ODE integrator are generally applicable, but are orders of magnitude slower. The matrix exponential solution falls, speed-wise, between the analytical and the numerical solution, and can be used for all linear ODEs system. 
-
 
 \section{Additional Examples}
 
-\subsection*{Available Examples online} Code for examples can be found on GitHub: \url{https://github.com/charlesm93/example-models/tree/feature/issue-70-PKPDexamples-torsten/PKPD/torsten}.
-
-The current version of Torsten requires a development version of Stan that has not yet been released. In order to run this version, we advice users to use cmdStan, the command line interface of Stan. When Stan v2.13 (expected end of November 2016) gets released, we will share examples that use RStan.
+Code for examples can be found on GitHub: \url{https://github.com/charlesm93/example-models/tree/torsten-0.82/PKPD/torsten}.
 
 All the files to run a model are stored under the directory that bears the model's name. There are four files per example:
 \begin{itemize}
@@ -513,15 +522,9 @@ All the files to run a model are stored under the directory that bears the model
   \item \texttt{<model name>Simulation.R}
 \end{itemize}
 
-\texttt{data.R} contains the data we fit the model to and \texttt{init.R} the initial estimates of the parameters. These two files are generated using \texttt{Simulation.R}. In order to run the model, I recommend creating a new directory under \texttt{cmdstan/examples}, next to the \textit{bernouilli} example Stan automatically installs. Under this directory, put the \texttt{data.R}, \texttt{init.R}, and \texttt{.stan} files. You can then compile the model using:
+\texttt{data.R} contains the data we fit the model to and \texttt{init.R} the initial estimates of the parameters. These two files are generated using \texttt{Simulation.R}. The \texttt{R} folder contains R scripts to compile and run the models, as well as code to output diagnostic plots and statistics.
 
-\texttt{make examples/<model name>/<model name>}
-
-and run it:
-
-\texttt{cd examples/<model name>} \\\texttt{./<model name> sample data file=<model name>.data.R init=<model name>.init.R}
-
-\subsection*{Example 2: Effect Compartment Model}
+\subsection {Effect Compartment Model} \ \\ \ \\
 Let us expand example 1 to a population model fitted to the combined data from phase I and phase IIa studies. The parameters exhibit inter-individual variations (IIV), due to both random effects and to the patients' body weight, treated as a covariate and denoted $bw$:
 
 \subsubsection*{Population Model for Plasma Drug Concentration ($c$)}
@@ -541,7 +544,7 @@ Let us expand example 1 to a population model fitted to the combined data from p
 Furthermore we add a fourth compartment in which we measure a PD effect (figure~\ref{effCptModel}).
 
 \begin{figure}[htbp]
-\includegraphics[width=3.5in,trim=0in 0in 0 0in]{graphics/effectCptModel.pdf}
+\includegraphics[width=3.5in,trim=0in 0in 0 0in]{graphics/effCptModel.png}
 \caption{Effect Compartment Model}
 \label{effCptModel}
 \end{figure}
@@ -576,7 +579,7 @@ The PK and the PD data are simulated using the following treatment.
   \end{itemize}
 \end{itemize}
 
-The model is now simultaneously fitted to the PK and the PD data! For this four compartment model, we construct a constant rate matrix and use \texttt{linCptModel}. Correct use of Torsten requires that the user pass the entire event history (observation and dosing events) for an individual to the function. Thus the Stan model shows the call to \texttt{linCptModel} within a loop over the individual subjects rather than over the individual observations.
+The model is simultaneously fitted to the PK and the PD data. For this effect compartment model, we construct a constant rate matrix and use \texttt{linOdeModel}. Correct use of Torsten requires the user pass the entire event history (observation and dosing events) for an individual to the function. Thus the Stan model shows the call to \texttt{linOdeModel} within a loop over the individual subjects rather than over the individual observations.
 
 \begin{figure}
 \caption{Stan language for fitting an effect compartment model using \texttt{linCptModel} (abstract)}
@@ -614,10 +617,6 @@ transformed parameters {
                         
     ke0[j] = exp(logKe0[j]);
     EC50[j] = exp(logEC50[j]);
-    
-    k10 = CL[j] / V1[j];
-    k12 = Q[j] / V1[j];
-    k21 = Q[j] / V2[j];
 
     K = rep_matrix(0, 4, 4);
     
@@ -630,11 +629,11 @@ transformed parameters {
     K[4, 2] = ke0[j];
     K[4, 4] = -ke0[j];
            
-    x[start[j]:end[j],] = `\textcolor{red}{linCptModel}'(K, parms, time[start[j]:end[j]], 
+    x[start[j]:end[j],] = `\textcolor{red}{linOdeModel}'(time[start[j]:end[j]], 
                                                  amt[start[j]:end[j]], rate[start[j]:end[j]],
                                                  ii[start[j]:end[j]], evid[start[j]:end[j]],
                                                  cmt[start[j]:end[j]], addl[start[j]:end[j]], 
-                                                 ss[start[j]:end[j]]);
+                                                 ss[start[j]:end[j]], K, biovar, tlag);
 
     cHat[start[j]:end[j]] = 1000 * x[start[j]:end[j], 2] ./ V1[j];
     ceHat[start[j]:end[j]] = 1000 * x[start[j]:end[j], 4] ./ V1[j];
@@ -728,7 +727,7 @@ omegaEC50 & 0.213 & 0.001 & 0.021 & 0.174 & 0.199 & 0.213 & 0.227 & 0.255 & 190.
 \end{tabular}
 \end{table}
 
-\subsection*{Example 3: Friberg-Karlsson Semi-Mechanistic Model \cite{2364}}
+\subsection{Friberg-Karlsson Semi-Mechanistic Model \cite{2364}}
 
 In this third example, we deal with a more sophisticated PD effect, described by a system of nonlinear ODEs. The PK effects are still described by a two compartment model with a first-order absorption. 
 
@@ -765,7 +764,7 @@ The PK and the PD data are simulated using the following treatment.
   \end{itemize}
 \end{itemize}
 
-Once again, we simultaneously fit the model to the PK and the PD data. From a computational perspective, this is a much more difficult problem than the one we dealt with in previous examples. The nonlinear nature of the ODEs forces us to use a numerical solver, which is significantly slower than the linear methods we have employed so far. Because the ODE system of interest is non-stiff, we use the \textit{rk45} version of \texttt{genCptModel}.
+Once again, we simultaneously fit the model to the PK and the PD data. From a computational perspective, this is a much more difficult problem than the one we dealt with in previous examples. The nonlinear nature of the ODEs forces us to use a numerical solver, which is significantly slower than the linear methods we have employed so far. Because the ODE system of interest is non-stiff, we use the \textit{rk45} version of \texttt{genOdeModel}.
 
 It pays off to construct informative priors. For instance, we could fit the PK data first, as was done in  example 1, and get informative priors on the PK parameters. The PD parameters are drug independent, so we can use information from the neutropenia literature. In this example, we choose to use weakly informative priors on the PK parameters and strongly informative priors on the PD parameters. 
 
@@ -782,19 +781,19 @@ Since it takes a long time to run the model, we only use 100 iterations per chai
 			real[] parms,
 			real[] rdummy,
 			int[] idummy){
-    real k10;
-    real k12;
-    real k21;
-    real CL;
-    real Q;
-    real V1;
-    real V2;
-    real ka;
-    real mtt;
-    real circ0;
-    real gamma;
-    real alpha;
-    real ktr;
+    real CL = parms[1];
+    real Q = parms[2];
+    real V2 = parms[3];
+    real V3 = parms[4];
+    real ka = parms[5];
+    real mtt = parms[6];
+    real circ0 = parms[7];
+    real gamma = parms[8];
+    real alpha = parns[9];
+    real k10 = CL / V2;
+    real k12 = Q / V2;
+    real k21 = Q / V3;
+    real ktr = 4 / mtt;
     real dxdt[8];
     real conc;
     real EDrug;
@@ -803,22 +802,6 @@ Since it takes a long time to run the model, we only use 100 iterations per chai
     real transit3;
     real circ;
     real prol;
-
-    CL = parms[1];
-    Q = parms[2];
-    V1 = parms[3];
-    V2 = parms[4];
-    ka = parms[5];
-    mtt = parms[6];	
-    circ0 = parms[7];
-    gamma = parms[8];
-    alpha = parms[9];
-
-    k10 = CL / V1;
-    k12 = Q / V1;
-    k21 = Q / V2;
-
-    ktr = 4 / mtt;
   
     dxdt[1] = -ka * x[1];
     dxdt[2] = ka * x[1] - (k10 + k12) * x[2] + k21 * x[3];
@@ -839,7 +822,6 @@ Since it takes a long time to run the model, we only use 100 iterations per chai
     dxdt[8] = ktr * (transit3 - circ);
 
     return dxdt;
-
   }
 \end{lstlisting}
 \end{fmpage}
@@ -858,18 +840,17 @@ transformed parameters {
                              $\vdots$
   for(i in 1:nSubjects) {
 
-    parms[1][1] = thetaM[i, 1] * (weight[i] / 70)^0.75; # CL
-    parms[1][2] = thetaM[i, 2] * (weight[i] / 70)^0.75; # Q
-    parms[1][3] = thetaM[i, 3] * (weight[i] / 70); # V1
-    parms[1][4] = thetaM[i, 4] * (weight[i] / 70); # V2
-    parms[1][5] = kaHat; # ka
-    parms[1][6] = thetaM[i, 5]; # mtt
-    parms[1][7] = thetaM[i, 6]; # circ0
-    parms[1][8] = gamma;
-    parms[1][9] = thetaM[i, 7]; # alpha
+    parms[1] = thetaM[i, 1] * (weight[i] / 70)^0.75; # CL
+    parms[2] = thetaM[i, 2] * (weight[i] / 70)^0.75; # Q
+    parms[3] = thetaM[i, 3] * (weight[i] / 70); # V1
+    parms[4] = thetaM[i, 4] * (weight[i] / 70); # V2
+    parms[5] = kaHat; # ka
+    parms[6] = thetaM[i, 5]; # mtt
+    parms[7] = thetaM[i, 6]; # circ0
+    parms[8] = gamma;
+    parms[9] = thetaM[i, 7]; # alpha
 
     x[start[i]:end[i]] = `\textcolor{red}{generalCptModel\_rk45}'(twoCptNeutModelODE, 8,
-                                                           parms, 
                                                            time[start[i]:end[i]], 
                                                            amt[start[i]:end[i]], 
                                                            rate[start[i]:end[i]], 
@@ -878,6 +859,7 @@ transformed parameters {
                                                            cmt[start[i]:end[i]], 
                                                            addl[start[i]:end[i]], 
                                                            ss[start[i]:end[i]],
+                                                           parms, biovar, tlag,
                                                            1e-6, 1e-6, 1e8);
                              
     cHat[start[i]:end[i]] = x[start[i]:end[i], 2] / parms[1][3]; # divide by V1
@@ -955,7 +937,7 @@ Our approach is heavily based on the \textit{BUGS model library}, a prototype PK
 This section is intended for developers. No knowledge of C++ is required for users.
 
 
-\subsection*{Computing Amounts in an ODE-based model}
+\subsection{Computing Amounts in an ODE-based model} \ \\ \ \\
 Most PKPD model are based on ODEs that describe how PK and PD amounts evolve over time. For instance, the following ODEs describe drug diffusion in a one compartment model with a first-order absorption from the gut:
 
 \begin{eqnarray*}
@@ -970,10 +952,10 @@ Note we cannot simply integrate from $t_{first}$ to $t_{last}$ because the ODEs 
 All five functions in Torsten call the C++ function \texttt{pred}, which:
 \begin{enumerate}
   \item augments the event schedule to include all events that alter the system
-  \item calculates the amounts in each compartment at each event of the augmented schedule
+  \item calculates the amounts in each compartment at each event of the augmented schedule by:
   \begin{itemize}
-    \item computes the \textit{natural} evolution of the system by integrating ODEs
-    \item computes alterations due to exterior interventions
+    \item computing the \textit{natural} evolution of the system by integrating ODEs,
+    \item or computing alterations due to exterior interventions
   \end{itemize}
   \item returns the amounts at each event of the original schedule
 \end{enumerate}
@@ -986,7 +968,7 @@ This Event specifies that a time 0 (TIME = 0), a patient receives a 1500 mg (AMT
 
 To integrate the ODEs, \texttt{pred} calls \texttt{pred1} (prediction for one event) or \texttt{predSS} (prediction for one event if the system is in a steady state, i.e SS = 1). \texttt{pred1} and \texttt{predSS} are functors and get constructed differently by each Torsten function. Under \texttt{PKModelOneCpt}, \texttt{pred1} analytically computes the solution, while under \texttt{generalCptModel\_rk45} it numerically solves the ODEs.
  
-\subsection*{Structure of a Torsten Function} 
+\subsection{Structure of a Torsten Function}  \ \\ \ \\
 Under the structural scheme described above, a Torsten function performs a very simple set of actions:
 \begin{enumerate}
   \item Consistent with Stan practices, check the validity of the arguments and of the parameter values
@@ -995,81 +977,12 @@ Under the structural scheme described above, a Torsten function performs a very 
   \item Call pred
 \end{enumerate}  
 
-Figure~\ref{PKModelOneCptCode} shows the C++ code for \texttt{PKModelOneCpt}.
-
-\begin{figure}
-\caption{C++ code for the PKModelOneCpt function (abstract)}
-\begin{center}
-\begin{small}
-\begin{fmpage}{\textwidth - .45in}
-\begin{lstlisting}[basicstyle=\footnotesize\ttfamily,mathescape=true,flexiblecolumns=true,frame=single,escapeinside=`']
-
-template <typename T0, typename T1, typename T2, typename T3, typename T4> 
-Eigen::Matrix <typename promote_args<T0, T1, T2, T3, T4>::type, Eigen::Dynamic,
-  Eigen::Dynamic> 
-PKModelOneCpt(const std::vector< Eigen::Matrix<T0, Eigen::Dynamic, 1> >& pMatrix, 
-			  const std::vector<T1>& time,
-			  const std::vector<T2>& amt,
-			  const std::vector<T3>& rate,
-			  const std::vector<T4>& ii,
-			  const std::vector<int>& evid,
-			  const std::vector<int>& cmt,
-			  const std::vector<int>& addl,
-			  const std::vector<int>& ss) {
-			  
-  using std::vector;
-  using Eigen::Dynamic;
-  using Eigen::Matrix;
-  using boost::math::tools::promote_args;
-  using stan::math::check_positive_finite;
-  
-  PKModel model("OneCptModel"); 
-  	 
-  // Check arguments
-  static const char* function("PKModelOneCpt");
-  pmetricsCheck(pMatrix, time, amt, rate, ii, evid, cmt, addl, ss, function, model);
-  for(int i=0; i<pMatrix.size(); i++) {
-    check_positive_finite(function, "PK parameter CL", pMatrix[i](0,0));
-    check_positive_finite(function, "PK parameter V2", pMatrix[i](1,0));
-    check_positive_finite(function, "PK parameter ka", pMatrix[i](2,0));
-  }
-  std::string message4 = ", but must equal the number of parameters in the model: " 
-    + boost::lexical_cast<string>(model.GetNParameter()) + "!"; 
-  const char* length_error4 = message4.c_str();    
-  if (!(pMatrix[0].size() == model.GetNParameter()))
-    stan::math::invalid_argument(function,
-    "The number of parameters per event (length of a vector in the first argument) is",
-    pMatrix[0].size(), "", length_error4);
-
-  // Construct Pred functions for the model.
-  Pred1_structure new_Pred1("OneCptModel");
-  PredSS_structure new_PredSS("OneCptModel");
-  Pred1 = new_Pred1;
-  PredSS = new_PredSS; 
-  	
-  // Construct dummy matrix for last argument of pred
-  Eigen::Matrix<double, Dynamic, Dynamic> dummy_system(0,0);
-
-  Matrix <typename promote_args<typename promote_args<T0, T1, T2, T3, T4>::type,
-    double>::type, Dynamic, Dynamic> pred;
-  pred = Pred(pMatrix, time, amt, rate, ii, evid, cmt, addl, ss, model,
-    dummy_ode(), dummy_system);
-    
-  return pred;
-}
-\end{lstlisting}
-\end{fmpage}
-\end{small}
-\end{center}
-\label{PKModelOneCptCode}
-\end{figure}
-
-\subsection*{Implementing Torsten in Stan}
+\subsection{Implementing Torsten in Stan}
 \subsubsection*{Modifications in Stan-math}
 All five Torsten functions are located under the \texttt{Torsten} directory, under \texttt{stan/math}. We modified \texttt{rev/math} to include the \texttt{torsten/torsten.hpp} header file. The code can be found on GitHub: \url{https://github.com/charlesm93/math} 
 
 \subsubsection*{Modifications in Stan}
-Further modification are done in Stan to expose the Torsten functions to the Stan language. We edited \texttt{function\_signatures.h} to expose \texttt{PKModelOneCpt}, \texttt{PKModelTwoCpt}, and \texttt{linCptModel}. The general compartment model functions are higher-order functions in that they take another function as one of their arguments. They were exposed by directly modifying the grammar files, following very closely the example of \texttt{integrate\_ode\_rk45} and \texttt{integrate\_ode\_bdf}.
+Further modification are done in Stan to expose the Torsten functions to the Stan language. We edited \texttt{function\_signatures.h} to expose \texttt{PKModelOneCpt}, \texttt{PKModelTwoCpt}, and \texttt{linOdeModel}. The general ODE model functions are higher-order functions (i.e. they take another function as one of their arguments). They were exposed by directly modifying the grammar files, following very closely the example of \texttt{integrate\_ode\_rk45} and \texttt{integrate\_ode\_bdf}.
 
 The code can be found on GitHub:  \url{https://github.com/charlesm93/stan}
 
