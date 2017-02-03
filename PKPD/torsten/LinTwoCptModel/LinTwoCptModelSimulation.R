@@ -1,12 +1,11 @@
 ## Template to simulate PKPD data
-
 rm(list = ls())
 gc()
 
 modelName <- "LinTwoCptModel"
 
 library(rstan)
-library(mrgsolve)
+library(mrgsolve)  ## tested with version 0.7.6.9029
 
 set.seed(11091989) ## not required but assures repeatable results
 
@@ -23,7 +22,7 @@ $GLOBAL
 
 $PKMODEL ncmt = 2, depot = TRUE
 
-$SIGMA 0.025
+$SIGMA 0.0025
 
 $MAIN
 pred_CL = CL;
@@ -31,10 +30,9 @@ pred_Q = Q;
 pred_VC = V2;
 pred_VP = V3;
 pred_KA = KA;
+double DV = CP * exp(EPS(1));
 
-$CAPTURE CP
-
-$TABLE table(DV) = CP*exp(EPS(1));
+$CAPTURE CP DV
 '
 
 mod <- mread("accum", tempdir(),code) %>% Req(DV) %>% update(end=480,delta=0.1)
@@ -44,7 +42,7 @@ mod %>% ev(e1) %>% mrgsim(end=20) %>% plot # plot data
 
 # create time at which data will be observed 
 # NOTE: end time at t=20 -- if we go further, we get to the limit where CP -> 0. 
-t1 <- seq(2,20,2)
+t1 <- seq(4,20,2)
 t2 <- seq(0.25,2,0.25)
 tall <- sort(c(t1,t2))
 
