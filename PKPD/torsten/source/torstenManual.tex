@@ -10,6 +10,7 @@
 \usepackage{hyperref}
 \usepackage{courier}
 \usepackage{listings}
+%\usepackage[titles]{tocloft}
 
 \usepackage{siunitx}
 \usepackage{booktabs}
@@ -34,6 +35,13 @@
 
 \lstset{columns=fullflexible, basicstyle=\ttfamily, xleftmargin=0.5cm, frame=tlbr,framesep=4pt, framerule=0pt}
 
+%\usepackage[nottoc]{tocbibind}
+%\usepackage[colorlinks=true,linkcolor=blue]{hyperref}
+%\setcounter{tocdepth}{0}
+
+%\cftsetindents{section}{0em}{2.3em}
+%\cftsetindents{subsection}{0em}{4.3em}
+
 \begin{document}
 
 \begin{center}
@@ -49,10 +57,17 @@ charlesm@metrumrg.com \` metrumrg.com \\
 User Manual \\ \ \\ 
 \Large Charles Margossian and Bill Gillespie \\ \ \\ \ \\ \ \\ \ \\
 Torsten Version 0.82 \\ for Stan Version 2.14.0 \\ \ \\ 
-\large Tuesday January 31st }
+\large Tuesday January 31st 2017 }
 \end{center}
 
+\clearpage
+
+\tableofcontents
+%\addtocontents{toc}{~\hfill\textbf{Page}\par}
+
+
 \section{Introduction}
+%\addcontentsline{toc}{section}{Introduction}
 
 \subsection{Preface} \ \\ \ \\ Stan is an open source probabilistic language designed primarily to do Bayesian data analysis \cite{stan}. Several of its features make it a powerful tool to specify and fit complex models. Notably, its language is extremely flexible and its No U-Turn Sampler (NUTS), an adaptative Hamiltonian Monte Carlo algorithm, has proven more efficient than commonly used Monte Carlo Markov Chains (MCMC) samplers for complex high dimensional problems \cite{nuts}. Our goal is to harness these innovative features and make Stan a better software for pharmacometrics modeling. Our efforts are twofold:
 \begin{enumerate}
@@ -72,7 +87,7 @@ We encourage interested users to try Torsten out and are happy to assist. Please
 \subsection{Installing Torsten}  \ \\ \ \\  
 Installation files are available on GitHub: \url{https://github.com/charlesm93/example-models/tree/torsten-0.82/PKPD/torsten}
 
-There is currently no mechanism to install Torsten on top of your version of Stan. This is still work in progress. In the meantime, we offer a version of Stan with Torsten built inside of it. Torsten 0.82 works with Stan 2.14.0. Torsten is built inside the Stan and Stan-math repositories and is agnostic to the interface the users use. We offer support for installing Stan with CmdStan\footnote{If you need assistance to set up Torsten with another interface, shoot me an e-mail at charlesm@metrumrg.com. I'm happy to help.}.
+There is currently no mechanism to install Torsten on top of your version of Stan. This is still a work in progress. In the meantime, we offer a version of Stan with Torsten built inside of it. Torsten 0.82 works with Stan 2.14.0. Torsten is built inside the Stan and Stan-math repositories and is agnostic to the interface the users use. We offer support for installing Stan with CmdStan\footnote{If you need assistance to set up Torsten with another interface, shoot me an e-mail at charlesm@metrumrg.com. I'm happy to help.}.
 
 The easiest way to install the CmdStan interface with Stan and Torsten is to run the bash file \texttt{setupTorsten.sh}. You can also do it manually on a terminal window:
 
@@ -153,7 +168,7 @@ Our current plans for future development of Torsten include the following:
   \item Fix issue that arises when computing the adjoint of the lag time parameter (in a dosing compartment) evaluated at $t_{lag} = 0$. 
   \item Make the following arguments optional
   \begin{itemize}
-    \item \texttt{biovar} and \texttt{tlag}, respectively used for the biovariability fraction and the lag times in each compartment
+    \item \texttt{biovar} and \texttt{tlag}, respectively used for the bioavailability fraction and the lag times in each compartment
     \item Tuning parameters of the ODE integrators for the general compartmental function.
   \end{itemize}
   \item Extend formal tests
@@ -167,7 +182,7 @@ Our current plans for future development of Torsten include the following:
 \subsection{Updates since Torsten 0.81}
 \begin{itemize}
   \item Torsten is now up to date with Stan version 2.14.0
-  \item We split the parameter argument into three arguments: \texttt{pMatrix} (parameters for ODEs), \texttt{biovar} (parameters for the biovariability), and \texttt{tlag} (parameters for lag times). This gives the users more control over which arguments get passed as data and as parameters. The model is most efficient when all fixed values are passed as data.
+  \item We split the parameter argument into three arguments: \texttt{pMatrix} (parameters for ODEs), \texttt{biovar} (parameters for the bioavailability), and \texttt{tlag} (parameters for lag times). This gives the users more control over which arguments get passed as data and as parameters. The model is most efficient when all fixed values are passed as data.
   \item We changed the order of the arguments: the user first passes the data arguments and then the parameter arguments. This is because in future versions we will want optional arguments to be passed last.
   \item The user can now pass parameter arguments as 1D or 2D arrays, depending on whether the parameters are constant or change from one event to the other.
   \item We have significantly increased the number of unit tests -- but we still have more to do!
@@ -183,11 +198,11 @@ The reader should have a basic understanding of how Stan works before tackling t
 
 In this section we go through the different functions Torsten adds to Stan. It will be helpful to apply these functions to a simple example. We have uploaded code and data on \url{https://github.com/charlesm93/example-models/tree/torsten-0.82/PKPD/torsten}.
 
-\subsection*{Example 1: Two Compartment Model}
+\subsection{Example 1: Two Compartment Model}
 We model drug absorption in a single patient and simulate plasma drug concentrations:
 \begin{itemize}
   \item Single Dose: 5000 mg
-  \item PK: plasma concentration of parent drug ($c$)
+  \item PK: plasma concentrations of parent drug ($c$)
   \item PK measured at 0, 0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75, 2, 4, 6, 8, 10, 12, 14, 16, 18, and 20 hours after dosing
 \end{itemize}
 
@@ -200,9 +215,9 @@ The plasma concentration ($c$) are simulated according to the following equation
   \sigma &=& 0.05
 \end{eqnarray*}
 
-The data are generated using the R package \textit{mrgsolve}, see \texttt{TwoCptModelSimulation.R}. We show the results obtained when using the function \texttt{PKModelTwoCpt}, which computes solutions to the ODEs analytically.
+The data are generated using the R package \textit{mrgsolve}\footnote{https://github.com/metrumresearchgroup/mrgsolve}, see \texttt{TwoCptModelSimulation.R}. We show the results obtained when using the function \texttt{PKModelTwoCpt}, which computes solutions to the ODEs analytically.
 
-\subsection{Linear One and Two Compartment Model} \ \\
+\subsection{Linear One and Two Compartment Model Function} \ \\
 
 The one and two compartment model functions have the form:
 
@@ -211,14 +226,14 @@ The one and two compartment model functions have the form:
 
 There is no need to skip a line, but we do so to separate what we call \textit{event} arguments and \textit{model} arguments. The event arguments describe the event schedule of the clinical trial. \texttt{time, amt, rate, ii} are arrays of real and \texttt{evid, cmt, addl, ss} arrays of integers. All arrays have the same length, which corresponds to the number of events.
 
-Next we have the \textit{model} arguments: \texttt{theta} contains the ODE parameters, \texttt{biovar} the biovariability fraction in each compartment (sometimes denoted as \textit{F}), and \texttt{tlag} the lag times in each compartment. The model arguments are 2-dimensional arrays. The first dimension provides a container for the parameters and the length of that container is simply the number of parameters. The second dimension allows for variations in the parameters from one event to the other. The length of the 2D container is the number of events. The \textit{ith} row contains an array of parameters for the time interval [\texttt{time[i-1], time[i]}]. Often times, the parameters are constant for all events and the user can then pass a 2D array of length 1 or, even better, a 1D array.
+Next we have the \textit{model} arguments: \texttt{theta} contains the ODE parameters, \texttt{biovar} the bioavailability fraction in each compartment (sometimes denoted as \textit{F} and called \textit{biovariability}), and \texttt{tlag} the lag times in each compartment. The model arguments are 2-dimensional arrays. The first dimension provides a container for the parameters and the length of that container is simply the number of parameters. The second dimension allows for variations in the parameters from one event to the other. The length of the 2D container is the number of events. The \textit{ith} row contains an array of parameters for the time interval [\texttt{time[i-1], time[i]}]. Often times, the parameters are constant for all events and the user can then pass a 2D array of length 1 or, even better, a 1D array.
 
 The options for \textit{model name} are:
 \begin{itemize}
   \item PKModelOneCpt
   \item PKModelTwoCpt
 \end{itemize}
-which respectively correspond to the one and two compartment model with first order absorption (figure~\ref{cptModels}). A vector in \texttt{thetha} is expected to contain parameters $CL$, $V2$, and $ka$ for the one compartment case, and $CL$, $Q$, $V2$, $V3$, and $ka$ for the two compartments case, \underline{in this order}. Setting $ka$ to 0 eliminates the fist-order absoprtion. \texttt{biovar} contains the bioavailability fraction of each compartment (non-effective if set to 1) and \texttt{tlag} the lag time in each compartment (non-effective if set to 0).
+which respectively correspond to the one and two compartment model with first order absorption (figure~\ref{cptModels}). A vector in \texttt{theta} is expected to contain parameters $CL$, $V2$, and $ka$ for the one compartment case, and $CL$, $Q$, $V2$, $V3$, and $ka$ for the two compartments case, \underline{in this order}. Setting $ka$ to 0 eliminates the fist-order absoprtion. \texttt{biovar} contains the bioavailability fraction of each compartment (non-effective if set to 1) and \texttt{tlag} the lag time in each compartment (non-effective if set to 0).
 
 \begin{figure}[htbp]
 \includegraphics[width=3.5in,trim=0in 0in 0 0in]{graphics/cptModels.png}
@@ -226,9 +241,9 @@ which respectively correspond to the one and two compartment model with first or
 \label{cptModels}
 \end{figure}
 
-\texttt{PKModelTwoCpt} can be used to fit example 1, see \texttt{TwoCptModel.stan}. We are interested in evaluating the ODE parameters, stored in \texttt{theta}. The biovariability fraction and the lag times on the other hand are fixed, and we therefore declare \texttt{biovar} and \texttt{tlag} in the transformed data block. Four MCMC chains of 2000 iterations were simulated. The first 1000 iteration of each chain were discarded. Thus 1000 MCMC samples were used for the subsequent analyses.
+\texttt{PKModelTwoCpt} can be used to fit example 1, see \texttt{TwoCptModel.stan}. We are interested in evaluating the ODE parameters, stored in \texttt{theta}. The bioavailability fraction and the lag times on the other hand are fixed, and we therefore declare \texttt{biovar} and \texttt{tlag} in the transformed data block. Four MCMC chains of 2000 iterations were simulated. The first 1000 iteration of each chain were discarded. Thus 1000 MCMC samples were used for the subsequent analyses.
 
-\begin{figure}
+\begin{figure}[htbp]
 \caption{Stan language for fitting a two compartment model using the \texttt{PKModelTwoCpt} function (abstract)}
 \begin{center}
 \begin{small}
@@ -306,15 +321,15 @@ which respectively correspond to the one and two compartment model with first or
 \label{TwoCptMCMC}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[!htb]
 \begin{center}
-\includegraphics[width=3.5in,trim=0in 0in 0 0in]{graphics/TwoCptModelExamplePlots004.pdf}
+\includegraphics[width=4.5in,trim=0in 0in 0 0in]{graphics/TwoCptModelExamplePlots004.pdf}
 \caption{{Posterior Marginal Densities of the Model Parameters of a two compartment model with first order absorption (each color corresponds to a different chain)}}
 \label{TwoCptDensity}
 \end{center}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[!htb]
 \begin{center}
 \includegraphics[width=3.5in,trim=0in 0in 0 0in]{graphics/TwoCptModelExamplePlots006.pdf}
 \caption{{Predicted (posterior median and 90 \% credible intervals) and observed plasma drug concentrations of a two compartment model with first order absorption}}
@@ -322,7 +337,7 @@ which respectively correspond to the one and two compartment model with first or
 \end{center}
 \end{figure}
 
-\begin{table}[ht]
+\begin{table}[!htb]
 \centering
 \caption{Summary of the MCMC simulations of the marginal posterior distributions of the model parameters}
 \begin{tabular}{rrrrrrrrrrr}
@@ -338,7 +353,7 @@ CL & 5.19 & 0.01 & 0.25 & 4.60 & 5.05 & 5.21 & 5.35 & 5.62 & 971.04 & 1.00 \\
 \end{tabular}
 \end{table}
 
-\subsection{General Linear ODE Model} \ \\
+\subsection{General Linear ODE Model Function} \ \\
 
 A general linear ODE model refers to a model that may be described in terms of a system of first order linear differential equations with (piecewise) constant coefficients, i.e., a differential equation of the form:
 $$ y^\prime\left(t\right) = Ky\left(t\right) $$
@@ -357,8 +372,8 @@ The linear ODE model function has the form:
 
 where \texttt{system} is an array of constant rate matrices. The length of the array is the number of events. If the rate matrix is constant for all events, the user may pass an array of length 1 or directly the matrix \texttt{K}.  \texttt{system} contains all the ODE parameters, so we no longer need \texttt{theta}.
 
-\begin{figure}
-\caption{Stan language for fitting a two compartment model using the \texttt{linCptModel} function (abstract)}
+\begin{figure}[!htb]
+\caption{Stan language for fitting a two compartment model using the \texttt{linOdeModel} function (abstract)}
 \begin{center}
 \begin{small}
 \begin{fmpage}{\textwidth - .75in}
@@ -402,7 +417,7 @@ where \texttt{system} is an array of constant rate matrices. The length of the a
 \label{LinTwoCptCode}
 \end{figure}
 
-\subsection{General ODE Model} \ \\
+\subsection{General ODE Model Function} \ \\
 
 Torsten may be used to fit models described by a system of first-order ODEs, i.e., differential equations of the form:
 $$ y^\prime\left(t\right) = f\left(t, y\left(t\right)\right) $$
@@ -415,7 +430,7 @@ The general ODE model functions have the form:
 \phantom{<model\_name>} theta, biovar, tlag, \\                              
 \phantom{<model\_name>} rel\_tol, abs\_tol, max\_step)}
                               
-where \texttt{ODE\_system} is a system of first-order ODEs defined in the function block of Stan (see section 19.2 of the Stan reference manual) and \texttt{nCmt} is the number of compartments (or, equivalently, of ODEs) in the model. \texttt{rel\_tol}, \texttt{abs\_tol}, and \texttt{max\_step} are the tuning parameters for the ODE integrator: respectively the relative tolerance, the absolute tolerance, and the maximum number of steps. Which value to pick for the tuning parameters depends on the specifics of the ODEs. Reducing the tolerance parameters and increasing the number of steps make for a more robust integrator but can significantly slow down the algorithm. We recommend default values we would use, but users should be prepared to adjust these parameters. As a starting point, we suggest:  \texttt{rel\_tol} = 1e-8, \texttt{abs\_tol} = 1e-8 and \texttt{max\_step} = 1e+8. For more details see Stan's reference manual.
+where \texttt{ODE\_system} is a system of first-order ODEs defined in the function block of Stan (see section 19.2 of the Stan reference manual) and \texttt{nCmt} is the number of compartments (or, equivalently, the number of ODEs) in the model. \texttt{rel\_tol}, \texttt{abs\_tol}, and \texttt{max\_step} are the tuning parameters for the ODE integrator: respectively the relative tolerance, the absolute tolerance, and the maximum number of steps. Which value to pick for the tuning parameters depends on the specifics of the ODEs. Reducing the tolerance parameters and increasing the number of steps make for a more robust integrator but can significantly slow down the algorithm. We here recommend default values, but users should be prepared to adjust these parameters. As a starting point, we suggest:  \texttt{rel\_tol} = 1e-8, \texttt{abs\_tol} = 1e-8 and \texttt{max\_step} = 1e+8. For more details see Stan's reference manual.
 
 The options for \texttt{model\_name} are:
 \begin{itemize}
@@ -476,13 +491,13 @@ They respectively call the built-in Runge-Kutta 4th/5th integrator, recommended 
 \label{GenTwoCptModelCode}
 \end{figure}
 
-\begin{table} %[htdp]
+\begin{table}[!htb] %[htdp]
 \caption{Summary: Arguments of Torsten functions.}
 \begin{center}
 \begin{minipage}{\textwidth - 1in}
 \begin{tabular}{p{1.5in}cp{1.5in}p{1.5in}} 
 \hline\hline
-& function & argument & parameters \\
+ & function & argument & parameters \\
 model & name & names & in {\tt theta}\\ 
 \hline
 {\raggedright one compartment\\ model with first order\\ absorption} 
@@ -582,7 +597,7 @@ The PK and the PD data are simulated using the following treatment.
 The model is simultaneously fitted to the PK and the PD data. For this effect compartment model, we construct a constant rate matrix and use \texttt{linOdeModel}. Correct use of Torsten requires the user pass the entire event history (observation and dosing events) for an individual to the function. Thus the Stan model shows the call to \texttt{linOdeModel} within a loop over the individual subjects rather than over the individual observations.
 
 \begin{figure}
-\caption{Stan language for fitting an effect compartment model using \texttt{linCptModel} (abstract)}
+\caption{Stan language for fitting an effect compartment model using \texttt{linOdeModel} (abstract)}
 \begin{tiny}
 \begin{center}
 \begin{fmpage}{\textwidth - .75in}
@@ -655,9 +670,38 @@ transformed parameters {
 \label{effCptModelCode}
 \end{figure}
 
-\subsubsection*{Results} We use the same diagnosis tools as for the previous example. The MCMC history plots (figure \ref{effCptModelMCMC}) suggest the 4 chains have converge to common distributions. We note some minor auto-correlations for $lp\_$ (the log posterior) and for IIV parameters: specifically $\Omega_{ke\_0}$ and $\rho$. The correlation matrix $\rho$ does not explicitly appear in the model, but it is used to construct $\Omega$, which parametrizes the PK IIV. The fits to the plasma concentration  (figure~\ref{effCptModelPredictionsPK}) are in close agreement with the data, notably for the sparse data case (phase IIa study). The fits to the PD data (figure~\ref{effCptModelPredictionsPD}) look good, though the data is more noisy. The model reflects the noise by producing larger confidence intervals. The estimated values of the parameters are consistent with the values used to simulate the data. 
+\subsubsection*{Results} We use the same diagnosis tools as for the previous example. The MCMC history plots (figure \ref{effCptModelMCMC}) suggest the 4 chains have converged to common distributions. We note some minor auto-correlations for $lp\_$ (the log posterior) and for IIV parameters: specifically $\Omega_{ke\_0}$ and $\rho$. The correlation matrix $\rho$ does not explicitly appear in the model, but it is used to construct $\Omega$, which parametrizes the PK IIV. The fits to the plasma concentration  (figure~\ref{effCptModelPredictionsPK}) are in close agreement with the data, notably for the sparse data case (phase IIa study). The fits to the PD data (figure~\ref{effCptModelPredictionsPD}) look good, though the data is more noisy. The model reflects the noise by producing larger credible intervals. The estimated values of the parameters are consistent with the values used to simulate the data.
 
-\begin{figure}[htbp]
+\begin{table}[!htb]
+\centering
+\caption{Summary of the MCMC simulations of the marginal posterior distributions of the model parameters for example 2}
+\begin{tabular}{rrrrrrrrrrr}
+  \hline
+ & mean & se\_mean & sd & 2.5\% & 25\% & 50\% & 75\% & 97.5\% & n\_eff & Rhat \\ 
+  \hline
+CLHat & 10.095 & 0.003 & 0.201 & 9.712 & 9.958 & 10.096 & 10.231 & 10.483 & 4000.000 & 0.999 \\
+QHat & 14.867 & 0.014 & 0.357 & 14.182 & 14.620 & 14.862 & 15.106 & 15.563 & 678.208 & 1.007 \\
+V1Hat & 34.188 & 0.067 & 1.089 & 31.940 & 33.494 & 34.214 & 34.918 & 36.251 & 267.748 & 1.016 \\
+V2Hat & 103.562 & 0.076 & 2.925 & 98.031 & 101.600 & 103.455 & 105.472 & 109.583 & 488.296 & 1.001 \\
+kaHat & 1.930 & 0.004 & 0.077 & 1.771 & 1.880 & 1.933 & 1.982 & 2.076 & 334.888 & 1.014 \\
+ke0Hat & 1.050 & 0.001 & 0.044 & 0.967 & 1.020 & 1.051 & 1.078 & 1.137 & 164.741 & 1.000 \\
+EC50Hat & 104.337 & 0.040 & 2.100 & 100.169 & 102.909 & 104.345 & 105.768 & 108.351 & 744.041 & 1.000 \\
+sigma & 0.099 & 0.000 & 0.002 & 0.095 & 0.097 & 0.099 & 0.100 & 0.103 & 906.342 & 1.002 \\
+sigmaResp & 10.156 & 0.003 & 0.197 & 9.779 & 10.023 & 10.154 & 10.286 & 10.552 & 4000.000 & 1.000 \\
+omega[1] & 0.270 & 0.000 & 0.016 & 0.241 & 0.259 & 0.269 & 0.280 & 0.302 & 4000.000 & 1.001 \\
+omega[2] & 0.231 & 0.001 & 0.021 & 0.192 & 0.217 & 0.230 & 0.245 & 0.275 & 531.512 & 1.006 \\
+omega[3] & 0.219 & 0.002 & 0.031 & 0.158 & 0.199 & 0.218 & 0.238 & 0.281 & 158.198 & 1.017 \\
+omega[4] & 0.267 & 0.001 & 0.026 & 0.218 & 0.249 & 0.266 & 0.284 & 0.319 & 684.870 & 1.001 \\
+omega[5] & 0.285 & 0.002 & 0.037 & 0.214 & 0.259 & 0.284 & 0.309 & 0.361 & 284.545 & 1.009 \\
+omegaKe0 & 0.271 & 0.003 & 0.047 & 0.183 & 0.239 & 0.271 & 0.303 & 0.363 & 217.350 & 1.007 \\
+omegaEC50 & 0.213 & 0.001 & 0.021 & 0.174 & 0.199 & 0.213 & 0.227 & 0.255 & 190.193 & 1.000 \\
+  \hline
+\end{tabular}
+\end{table}
+
+\clearpage
+
+\begin{figure}[!htb]
 \includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots001.pdf}
 \includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots002.pdf}
 \includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots003.pdf}
@@ -667,7 +711,7 @@ transformed parameters {
 \label{effCptModelMCMC}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[!htb]
 \includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots006.pdf}
 \includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots007.pdf}
 \caption{{Posterior Marginal Densities of the Model Parameters of an Effect Compartment Model (each color corresponds to a different chain) for example 2}}
@@ -700,40 +744,15 @@ transformed parameters {
 \label{effCptModelPredictionsPD}
 \end{figure}
 
-\begin{table}[ht]
-\centering
-\caption{Summary of the MCMC simulations of the marginal posterior distributions of the model parameters for example 2}
-\begin{tabular}{rrrrrrrrrrr}
-  \hline
- & mean & se\_mean & sd & 2.5\% & 25\% & 50\% & 75\% & 97.5\% & n\_eff & Rhat \\ 
-  \hline
-CLHat & 10.095 & 0.003 & 0.201 & 9.712 & 9.958 & 10.096 & 10.231 & 10.483 & 4000.000 & 0.999 \\
-QHat & 14.867 & 0.014 & 0.357 & 14.182 & 14.620 & 14.862 & 15.106 & 15.563 & 678.208 & 1.007 \\
-V1Hat & 34.188 & 0.067 & 1.089 & 31.940 & 33.494 & 34.214 & 34.918 & 36.251 & 267.748 & 1.016 \\
-V2Hat & 103.562 & 0.076 & 2.925 & 98.031 & 101.600 & 103.455 & 105.472 & 109.583 & 488.296 & 1.001 \\
-kaHat & 1.930 & 0.004 & 0.077 & 1.771 & 1.880 & 1.933 & 1.982 & 2.076 & 334.888 & 1.014 \\
-ke0Hat & 1.050 & 0.001 & 0.044 & 0.967 & 1.020 & 1.051 & 1.078 & 1.137 & 164.741 & 1.000 \\
-EC50Hat & 104.337 & 0.040 & 2.100 & 100.169 & 102.909 & 104.345 & 105.768 & 108.351 & 744.041 & 1.000 \\
-sigma & 0.099 & 0.000 & 0.002 & 0.095 & 0.097 & 0.099 & 0.100 & 0.103 & 906.342 & 1.002 \\
-sigmaResp & 10.156 & 0.003 & 0.197 & 9.779 & 10.023 & 10.154 & 10.286 & 10.552 & 4000.000 & 1.000 \\
-omega[1] & 0.270 & 0.000 & 0.016 & 0.241 & 0.259 & 0.269 & 0.280 & 0.302 & 4000.000 & 1.001 \\
-omega[2] & 0.231 & 0.001 & 0.021 & 0.192 & 0.217 & 0.230 & 0.245 & 0.275 & 531.512 & 1.006 \\
-omega[3] & 0.219 & 0.002 & 0.031 & 0.158 & 0.199 & 0.218 & 0.238 & 0.281 & 158.198 & 1.017 \\
-omega[4] & 0.267 & 0.001 & 0.026 & 0.218 & 0.249 & 0.266 & 0.284 & 0.319 & 684.870 & 1.001 \\
-omega[5] & 0.285 & 0.002 & 0.037 & 0.214 & 0.259 & 0.284 & 0.309 & 0.361 & 284.545 & 1.009 \\
-omegaKe0 & 0.271 & 0.003 & 0.047 & 0.183 & 0.239 & 0.271 & 0.303 & 0.363 & 217.350 & 1.007 \\
-omegaEC50 & 0.213 & 0.001 & 0.021 & 0.174 & 0.199 & 0.213 & 0.227 & 0.255 & 190.193 & 1.000 \\
-  \hline
-\end{tabular}
-\end{table}
+\clearpage
 
-\subsection{Friberg-Karlsson Semi-Mechanistic Model \cite{2364}}
+\subsection{Friberg-Karlsson Semi-Mechanistic Model \cite{2364}} \ \\ 
 
 In this third example, we deal with a more sophisticated PD effect, described by a system of nonlinear ODEs. The PK effects are still described by a two compartment model with a first-order absorption. 
 
 Neutropenia is observed in patients receiving an ME-2 drug. Our goal is to model the relation between neutrophil counts and drug exposure. Using a feedback mechanism, the body maintains the number of neutrophils at a baseline value (figure~\ref{FK}). While in the patient's blood, the drug impedes the production of neutrophils. As a result, the neutrophil count goes down, and after  the drug clears out, the feedback mechanism kicks in and brings the neutrophil count back to baseline.
 
-\subsection*{Friberg-Karlsson Model for drug-induced myelosuppression ($ANC$)}
+{\bf Friberg-Karlsson Model for drug-induced myelosuppression ($ANC$)}
 
 \begin{eqnarray*}
 \log(ANC_{ij}) &\sim& N(Circ_{ij}, \sigma^2_{ANC}) \\
@@ -878,8 +897,31 @@ transformed parameters {
 \label{FKCode}
 \end{figure}
 
+\subsubsection*{Results} The MCMC history plots are not as convincing as in the previous examples, mostly because the number of iterations is small (100 versus 1000 in the previous example). It does however look as though the chains are converging to a common distribution, and we see little auto-correlation (in particular, we  expect that if we had run the model for 1000 iterations, we would obtain the desired "fuzzy caterpillar" look). The plots of the marginal posterior distributions clearly show that the chains have not (yet) converged to a common distribution, but they do not disagree significantly. Still, the need for more iterations is evident. The model fits the data, and the credible interval reflect the noise in the data. The parameters estimation reflects the real value of the parameters.
 
-\subsubsection*{Results} The MCMC history plots are not as convincing as in the previous examples, mostly because the number of iterations is small (100 versus 1000 in the previous example). It does however look as though the chains are converging to a common distribution, and we see little auto-correlation (in particular, we  expect that if we had run the model for 1000 iterations, we would obtain the desired "fuzzy caterpillar" look). The plots of the marginal posterior distributions clearly show that the chains have not (yet) converged to a common distribution, but they do not disagree significantly. Still, the need for more iterations is evident. The model fits the data, and the confidence interval reflect the noise in the data. The parameters estimation are actually pretty good.
+{\tiny
+\begin{table}[!htb]
+\centering
+\caption{Summary of the MCMC simulations of the marginal posterior distributions of the model parameters for example 3}
+\begin{tabular}{rrrrrrrrrrr}
+  \hline
+ & mean & se\_mean & sd & 2.5\% & 25\% & 50\% & 75\% & 97.5\% & n\_eff & Rhat \\ 
+  \hline
+CL & 9.986 & 0.009 & 0.174 & 9.641 & 9.872 & 9.982 & 10.107 & 10.331 & 400.000 & 0.997 \\
+Q & 14.633 & 0.055 & 1.106 & 12.505 & 13.992 & 14.623 & 15.296 & 16.948 & 400.000 & 0.996 \\
+V1 & 32.909 & 0.174 & 2.439 & 28.203 & 31.186 & 32.836 & 34.762 & 37.750 & 195.828 & 1.008 \\
+V2 & 106.631 & 0.311 & 6.226 & 95.234 & 102.269 & 106.403 & 111.000 & 118.533 & 400.000 & 0.999 \\
+ka & 1.882 & 0.012 & 0.175 & 1.582 & 1.756 & 1.871 & 2.006 & 2.223 & 196.052 & 1.007 \\
+sigma & 0.106 & 0.001 & 0.010 & 0.089 & 0.098 & 0.105 & 0.112 & 0.132 & 259.693 & 1.009 \\
+alpha & 3.3E-04 & 1.4E-06 & 2.2E-05 & 2.9E-04 & 3.2E-04 & 3.3E-04 & 3.5E-04 & 3.8E-04 & 247 & 1.01 \\
+mtt & 132.763 & 0.515 & 6.498 & 120.843 & 128.082 & 132.223 & 136.694 & 146.845 & 159.372 & 1.024 \\
+circ0 & 5.014 & 0.009 & 0.172 & 4.711 & 4.888 & 5.000 & 5.138 & 5.334 & 400.000 & 1.000 \\
+gamma & 0.190 & 0.002 & 0.022 & 0.153 & 0.175 & 0.187 & 0.202 & 0.239 & 139.485 & 1.025 \\
+sigmaNeut & 0.092 & 0.001 & 0.014 & 0.068 & 0.082 & 0.090 & 0.100 & 0.125 & 161.199 & 1.010 \\
+  \hline
+\end{tabular}
+\end{table} 
+}
 
 \begin{figure}[htbp]
 \includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/neutropenia/neutropeniaPopulation1TorstenPlots001.pdf}
@@ -904,28 +946,7 @@ transformed parameters {
 \label{FKPredictions}
 \end{figure}
  
-\begin{table}[ht]
-\centering
-\caption{Summary of the MCMC simulations of the marginal posterior distributions of the model parameters for example 3}
-\begin{tabular}{rrrrrrrrrrr}
-  \hline
- & mean & se\_mean & sd & 2.5\% & 25\% & 50\% & 75\% & 97.5\% & n\_eff & Rhat \\ 
-  \hline
-CL & 9.986 & 0.009 & 0.174 & 9.641 & 9.872 & 9.982 & 10.107 & 10.331 & 400.000 & 0.997 \\
-Q & 14.633 & 0.055 & 1.106 & 12.505 & 13.992 & 14.623 & 15.296 & 16.948 & 400.000 & 0.996 \\
-V1 & 32.909 & 0.174 & 2.439 & 28.203 & 31.186 & 32.836 & 34.762 & 37.750 & 195.828 & 1.008 \\
-V2 & 106.631 & 0.311 & 6.226 & 95.234 & 102.269 & 106.403 & 111.000 & 118.533 & 400.000 & 0.999 \\
-ka & 1.882 & 0.012 & 0.175 & 1.582 & 1.756 & 1.871 & 2.006 & 2.223 & 196.052 & 1.007 \\
-sigma & 0.106 & 0.001 & 0.010 & 0.089 & 0.098 & 0.105 & 0.112 & 0.132 & 259.693 & 1.009 \\
-alpha & 3.3E-04 & 1.4E-06 & 2.2E-05 & 2.9E-04 & 3.2E-04 & 3.3E-04 & 3.5E-04 & 3.8E-04 & 247 & 1.01 \\
-mtt & 132.763 & 0.515 & 6.498 & 120.843 & 128.082 & 132.223 & 136.694 & 146.845 & 159.372 & 1.024 \\
-circ0 & 5.014 & 0.009 & 0.172 & 4.711 & 4.888 & 5.000 & 5.138 & 5.334 & 400.000 & 1.000 \\
-gamma & 0.190 & 0.002 & 0.022 & 0.153 & 0.175 & 0.187 & 0.202 & 0.239 & 139.485 & 1.025 \\
-sigmaNeut & 0.092 & 0.001 & 0.014 & 0.068 & 0.082 & 0.090 & 0.100 & 0.125 & 161.199 & 1.010 \\
-  \hline
-\end{tabular}
-\end{table} 
- 
+
  
  
 
@@ -960,9 +981,9 @@ All five functions in Torsten call the C++ function \texttt{pred}, which:
   \item returns the amounts at each event of the original schedule
 \end{enumerate}
 
-The Event Schedule depends on the user's input (TIME, EVID, CMT, AMT, RATE, ADDL, II, SS). The event schedule may need to be augmented if, for example, an event specifies a patient receives multiple doses at a regular time interval. Consider: \\
+The Event Schedule depends on the user's input (TIME, EVID, CMT, AMT, RATE, ADDL, II, SS). The event schedule may need to be augmented if, for example, an event specifies a patient receives multiple doses at a regular time interval. Consider:
 
-\texttt{TIME = 0, EVID = 1, CMT = 1, AMT = 1500, RATE = 0, ADDL = 4, II = 10, SS = 0} \\
+\texttt{TIME = 0, EVID = 1, CMT = 1, AMT = 1500, RATE = 0, ADDL = 4, II = 10, SS = 0} 
 
 This Event specifies that a time 0 (TIME = 0), a patient receives a 1500 mg (AMT = 1500) drug dose (EVID = 1) in the gut (CMT = 1), and will receive an additional dose every 10 hours (II = 10) until the patient has received a total of 5 doses (ADDL = 4, being the number of additional doses, + 1, the original dose). Such an Event really corresponds to 5 dosing events.
 
