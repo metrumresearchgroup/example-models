@@ -1,7 +1,4 @@
 \contentsline {section}{\tocsection {}{}{Aknowledgements}}{3}{section*.2}
-\contentsline {subsection}{\tocsubsection {}{}{Institutions}}{3}{section*.3}
-\contentsline {subsection}{\tocsubsection {}{}{Grants}}{3}{section*.4}
-\contentsline {subsection}{\tocsubsection {}{}{Individuals}}{3}{section*.5}
 \contentsline {section}{\tocsection {}{1}{Introduction}}{4}{section.1}
 \contentsline {subsection}{\tocsubsection {}{1.1}{Preface}}{4}{subsection.1.1}
 \contentsline {subsection}{\tocsubsection {}{1.2}{Installing Torsten}}{4}{subsection.1.2}
@@ -16,15 +13,15 @@
 \contentsline {subsection}{\tocsubsection {}{2.4}{General ODE Model Function}}{12}{subsection.2.4}
 \contentsline {section}{\tocsection {}{3}{Additional Examples}}{15}{section.3}
 \contentsline {subsection}{\tocsubsection {}{3.1}{Effect Compartment Model}}{15}{subsection.3.1}
-\contentsline {subsubsection}{\tocsubsubsection {}{}{Population Model for Plasma Drug Concentration ($c$)}}{15}{section*.7}
-\contentsline {subsubsection}{\tocsubsubsection {}{}{Effect Compartment Model for PD response ($R$)}}{16}{section*.9}
-\contentsline {subsubsection}{\tocsubsubsection {}{}{Results}}{18}{section*.10}
+\contentsline {subsubsection}{\tocsubsubsection {}{}{Population Model for Plasma Drug Concentration ($c$)}}{15}{section*.4}
+\contentsline {subsubsection}{\tocsubsubsection {}{}{Effect Compartment Model for PD response ($R$)}}{16}{section*.6}
+\contentsline {subsubsection}{\tocsubsubsection {}{}{Results}}{18}{section*.7}
 \contentsline {subsection}{\tocsubsection {}{3.2}{Friberg-Karlsson Semi-Mechanistic Model \cite {2364}}}{22}{subsection.3.2}
-\contentsline {subsubsection}{\tocsubsubsection {}{}{Results}}{24}{section*.11}
+\contentsline {subsubsection}{\tocsubsubsection {}{}{Results}}{24}{section*.8}
 \contentsline {section}{\tocsection {}{4}{Under the Hood Design}}{27}{section.4}
 \contentsline {subsection}{\tocsubsection {}{4.1}{Computing Amounts in an ODE-based model}}{27}{subsection.4.1}
 \contentsline {subsection}{\tocsubsection {}{4.2}{Structure of a Torsten Function}}{28}{subsection.4.2}
 \contentsline {subsection}{\tocsubsection {}{4.3}{Implementing Torsten in Stan}}{28}{subsection.4.3}
-\contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in Stan-math}}{28}{section*.12}
-\contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in Stan}}{28}{section*.13}
-\contentsline {section}{\tocsection {}{}{References}}{29}{section*.14}
+\contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in Stan-math}}{28}{section*.9}
+\contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in Stan}}{28}{section*.10}
+\contentsline {section}{\tocsection {}{}{References}}{29}{section*.11}
