@@ -1,9 +1,9 @@
 rm(list = ls())
 gc()
 
-# modelName <- "TwoCptModel"
+modelName <- "TwoCptModel"
 # modelName <- "LinTwoCptModel"
-modelName <- "GenTwoCptModel"
+# modelName <- "GenTwoCptModel"
 
 ## Adjust directories to your settings.
 scriptDir <- getwd()
@@ -46,7 +46,7 @@ nPost <- 1000 ## Number of post-burn-in samples per chain after thinning
 nBurn <- 1000 ## Number of burn-in samples per chain after thinning
 nThin <- 1
 
-nIter <- (nPost + nBurn) * nThin
+nIter <- nPost * nThin
 nBurnin <- nBurn * nThin
 
 RNGkind("L'Ecuyer-CMRG")
