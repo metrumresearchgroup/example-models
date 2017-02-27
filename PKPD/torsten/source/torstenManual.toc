@@ -1,4 +1,4 @@
-\contentsline {section}{\tocsection {}{}{Aknowledgements}}{3}{section*.2}
+\contentsline {section}{\tocsection {}{}{Acknowledgements}}{3}{section*.2}
 \contentsline {section}{\tocsection {}{1}{Introduction}}{4}{section.1}
 \contentsline {subsection}{\tocsubsection {}{1.1}{Preface}}{4}{subsection.1.1}
 \contentsline {subsection}{\tocsubsection {}{1.2}{Installing Torsten}}{4}{subsection.1.2}

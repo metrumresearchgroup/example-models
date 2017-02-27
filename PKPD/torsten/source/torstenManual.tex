@@ -102,7 +102,7 @@ Installation files are available on GitHub: \url{https://github.com/charlesm93/e
 
 There is currently no mechanism to install Torsten on top of your version of Stan. This is still a work in progress. In the meantime, we offer a version of Stan with Torsten built inside of it. Torsten 0.82 works with Stan 2.14.0. Torsten is built inside the Stan and Stan-math repositories and is agnostic to the interface the users use. We offer support for installing Stan with CmdStan\footnote{If you need assistance to set up Torsten with another interface, shoot me an e-mail at charlesm@metrumrg.com. I'm happy to help.}.
 
-The easiest way to install the CmdStan interface with Stan and Torsten is to run the bash file \texttt{setupTorsten.sh}. You can also do it manually on a terminal window:
+The easiest way to install the CmdStan interface with Stan and Torsten is to run the bash file \texttt{setupTorsten.sh}\footnote{You can install the development version using \texttt{setupTorsten-dev.sh}.}. You can also do it manually on a terminal window:
 
 Download CmdStan: \\
 \texttt{git clone https://github.com/stan-dev/cmdstan.git \\
@@ -195,7 +195,8 @@ Our current plans for future development of Torsten include the following:
 \subsection{Updates since Torsten 0.81}
 \begin{itemize}
   \item Torsten is now up to date with Stan version 2.14.0
-  \item We split the parameter argument into three arguments: \texttt{pMatrix} (parameters for ODEs), \texttt{biovar} (parameters for the bioavailability), and \texttt{tlag} (parameters for lag times). This gives the users more control over which arguments get passed as data and as parameters. The model is most efficient when all fixed values are passed as data.
+  \item We fixed a bug that prevented the user from passing tuning parameters for the ODE integrators.
+  \item We split the parameter argument into three arguments: \texttt{pMatrix} (parameters for the ODE system), \texttt{biovar} (parameters for the bioavailability), and \texttt{tlag} (parameters for lag times). This gives the users more control over which arguments get passed as data and as parameters. The model is most efficient when all fixed values are passed as data.
   \item We changed the order of the arguments: the user first passes the data arguments and then the parameter arguments. This is because in future versions we will want optional arguments to be passed last.
   \item The user can now pass parameter arguments as 1D or 2D arrays, depending on whether the parameters are constant or change from one event to the other.
   \item We have significantly increased the number of unit tests -- but we still have more to do!
@@ -443,7 +444,7 @@ The general ODE model functions have the form:
 \phantom{<model\_name>} theta, biovar, tlag, \\                              
 \phantom{<model\_name>} rel\_tol, abs\_tol, max\_step)}
                               
-where \texttt{ODE\_system} is a system of first-order ODEs defined in the function block of Stan (see section 19.2 of the Stan reference manual) and \texttt{nCmt} is the number of compartments (or, equivalently, the number of ODEs) in the model. \texttt{rel\_tol}, \texttt{abs\_tol}, and \texttt{max\_step} are the tuning parameters for the ODE integrator: respectively the relative tolerance, the absolute tolerance, and the maximum number of steps. Which value to pick for the tuning parameters depends on the specifics of the ODEs. Reducing the tolerance parameters and increasing the number of steps make for a more robust integrator but can significantly slow down the algorithm. We here recommend default values, but users should be prepared to adjust these parameters. As a starting point, we suggest:  \texttt{rel\_tol} = 1e-8, \texttt{abs\_tol} = 1e-8 and \texttt{max\_step} = 1e+8. For more details see Stan's reference manual.
+where \texttt{ODE\_system} is a system of first-order ODEs defined in the function block of Stan (see section 19.2 of the Stan reference manual) and \texttt{nCmt} is the number of compartments (or, equivalently, the number of ODEs) in the model. \texttt{rel\_tol}, \texttt{abs\_tol}, and \texttt{max\_step} are the tuning parameters for the ODE integrator: respectively the relative tolerance, the absolute tolerance, and the maximum number of steps.
 
 The options for \texttt{model\_name} are:
 \begin{itemize}
@@ -451,7 +452,7 @@ The options for \texttt{model\_name} are:
   \item generalOdeModel\_bdf
 \end{itemize}
 
-They respectively call the built-in Runge-Kutta 4th/5th integrator, recommended for non-stiff ODEs, and BDF integrator, recommended for stiff ODEs.
+They respectively call the built-in Runge-Kutta 4th/5th order (rk45) integrator, recommended for non-stiff ODEs, and the Backward Differentiation (BDF) integrator, recommended for stiff ODEs. Which value to use for the tuning parameters depends on the integrator and the specifics of the ODE system. Reducing the tolerance parameters and increasing the number of steps make for a more robust integrator but can significantly slow down the algorithm. The following can be used as a starting point:  \mbox{\texttt{rel\_tol = 1e-6}}, \mbox{\texttt{abs\_tol = 1e-6}} and \mbox{\texttt{max\_step = 1e+6}} for the rk45 integrator and \mbox{\texttt{rel\_tol = 1e-10}}, \mbox{\texttt{abs\_tol = 1e-10}} and \mbox{\texttt{max\_step = 1e+8}} for the bdf integrator\footnote{These are the default tuning parameters for integrate\_ode\_rk45() and integrate\_ode\_bdf(). The Torsten functions do not have a default value. The user must explicitly pass the tuning parameters for generalOdeModel\_*().}. The user should be prepared to adjust these values. For additional information, see Stan's reference manual (section 19).
 
 \begin{figure}
 \caption{Stan language for fitting a two compartment model using the \texttt{genOdeModel\_rk45} function (abstract)}

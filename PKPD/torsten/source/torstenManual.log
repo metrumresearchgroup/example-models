@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  6 FEB 2017 13:40
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  27 FEB 2017 16:26
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -866,10 +866,10 @@ Underfull \hbox (badness 10000) in paragraph at lines 100--102
  []
 
 
-Overfull \hbox (29.9pt too wide) in paragraph at lines 105--106
+Overfull \hbox (34.15005pt too wide) in paragraph at lines 105--106
 []\OT1/cmr/m/n/10.95 The eas-i-est way to in-stall the Cmd-Stan in-ter-face wit
-h Stan and Torsten is to run the bash file \OT1/pcr/m/n/10.95 setupTorsten.sh\O
-T1/cmr/m/n/10.95 .
+h Stan and Torsten is to run the bash file \OT1/pcr/m/n/10.95 setupTorsten.sh[]
+[][]\OT1/cmr/m/n/10.95 .
  []
 
 
@@ -904,60 +904,60 @@ Underfull \hbox (badness 10000) in paragraph at lines 167--169
  []
 
 [6]
-Underfull \hbox (badness 10000) in paragraph at lines 233--234
+Underfull \hbox (badness 10000) in paragraph at lines 234--235
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 238--239
+Underfull \hbox (badness 10000) in paragraph at lines 239--240
 
  []
 
 [7
 
-] <graphics/cptModels.png, id=192, 599.23875pt x 656.4525pt>
+] <graphics/cptModels.png, id=194, 599.23875pt x 656.4525pt>
 File: graphics/cptModels.png Graphic file (type png)
 
 <use graphics/cptModels.png>
-Package pdftex.def Info: graphics/cptModels.png used on input line 252.
+Package pdftex.def Info: graphics/cptModels.png used on input line 253.
 (pdftex.def)             Requested size: 252.94499pt x 277.09047pt.
 
 
-LaTeX Warning: Float too large for page by 52.66953pt on input line 326.
+LaTeX Warning: Float too large for page by 52.66953pt on input line 327.
 
-<graphics/TwoCptModelExamplePlots001.pdf, id=196, 433.62pt x 433.62pt>
+<graphics/TwoCptModelExamplePlots001.pdf, id=198, 433.62pt x 433.62pt>
 File: graphics/TwoCptModelExamplePlots001.pdf Graphic file (type pdf)
 
 <use graphics/TwoCptModelExamplePlots001.pdf>
 Package pdftex.def Info: graphics/TwoCptModelExamplePlots001.pdf used on input 
-line 331.
+line 332.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
-<graphics/TwoCptModelExamplePlots002.pdf, id=197, 433.62pt x 433.62pt>
+<graphics/TwoCptModelExamplePlots002.pdf, id=199, 433.62pt x 433.62pt>
 File: graphics/TwoCptModelExamplePlots002.pdf Graphic file (type pdf)
 
 <use graphics/TwoCptModelExamplePlots002.pdf>
 Package pdftex.def Info: graphics/TwoCptModelExamplePlots002.pdf used on input 
-line 332.
+line 333.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
-<graphics/TwoCptModelExamplePlots004.pdf, id=198, 433.62pt x 433.62pt>
+<graphics/TwoCptModelExamplePlots004.pdf, id=200, 433.62pt x 433.62pt>
 File: graphics/TwoCptModelExamplePlots004.pdf Graphic file (type pdf)
 
 <use graphics/TwoCptModelExamplePlots004.pdf>
 Package pdftex.def Info: graphics/TwoCptModelExamplePlots004.pdf used on input 
-line 339.
+line 340.
 (pdftex.def)             Requested size: 325.215pt x 325.22743pt.
 
-<graphics/TwoCptModelExamplePlots006.pdf, id=199, 433.62pt x 433.62pt>
+<graphics/TwoCptModelExamplePlots006.pdf, id=201, 433.62pt x 433.62pt>
 File: graphics/TwoCptModelExamplePlots006.pdf Graphic file (type pdf)
 
 <use graphics/TwoCptModelExamplePlots006.pdf>
 Package pdftex.def Info: graphics/TwoCptModelExamplePlots006.pdf used on input 
-line 347.
+line 348.
 (pdftex.def)             Requested size: 252.94499pt x 252.94879pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 369--370
+Underfull \hbox (badness 10000) in paragraph at lines 370--371
 
  []
 
@@ -968,99 +968,104 @@ LaTeX Warning: Text page 10 contains only floats.
 [10 <./graphics/TwoCptModelExamplePlots001.pdf> <./graphics/TwoCptModelExampleP
 lots002.pdf> <./graphics/TwoCptModelExamplePlots004.pdf>] [11 <./graphics/TwoCp
 tModelExamplePlots006.pdf>]
-Underfull \hbox (badness 10000) in paragraph at lines 433--434
+Underfull \hbox (badness 10000) in paragraph at lines 434--435
 
  []
 
 [12]
-Underfull \hbox (badness 10000) in paragraph at lines 457--457
+Overfull \hbox (28.23856pt too wide) in paragraph at lines 455--456
+[] \OT1/cmr/m/n/10.95 and [] for the rk45 in-te-gra-tor and [], []
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 458--458
 \OT1/cmr/m/sc/10.95 Figure 7.[]\OT1/cmr/m/n/10.95 Stan lan-guage for fit-ting a
  two com-part-ment model us-ing the
  []
 
 
-Underfull \hbox (badness 8056) in paragraph at lines 518--518
+Underfull \hbox (badness 8056) in paragraph at lines 519--519
 \OT1/pcr/m/n/10.95 evid\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 cmt\OT1/cmr/m/n/
 10.95 , \OT1/pcr/m/n/10.95 addl\OT1/cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 8056) in paragraph at lines 523--523
+Underfull \hbox (badness 8056) in paragraph at lines 524--524
 \OT1/pcr/m/n/10.95 evid\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 cmt\OT1/cmr/m/n/
 10.95 , \OT1/pcr/m/n/10.95 addl\OT1/cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 8056) in paragraph at lines 527--527
+Underfull \hbox (badness 8056) in paragraph at lines 528--528
 []|\OT1/pcr/m/n/10.95 time\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 amt\OT1/cmr/m
 /n/10.95 , \OT1/pcr/m/n/10.95 rate\OT1/cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 6808) in paragraph at lines 531--532
+Underfull \hbox (badness 6808) in paragraph at lines 532--533
 []|\OT1/pcr/m/n/10.95 ODE[]system\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 nCmt\O
 T1/cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 8056) in paragraph at lines 531--532
+Underfull \hbox (badness 8056) in paragraph at lines 532--533
 \OT1/pcr/m/n/10.95 time\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 amt\OT1/cmr/m/n/
 10.95 , \OT1/pcr/m/n/10.95 rate\OT1/cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 531--532
+Underfull \hbox (badness 10000) in paragraph at lines 532--533
 \OT1/pcr/m/n/10.95 ii\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 evid\OT1/cmr/m/n/1
 0.95 , \OT1/pcr/m/n/10.95 cmt\OT1/cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 8056) in paragraph at lines 531--532
+Underfull \hbox (badness 8056) in paragraph at lines 532--533
 \OT1/pcr/m/n/10.95 addl\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 ss\OT1/cmr/m/n/1
 0.95 , \OT1/pcr/m/n/10.95 theta\OT1/cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 531--532
+Underfull \hbox (badness 10000) in paragraph at lines 532--533
 \OT1/pcr/m/n/10.95 biovar\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 tlag\OT1/cmr/m
 /n/10.95 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 531--532
+Underfull \hbox (badness 10000) in paragraph at lines 532--533
 \OT1/pcr/m/n/10.95 rel[]tol\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 abs[]tol\OT1
 /cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 3838) in paragraph at lines 533--534
+Underfull \hbox (badness 3838) in paragraph at lines 534--535
 []|\OT1/cmr/m/n/10.95 Parameters that get
  []
 
 
-Overfull \hbox (17.00488pt too wide) in paragraph at lines 511--535
+Overfull \hbox (17.00488pt too wide) in paragraph at lines 512--536
 [][] 
  []
 
 [13] [14]
-Underfull \hbox (badness 10000) in paragraph at lines 555--557
+Underfull \hbox (badness 10000) in paragraph at lines 556--558
 
  []
 
 
 Package hyperref Warning: No destination for bookmark of \addcontentsline,
-(hyperref)                destination is added on input line 559.
+(hyperref)                destination is added on input line 560.
 
-<graphics/effCptModel.png, id=398, 637.38126pt x 584.1825pt>
+<graphics/effCptModel.png, id=402, 637.38126pt x 584.1825pt>
 File: graphics/effCptModel.png Graphic file (type png)
 
 <use graphics/effCptModel.png>
-Package pdftex.def Info: graphics/effCptModel.png used on input line 575.
+Package pdftex.def Info: graphics/effCptModel.png used on input line 576.
 (pdftex.def)             Requested size: 252.94499pt x 231.8326pt.
 
 
 Package hyperref Warning: No destination for bookmark of \addcontentsline,
-(hyperref)                destination is added on input line 581.
+(hyperref)                destination is added on input line 582.
 
 
 Underfull \vbox (badness 7203) has occurred while \output is active []
@@ -1072,220 +1077,220 @@ Underfull \vbox (badness 7203) has occurred while \output is active []
 Underfull \vbox (badness 1062) has occurred while \output is active []
 
  [17]
-Overfull \hbox (6.11554pt too wide) in paragraph at lines 691--713
+Overfull \hbox (6.11554pt too wide) in paragraph at lines 692--714
  [][] 
  []
 
 [18]
-<graphics/effCptModelTorsten/effCptModelTorstenPlots001.pdf, id=493, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots001.pdf, id=498, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots001.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots001.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots001
-.pdf used on input line 718.
+.pdf used on input line 719.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots002.pdf, id=494, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots002.pdf, id=499, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots002.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots002.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots002
-.pdf used on input line 719.
+.pdf used on input line 720.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots003.pdf, id=495, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots003.pdf, id=500, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots003.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots003.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots003
-.pdf used on input line 720.
+.pdf used on input line 721.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots004.pdf, id=496, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots004.pdf, id=501, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots004.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots004.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots004
-.pdf used on input line 721.
+.pdf used on input line 722.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots005.pdf, id=497, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots005.pdf, id=502, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots005.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots005.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots005
-.pdf used on input line 722.
+.pdf used on input line 723.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
 
-LaTeX Warning: Float too large for page by 38.34004pt on input line 725.
+LaTeX Warning: Float too large for page by 38.34004pt on input line 726.
 
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots006.pdf, id=498, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots006.pdf, id=503, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots006.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots006.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots006
-.pdf used on input line 728.
+.pdf used on input line 729.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots007.pdf, id=499, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots007.pdf, id=504, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots007.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots007.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots007
-.pdf used on input line 729.
+.pdf used on input line 730.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots011.pdf, id=500, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots011.pdf, id=505, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots011.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots011.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots011
-.pdf used on input line 735.
+.pdf used on input line 736.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots012.pdf, id=501, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots012.pdf, id=506, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots012.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots012.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots012
-.pdf used on input line 736.
+.pdf used on input line 737.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots013.pdf, id=502, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots013.pdf, id=507, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots013.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots013.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots013
-.pdf used on input line 737.
+.pdf used on input line 738.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots014.pdf, id=503, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots014.pdf, id=508, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots014.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots014.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots014
-.pdf used on input line 738.
+.pdf used on input line 739.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots015.pdf, id=504, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots015.pdf, id=509, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots015.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots015.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots015
-.pdf used on input line 739.
+.pdf used on input line 740.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots016.pdf, id=505, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots016.pdf, id=510, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots016.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots016.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots016
-.pdf used on input line 740.
+.pdf used on input line 741.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots017.pdf, id=506, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots017.pdf, id=511, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots017.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots017.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots017
-.pdf used on input line 741.
+.pdf used on input line 742.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots018.pdf, id=507, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots018.pdf, id=512, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots018.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots018.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots018
-.pdf used on input line 742.
+.pdf used on input line 743.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots019.pdf, id=508, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots019.pdf, id=513, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots019.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots019.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots019
-.pdf used on input line 748.
+.pdf used on input line 749.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots020.pdf, id=509, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots020.pdf, id=514, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots020.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots020.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots020
-.pdf used on input line 749.
+.pdf used on input line 750.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots021.pdf, id=510, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots021.pdf, id=515, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots021.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots021.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots021
-.pdf used on input line 750.
+.pdf used on input line 751.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots022.pdf, id=511, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots022.pdf, id=516, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots022.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots022.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots022
-.pdf used on input line 751.
+.pdf used on input line 752.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots023.pdf, id=512, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots023.pdf, id=517, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots023.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots023.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots023
-.pdf used on input line 752.
+.pdf used on input line 753.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots024.pdf, id=513, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots024.pdf, id=518, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots024.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots024.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots024
-.pdf used on input line 753.
+.pdf used on input line 754.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots025.pdf, id=514, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots025.pdf, id=519, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots025.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots025.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots025
-.pdf used on input line 754.
+.pdf used on input line 755.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
-<graphics/effCptModelTorsten/effCptModelTorstenPlots026.pdf, id=515, 433.62pt x
+<graphics/effCptModelTorsten/effCptModelTorstenPlots026.pdf, id=520, 433.62pt x
  433.62pt>
 File: graphics/effCptModelTorsten/effCptModelTorstenPlots026.pdf Graphic file (
 type pdf)
  <use graphics/effCptModelTorsten/effCptModelTorstenPlots026.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten/effCptModelTorstenPlots026
-.pdf used on input line 755.
+.pdf used on input line 756.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
 [19 <./graphics/effCptModelTorsten/effCptModelTorstenPlots001.pdf> <./graphics/
@@ -1309,18 +1314,18 @@ phics/effCptModelTorsten/effCptModelTorstenPlots025.pdf> <./graphics/effCptMode
 lTorsten/effCptModelTorstenPlots026.pdf>]
 
 Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `\@ifnextchar' on input line 762.
+(hyperref)                removing `\@ifnextchar' on input line 763.
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 762--763
+Underfull \hbox (badness 10000) in paragraph at lines 763--764
 
  []
 
-<graphics/neutrophilModel.jpg, id=713, 1284.8pt x 485.815pt>
+<graphics/neutrophilModel.jpg, id=717, 1284.8pt x 485.815pt>
 File: graphics/neutrophilModel.jpg Graphic file (type jpg)
 
 <use graphics/neutrophilModel.jpg>
-Package pdftex.def Info: graphics/neutrophilModel.jpg used on input line 780.
+Package pdftex.def Info: graphics/neutrophilModel.jpg used on input line 781.
 (pdftex.def)             Requested size: 252.94499pt x 95.64162pt.
  [22
 
@@ -1329,84 +1334,84 @@ Package pdftex.def Info: graphics/neutrophilModel.jpg used on input line 780.
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [23]
-<graphics/neutropenia/neutropeniaPopulation1TorstenPlots001.pdf, id=775, 433.62
+<graphics/neutropenia/neutropeniaPopulation1TorstenPlots001.pdf, id=779, 433.62
 pt x 433.62pt>
 File: graphics/neutropenia/neutropeniaPopulation1TorstenPlots001.pdf Graphic fi
 le (type pdf)
 
 <use graphics/neutropenia/neutropeniaPopulation1TorstenPlots001.pdf>
 Package pdftex.def Info: graphics/neutropenia/neutropeniaPopulation1TorstenPlot
-s001.pdf used on input line 940.
+s001.pdf used on input line 941.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
-<graphics/neutropenia/neutropeniaPopulation1TorstenPlots002.pdf, id=776, 433.62
+<graphics/neutropenia/neutropeniaPopulation1TorstenPlots002.pdf, id=780, 433.62
 pt x 433.62pt>
 File: graphics/neutropenia/neutropeniaPopulation1TorstenPlots002.pdf Graphic fi
 le (type pdf)
 
 <use graphics/neutropenia/neutropeniaPopulation1TorstenPlots002.pdf>
 Package pdftex.def Info: graphics/neutropenia/neutropeniaPopulation1TorstenPlot
-s002.pdf used on input line 941.
+s002.pdf used on input line 942.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
-<graphics/neutropenia/neutropeniaPopulation1TorstenPlots003.pdf, id=777, 433.62
+<graphics/neutropenia/neutropeniaPopulation1TorstenPlots003.pdf, id=781, 433.62
 pt x 433.62pt>
 File: graphics/neutropenia/neutropeniaPopulation1TorstenPlots003.pdf Graphic fi
 le (type pdf)
 
 <use graphics/neutropenia/neutropeniaPopulation1TorstenPlots003.pdf>
 Package pdftex.def Info: graphics/neutropenia/neutropeniaPopulation1TorstenPlot
-s003.pdf used on input line 942.
+s003.pdf used on input line 943.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
-<graphics/neutropenia/neutropeniaPopulation1TorstenPlots004.pdf, id=778, 433.62
+<graphics/neutropenia/neutropeniaPopulation1TorstenPlots004.pdf, id=782, 433.62
 pt x 433.62pt>
 File: graphics/neutropenia/neutropeniaPopulation1TorstenPlots004.pdf Graphic fi
 le (type pdf)
 
 <use graphics/neutropenia/neutropeniaPopulation1TorstenPlots004.pdf>
 Package pdftex.def Info: graphics/neutropenia/neutropeniaPopulation1TorstenPlot
-s004.pdf used on input line 943.
+s004.pdf used on input line 944.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
-<graphics/neutropenia/neutropeniaPopulation1TorstenPlots005.pdf, id=779, 433.62
+<graphics/neutropenia/neutropeniaPopulation1TorstenPlots005.pdf, id=783, 433.62
 pt x 433.62pt>
 File: graphics/neutropenia/neutropeniaPopulation1TorstenPlots005.pdf Graphic fi
 le (type pdf)
 
 <use graphics/neutropenia/neutropeniaPopulation1TorstenPlots005.pdf>
 Package pdftex.def Info: graphics/neutropenia/neutropeniaPopulation1TorstenPlot
-s005.pdf used on input line 949.
+s005.pdf used on input line 950.
 (pdftex.def)             Requested size: 180.67499pt x 180.67676pt.
 
-<graphics/neutropenia/neutropeniaPopulation1TorstenPlots006.pdf, id=780, 433.62
+<graphics/neutropenia/neutropeniaPopulation1TorstenPlots006.pdf, id=784, 433.62
 pt x 433.62pt>
 File: graphics/neutropenia/neutropeniaPopulation1TorstenPlots006.pdf Graphic fi
 le (type pdf)
 
 <use graphics/neutropenia/neutropeniaPopulation1TorstenPlots006.pdf>
 Package pdftex.def Info: graphics/neutropenia/neutropeniaPopulation1TorstenPlot
-s006.pdf used on input line 950.
+s006.pdf used on input line 951.
 (pdftex.def)             Requested size: 180.67499pt x 180.67676pt.
 
-<graphics/neutropenia/neutropeniaPopulation1TorstenPlots010.pdf, id=781, 433.62
+<graphics/neutropenia/neutropeniaPopulation1TorstenPlots010.pdf, id=785, 433.62
 pt x 433.62pt>
 File: graphics/neutropenia/neutropeniaPopulation1TorstenPlots010.pdf Graphic fi
 le (type pdf)
 
 <use graphics/neutropenia/neutropeniaPopulation1TorstenPlots010.pdf>
 Package pdftex.def Info: graphics/neutropenia/neutropeniaPopulation1TorstenPlot
-s010.pdf used on input line 956.
+s010.pdf used on input line 957.
 (pdftex.def)             Requested size: 180.67499pt x 180.67676pt.
 
-<graphics/neutropenia/neutropeniaPopulation1TorstenPlots011.pdf, id=782, 433.62
+<graphics/neutropenia/neutropeniaPopulation1TorstenPlots011.pdf, id=786, 433.62
 pt x 433.62pt>
 File: graphics/neutropenia/neutropeniaPopulation1TorstenPlots011.pdf Graphic fi
 le (type pdf)
 
 <use graphics/neutropenia/neutropeniaPopulation1TorstenPlots011.pdf>
 Package pdftex.def Info: graphics/neutropenia/neutropeniaPopulation1TorstenPlot
-s011.pdf used on input line 957.
+s011.pdf used on input line 958.
 (pdftex.def)             Requested size: 180.67499pt x 180.67676pt.
  [24]
 [25 <./graphics/neutropenia/neutropeniaPopulation1TorstenPlots001.pdf> <./graph
@@ -1416,46 +1421,46 @@ niaPopulation1TorstenPlots004.pdf>] [26 <./graphics/neutropenia/neutropeniaPopu
 lation1TorstenPlots005.pdf> <./graphics/neutropenia/neutropeniaPopulation1Torst
 enPlots006.pdf> <./graphics/neutropenia/neutropeniaPopulation1TorstenPlots010.p
 df> <./graphics/neutropenia/neutropeniaPopulation1TorstenPlots011.pdf>]
-Overfull \hbox (4.07556pt too wide) in paragraph at lines 969--970
+Overfull \hbox (4.07556pt too wide) in paragraph at lines 970--971
 \OT1/cmr/m/n/10.95 ([]$\OT1/pcr/m/n/10.95 https : / / bitbucket . org / metrumr
 g / bugsmodellibrary / wiki / Home$[]\OT1/cmr/m/n/10.95 ), de-vel-oped by Metru
 m Re-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 974--976
+Underfull \hbox (badness 10000) in paragraph at lines 975--977
 
  []
 
 [27
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 1005--1007
+Underfull \hbox (badness 10000) in paragraph at lines 1006--1008
 
  []
 
 (./torstenManual.bbl [28])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1028.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1029.
  [29
 
 ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1028.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1029.
  (./torstenManual.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1028.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1028.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1029.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1029.
 
 Package rerunfilecheck Info: File `torstenManual.out' has not changed.
-(rerunfilecheck)             Checksum: 5ABB2BBEBF27DB33D527C143AD21EC67;1537.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1028.
+(rerunfilecheck)             Checksum: 9A856AFD1CDD1342963FF1C0D7E440FF;1538.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1029.
  ) 
 Here is how much of TeX's memory you used:
- 18428 strings out of 493089
- 349124 string characters out of 6134842
- 451685 words of memory out of 5000000
+ 18430 strings out of 493089
+ 349146 string characters out of 6134842
+ 451684 words of memory out of 5000000
  21140 multiletter control sequences out of 15000+600000
  19477 words of font info for 76 fonts, out of 8000000 for 9000
  1302 hyphenation exceptions out of 8191
- 42i,13n,39p,10401b,1241s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 42i,13n,39p,10401b,1240s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/te
 xlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/tex
@@ -1479,10 +1484,10 @@ e1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type
 1/public/amsfonts/cm/cmti9.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/
 public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2015/texmf-dist/fonts/ty
 pe1/urw/courier/ucrr8a.pfb>
-Output written on torstenManual.pdf (29 pages, 2245402 bytes).
+Output written on torstenManual.pdf (29 pages, 2246727 bytes).
 PDF statistics:
- 1064 PDF objects out of 1200 (max. 8388607)
- 924 compressed objects within 10 object streams
- 375 named destinations out of 1000 (max. 500000)
+ 1068 PDF objects out of 1200 (max. 8388607)
+ 928 compressed objects within 10 object streams
+ 377 named destinations out of 1000 (max. 500000)
  364 words of extra memory for PDF output out of 10000 (max. 10000000)
 
