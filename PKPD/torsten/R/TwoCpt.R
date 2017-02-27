@@ -16,6 +16,7 @@ toolsDir <- file.path("tools")
 stanDir <- file.path("cmdstan")
 
 # source(file.path(scriptDir, "pkgSetup.R"))
+# .libPaths(...)
 library(rstan)
 library(ggplot2)
 library(plyr)
@@ -50,7 +51,7 @@ nIter <- nPost * nThin
 nBurnin <- nBurn * nThin
 
 RNGkind("L'Ecuyer-CMRG")
-# mc.reset.stream() # CHECK
+mc.reset.stream()
 
 compileModel(model = file.path(modelDir, modelName), stanDir = stanDir)
 

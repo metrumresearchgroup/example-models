@@ -7,7 +7,7 @@
 # update 1.2: download cmdStan v2.14.0 and the master version of 
 #             torsten-stan and torsten-math.
 # update 1.1: download last version of cmdStan/dev with which Torsten
-#             was tested.  
+#             was tested.
 
 #!/bin/bash
 git clone https://github.com/stan-dev/cmdstan.git

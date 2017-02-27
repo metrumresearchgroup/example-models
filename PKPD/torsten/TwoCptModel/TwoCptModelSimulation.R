@@ -42,8 +42,8 @@ mod %>% ev(e1) %>% mrgsim(end=20) %>% plot # plot data
 
 # create time at which data will be observed 
 # NOTE: end time at t=20 -- if we go further, we get to the limit where CP -> 0. 
-t1 <- seq(4,20,2)
-t2 <- seq(0.25,2,0.25)
+t1 <- c(0.083, 0.167, 0.25, 0.5, 0.75, 1, 1.5, 2, 3)
+t2 <- seq(4,20,2)
 tall <- sort(c(t1,t2))
 
 # save data in data frame 
