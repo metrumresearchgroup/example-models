@@ -22,7 +22,7 @@ $GLOBAL
 
 $PKMODEL ncmt = 2, depot = TRUE
 
-$SIGMA 0.0025
+$SIGMA 0.01
 
 $MAIN
 pred_CL = CL;
@@ -37,14 +37,24 @@ $CAPTURE CP DV
 
 mod <- mread("accum", tempdir(),code) %>% Req(DV) %>% update(end=480,delta=0.1)
 
-e1 <- ev(amt=5000) # Create an initial dosing event
-mod %>% ev(e1) %>% mrgsim(end=20) %>% plot # plot data
+e1 <- ev(amt = 1250, ii = 12, addl = 14) # Create dosing events
+mod %>% ev(e1) %>% mrgsim(end = 250) %>% plot # plot data
 
-# create time at which data will be observed 
-# NOTE: end time at t=20 -- if we go further, we get to the limit where CP -> 0. 
-t1 <- seq(4,20,2)
-t2 <- seq(0.25,2,0.25)
-tall <- sort(c(t1,t2))
+## Create time at which data will be observed.
+## More observations around the first two and the last dosing event.
+td <- 0
+t1 <- c(td + 0.083, td + 0.167, td + 0.25, td + 0.5, 
+        td + 0.75, td + 1, td + 1.5, td + 2, td + 3)
+t2 <- seq(4, 12, 2)
+td <- 12
+t3 <- c(td + 0.083, td + 0.167, td + 0.25, td + 0.5, 
+        td + 0.75, td + 1, td + 1.5, td + 2, td + 3)
+t4 <- c(seq(16, 20, 2), 24, seq(36, 168, 12))
+td <- 168
+t5 <- c(td + 0.083, td + 0.167, td + 0.25, td + 0.5, 
+        td + 0.75, td + 1, td + 1.5, td + 2, td + 3)
+t6 <- c(172, 174, 176, 180, 186, 192)
+tall <- sort(c(t1, t2, t3, t4, t5, t6))
 
 # save data in data frame 
 SimData <- 
@@ -59,7 +69,6 @@ SimData <- SimData[!((SimData$evid == 0)&(SimData$DV == 0)),] ## remove observat
 
 ################################################################################################
 # Format Data for Stan using RStan
-
 nt <- nrow(SimData)
 iObs <- with(SimData, (1:nrow(SimData))[evid == 0])
 nObs <- length(iObs)
@@ -91,3 +100,4 @@ init <- function()
 with(data, stan_rdump(ls(data), file = paste0(modelName, ".data.R")))
 inits <- init()
 with(inits, stan_rdump(ls(inits), file = paste0(modelName, ".init.R")))
+

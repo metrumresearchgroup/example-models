@@ -41,7 +41,7 @@ e1 <- ev(amt = 1250, ii = 12, addl = 14) # Create dosing events
 mod %>% ev(e1) %>% mrgsim(end = 250) %>% plot # plot data
 
 ## Create time at which data will be observed.
-## Many observations around the first two and the last dosing event.
+## More observations around the first two and the last dosing event.
 td <- 0
 t1 <- c(td + 0.083, td + 0.167, td + 0.25, td + 0.5, 
         td + 0.75, td + 1, td + 1.5, td + 2, td + 3)
