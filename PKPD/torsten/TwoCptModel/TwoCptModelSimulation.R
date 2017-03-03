@@ -37,14 +37,24 @@ $CAPTURE CP DV
 
 mod <- mread("accum", tempdir(),code) %>% Req(DV) %>% update(end=480,delta=0.1)
 
-e1 <- ev(amt=5000) # Create an initial dosing event
-mod %>% ev(e1) %>% mrgsim(end=20) %>% plot # plot data
+e1 <- ev(amt = 1250, ii = 12, addl = 14) # Create dosing events
+mod %>% ev(e1) %>% mrgsim(end = 250) %>% plot # plot data
 
-# create time at which data will be observed 
-# NOTE: end time at t=20 -- if we go further, we get to the limit where CP -> 0. 
-t1 <- c(0.083, 0.167, 0.25, 0.5, 0.75, 1, 1.5, 2, 3)
-t2 <- seq(4,20,2)
-tall <- sort(c(t1,t2))
+## Create time at which data will be observed.
+## Many observations around the first two and the last dosing event.
+td <- 0
+t1 <- c(td + 0.083, td + 0.167, td + 0.25, td + 0.5, 
+        td + 0.75, td + 1, td + 1.5, td + 2, td + 3)
+t2 <- seq(4, 12, 2)
+td <- 12
+t3 <- c(td + 0.083, td + 0.167, td + 0.25, td + 0.5, 
+           td + 0.75, td + 1, td + 1.5, td + 2, td + 3)
+t4 <- c(seq(16, 20, 2), 24, seq(36, 168, 12))
+td <- 168
+t5 <- c(td + 0.083, td + 0.167, td + 0.25, td + 0.5, 
+        td + 0.75, td + 1, td + 1.5, td + 2, td + 3)
+t6 <- c(172, 174, 176, 180, 186, 192)
+tall <- sort(c(t1, t2, t3, t4, t5, t6))
 
 # save data in data frame 
 SimData <- 

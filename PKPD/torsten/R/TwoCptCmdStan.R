@@ -13,7 +13,10 @@ tabDir <- file.path("deliv", "table", modelName)
 modelDir <- file.path(projectDir, modelName)
 outDir <- file.path(modelDir, modelName)
 toolsDir <- file.path("tools")
+stanDir <- file.path("cmdstan")
 
+# source(file.path(scriptDir, "pkgSetup.R"))
+# .libPaths(...)
 library(rstan)
 library(ggplot2)
 library(plyr)
@@ -22,22 +25,11 @@ library(tidyr)
 library(parallel)
 
 source(file.path(toolsDir, "stanTools.R"))
+source(file.path(toolsDir, "cmdStanTools.R"))
 
 rstan_options(auto_write = TRUE)
+
 set.seed(11191951) ## not required but assures repeatable results
-
-## read data
-data <- read_rdump(file.path(modelDir, paste0(modelName,".data.R")))
-
-## create initial estimates
-init <- function() {
-  list(CL = exp(rnorm(1, log(10), 0.2)),
-       Q = exp(rnorm(1, log(15), 0.2)),
-       V1 = exp(rnorm(1, log(35), 0.2)),
-       V2 =  exp(rnorm(1, log(105), 0.2)),
-       ka = exp(rnorm(1, log(2), 0.2)),
-       sigma = runif(1, 0.5, 2))
-}
 
 ## Specify the variables for which you want history and density plots
 parametersToPlot <- c("CL", "Q", "V1", "V2", "ka", "sigma")
@@ -51,28 +43,40 @@ parametersToPlot <- c("lp__", parametersToPlot)
 ################################################################################################
 ## run Stan
 nChains <- 4
-nPost <- 500 ## Number of post-burn-in samples per chain after thinning
-nBurn <- 500 ## Number of burn-in samples per chain after thinning
+nPost <- 1000 ## Number of post-burn-in samples per chain after thinning
+nBurn <- 1000 ## Number of burn-in samples per chain after thinning
 nThin <- 1
 
-nIter <- (nPost + nBurn) * nThin
+nIter <- nPost * nThin
 nBurnin <- nBurn * nThin
 
-fit <- stan(file = file.path(modelDir, paste0(modelName, ".stan")),
-            data = data,
-            pars = parameters,
-            iter = nIter,
-            warmup = nBurnin,
-            thin = nThin,
-            init = init,
-            chains = nChains,
-            cores = min(nChains, parallel::detectCores()))
+RNGkind("L'Ecuyer-CMRG")
+mc.reset.stream()
+
+compileModel(model = file.path(modelDir, modelName), stanDir = stanDir)
+
+chains <- 1:nChains
+mclapply(chains,
+         function(chain, model, data, iter, warmup, thin, init)
+           runModel(model = model, data = data,
+                    iter = iter, warmup = warmup, thin = thin,
+                    init = init, seed = sample(1:999999, 1),
+                    chain = chain),
+         ##                      adapt_delta = 0.95, stepsize = 0.01),
+         model = file.path(modelDir, modelName),
+         data = file.path(modelDir, paste0(modelName, ".data.R")),
+         init = file.path(modelDir, paste0(modelName, ".init.R")),
+         iter = nIter, warmup = nBurn, thin = nThin,
+         mc.cores = min(nChains, detectCores()))
+
+fit <- read_stan_csv(file.path(modelDir, modelName, paste0(modelName, chains, ".csv")))
 
 dir.create(outDir)
 save(fit, file = file.path(outDir, paste(modelName, "Fit.Rsave", sep = "")))
 
 ################################################################################################
 ## posterior distributions of parameters
+
 dir.create(figDir)
 dir.create(tabDir)
 
@@ -90,6 +94,7 @@ write.csv(ptable, file = file.path(tabDir, paste(modelName, "ParameterTable.csv"
 
 ################################################################################################
 ## posterior predictive plot
+data <- read_rdump(file.path(modelDir, paste0(modelName,".data.R")))
 data <- data.frame(data$cObs, data$time[-1])
 data <- plyr::rename(data, c("data.cObs" = "cObs", "data.time..1." = "time"))
 
