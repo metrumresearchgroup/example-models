@@ -57,7 +57,7 @@ charlesm@metrumrg.com \` metrumrg.com \\
 User Manual \\ \ \\ 
 \Large Charles Margossian and Bill Gillespie \\ \ \\ \ \\ \ \\ \ \\
 Torsten Version 0.82 \\ for Stan Version 2.14.0 \\ \ \\ 
-\large Tuesday January 31st 2017 }
+\large Tuesday March 3rd 2017 }
 \end{center}
 
 \clearpage
@@ -100,31 +100,11 @@ We encourage interested users to try Torsten out and are happy to assist. Please
 \subsection{Installing Torsten}  \ \\ \ \\  
 Installation files are available on GitHub: \url{https://github.com/charlesm93/example-models/tree/torsten-0.82/PKPD/torsten}
 
-There is currently no mechanism to install Torsten on top of your version of Stan. This is still a work in progress. In the meantime, we offer a version of Stan with Torsten built inside of it. Torsten 0.82 works with Stan 2.14.0. Torsten is built inside the Stan and Stan-math repositories and is agnostic to the interface the users use. We offer support for installing Stan with CmdStan\footnote{If you need assistance to set up Torsten with another interface, shoot me an e-mail at charlesm@metrumrg.com. I'm happy to help.}.
+There is currently no mechanism to install Torsten on top of your version of Stan. This is still a work in progress. In the meantime, we offer a version of Stan with Torsten built inside of it. Torsten 0.82 works with Stan 2.14.0. Torsten is built inside the Stan and Stan-math repositories and is agnostic to the interface. We offer support to install Torsten with RStan and CmdStan.
 
-The easiest way to install the CmdStan interface with Stan and Torsten is to run the bash file \texttt{setupTorsten.sh}\footnote{You can install the development version using \texttt{setupTorsten-dev.sh}.}. You can also do it manually on a terminal window:
+\subsubsection{Intalling Torsten with RStan} The easiest way to install the RStan interface with Stan and Torsten is to run the R script \texttt{R/setupRTorsten.R}. You'll need to make a few minor adjustments, notably by specifying the location at which you wish to install the libraries rstan (and its dependency StanHeaders). If you already have these packages installed, the script will not automatically overwrite them, which is why you should remove them prior to running \texttt{setupRTorsten.R}. 
 
-Download CmdStan: \\
-\texttt{git clone https://github.com/stan-dev/cmdstan.git \\
-cd cmdstan \\
-git checkout release/v2.14.0
-} \\
-
-Download Stan with Torsten: \\
-\texttt{git clone https://github.com/charlesm93/stan.git \\
-rm -r stan\_2.14.0 \\
-mv stan stan\_2.14.0 \\
-cd stan\_2.14.0 \\
-git checkout torsten-master
-} \\
-
-Download Stan\_math with Torsten:
-\texttt{cd lib \\
-git clone https://github.com/charlesm93/math.git \\
-mv math stan\_math\_2.14.0 \\
-cd stan\_math\_2.14.0 \\
-git checkout torsten-master
-}
+\subsubsection{Installing Torsten with CmdStan} Similarly, you can install the CmdStan interface with Stan and Torsten using the bash file \texttt{setupTorsten.sh}\footnote{To get the development version of Torsten use \texttt{setupTorsten-dev.sh}.}.
 
 \subsection{Overview} \ \\ \ \\
 Torsten is a prototype Pharmacokinetic/Pharmacodynamic (PKPD) model library for use in Stan 2.14.0. The current version includes:
