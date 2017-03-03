@@ -104,7 +104,7 @@ transformed parameters{
    x = generalOdeModel_rk45(twoCptModelODE, 3,
                            time, amt, rate, ii, evid, cmt, addl, ss,
                            theta, biovar, tlag,
-                           1e-8, 1e-8, 1e8);
+                           1e-6, 1e-6, 1e6);
 
   cHat = col(x, 2) ./ V1;
 
