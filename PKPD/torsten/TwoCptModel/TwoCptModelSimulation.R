@@ -22,7 +22,7 @@ $GLOBAL
 
 $PKMODEL ncmt = 2, depot = TRUE
 
-$SIGMA 0.0025
+$SIGMA 0.01
 
 $MAIN
 pred_CL = CL;
@@ -69,7 +69,6 @@ SimData <- SimData[!((SimData$evid == 0)&(SimData$DV == 0)),] ## remove observat
 
 ################################################################################################
 # Format Data for Stan using RStan
-
 nt <- nrow(SimData)
 iObs <- with(SimData, (1:nrow(SimData))[evid == 0])
 nObs <- length(iObs)
