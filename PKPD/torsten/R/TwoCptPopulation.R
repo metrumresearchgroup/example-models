@@ -11,9 +11,7 @@ tabDir <- file.path("deliv", "table", modelName)
 modelDir <- file.path(projectDir, modelName)
 outDir <- file.path(modelDir, modelName)
 toolsDir <- file.path("tools")
-stanDir <- file.path("cmdstan")
 
-# source(file.path(scriptDir, "pkgSetup.R"))
 library(rstan)
 library(ggplot2)
 library(plyr)
@@ -21,11 +19,32 @@ library(dplyr)
 library(tidyr)
 
 source(file.path(toolsDir, "stanTools.R"))
-source(file.path(toolsDir, "cmdStanTools.R"))
 
 rstan_options(auto_write = TRUE)
-
 set.seed(11191951) ## not required but assures repeatable results
+
+## read data
+data <- read_rdump(file.path(modelDir, paste0(modelName,".data.R")))
+
+## create initial estimates
+nIIV <- 5
+init <- function()
+  list(CLHat = exp(rnorm(1, log(10), 0.2)),
+       QHat = exp(rnorm(1, log(20), 0.2)),
+       V1Hat = exp(rnorm(1, log(70), 0.2)),
+       V2Hat = exp(rnorm(1, log(70), 0.2)),
+       kaHat = exp(rnorm(1, log(1), 0.2)),
+       sigma = runif(1, 0.5, 2),
+       L = diag(nIIV),
+       etaStd = matrix(rep(0, nIIV * data$nSubjects), nrow = nIIV),
+       omega = runif(nIIV, 0.5, 2),
+       logtheta = matrix(rep(log(c(exp(rnorm(1, log(10), 0.2)),
+                                   exp(rnorm(1, log(20), 0.2)),
+                                   exp(rnorm(1, log(70), 0.2)),
+                                   exp(rnorm(1, log(70), 0.2)),
+                                   exp(rnorm(1, log(1), 0.2)))),
+                             ea = data$nSubjects),
+                         nrow = data$nSubjects))
 
 ## Specify the variables for which you want history and density plots
 parametersToPlot <- c("CLHat", "QHat", "V1Hat", "V2Hat", "kaHat", "sigma", "omega")
@@ -38,33 +57,23 @@ parametersToPlot <- c("lp__", parametersToPlot)
 
 ################################################################################################
 ## run Stan
-nChains <- 4
-nPost <- 500 ## Number of post-burn-in samples per chain after thinning
-nBurn <- 500 ## Number of burn-in samples per chain after thinning
+nChains <- 1
+nPost <- 1 ## Number of post-burn-in samples per chain after thinning
+nBurn <- 0 ## Number of burn-in samples per chain after thinning
 nThin <- 1
 
 nIter <- nPost* nThin
 nBurnin <- nBurn * nThin
 
-RNGkind("L'Ecuyer-CMRG")
-mc.reset.stream()
-
-compileModel(model = file.path(modelDir, modelName), stanDir = stanDir)
-
-chains <- 1:nChains
-mclapply(chains,
-         function(chain, model, data, iter, warmup, thin, init)
-           runModel(model = model, data = data,
-                    iter = iter, warmup = warmup, thin = thin,
-                    init = init, seed = sample(1:999999, 1),
-                    chain = chain),
-         model = file.path(modelDir, modelName),
-         data = file.path(modelDir, paste0(modelName, ".data.R")),
-         init = file.path(modelDir, paste0(modelName, ".init.R")),
-         iter = nIter, warmup = nBurn, thin = nThin,
-         mc.cores = min(nChains, detectCores()))
-
-fit <- read_stan_csv(file.path(modelDir, modelName, paste0(modelName, chains, ".csv")))
+fit <- stan(file = file.path(modelDir, paste0(modelName, ".stan")),
+            data = data,
+            pars = parameters,
+            iter = nIter,
+            warmup = nBurnin,
+            thin = nThin,
+            init = init,
+            chains = nChains,
+            cores = min(nChains, parallel::detectCores()))
 
 dir.create(outDir)
 save(fit, file = file.path(outDir, paste(modelName, "Fit.Rsave", sep = "")))

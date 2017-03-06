@@ -18,15 +18,19 @@ data{
 }
 
 transformed data{
-  vector[nObs] logCObs;
-  int nTheta;
+  vector[nObs] logCObs = log(cObs);
+  int nTheta = 5;
+  int nCmt = 3;
   int nti[nSubjects];
-  int ntMax;
+  real biovar[nCmt];
+  real tlag[nCmt];
 
-  logCObs = log(cObs);
-  nTheta = 11;
-  
   for(i in 1:nSubjects) nti[i] = end[i] - start[i] + 1;
+
+  for (i in 1:nCmt) {
+    biovar[i] = 1;
+    tlag[i] = 0;
+  }
 }
 
 parameters{
@@ -46,10 +50,10 @@ parameters{
 transformed parameters{
   vector<lower = 0>[nIIV] thetaHat;
   matrix<lower = 0>[nSubjects, nIIV] thetaM; // variable required for Matt's trick
-  vector<lower = 0>[nTheta] theta[1];
+  real<lower = 0> theta[nTheta];
+  matrix<lower = 0>[nt, nCmt] x;
   vector<lower = 0>[nt] cHat;
   vector<lower = 0>[nObs] cHatObs;
-  matrix<lower = 0>[nt, 3] x;
 
   thetaHat[1] = CLHat;
   thetaHat[2] = QHat;
@@ -62,34 +66,26 @@ transformed parameters{
   
   for(j in 1:nSubjects)
   {
-    theta[1][1] = thetaM[j, 1]; # CL
-    theta[1][2] = thetaM[j, 2]; # Q
-    theta[1][3] = thetaM[j, 3]; # V1
-    theta[1][4] = thetaM[j, 4]; # V2
-    theta[1][5] = thetaM[j, 5]; # ka
-    theta[1][6] = 1; # F1
-    theta[1][7] = 1; # F2
-    theta[1][8] = 1; # F3
-    theta[1][9] = 0; # tlag1
-    theta[1][10] = 0; # tlag2
-    theta[1][11] = 0; # tlag3
+    theta[1] = thetaM[j, 1]; # CL
+    theta[2] = thetaM[j, 2]; # Q
+    theta[3] = thetaM[j, 3]; # V1
+    theta[4] = thetaM[j, 4]; # V2
+    theta[5] = thetaM[j, 5]; # ka
 
-    x[start[j]:end[j]] = PKModelTwoCpt(theta, 
-                                       time[start[j]:end[j]], 
+    x[start[j]:end[j]] = PKModelTwoCpt(time[start[j]:end[j]], 
                                        amt[start[j]:end[j]],
                                        rate[start[j]:end[j]],
                                        ii[start[j]:end[j]],
                                        evid[start[j]:end[j]],
                                        cmt[start[j]:end[j]],
                                        addl[start[j]:end[j]],
-                                       ss[start[j]:end[j]]);
+                                       ss[start[j]:end[j]],
+                                       theta, biovar, tlag);
                                        
-    cHat[start[j]:end[j]] = col(x[start[j]:end[j]], 2) ./ theta[1][3]; ## divide by V1
+    cHat[start[j]:end[j]] = col(x[start[j]:end[j]], 2) ./ theta[3]; ## divide by V1
   }
 
-  for(i in 1:nObs){
-    cHatObs[i] = cHat[iObs[i]]; ## predictions for observed data records
-  }
+  cHatObs  = cHat[iObs];
 }
 
 model{
@@ -118,46 +114,39 @@ generated quantities{
     matrix[nIIV, nSubjects] etaStdPred;
     matrix<lower=0>[nSubjects, nIIV] thetaPredM;
     corr_matrix[nIIV] rho;
-    vector<lower = 0>[nTheta] thetaPred[1];
-    
+    real<lower = 0> thetaPred[nTheta];
+
     rho = L * L';
-    
+
     for(i in 1:nSubjects){
       for(j in 1:nIIV){ 
         etaStdPred[j, i] = normal_rng(0, 1);
       }
     }
-    
+
     thetaPredM = (rep_matrix(thetaHat, nSubjects) .* exp(diag_pre_multiply(omega, L * etaStdPred)))';
 
     for(j in 1:nSubjects){
       
-      thetaPred[1][1] = thetaPredM[j,1]; # CL
-      thetaPred[1][2] = thetaPredM[j,2]; # Q 
-      thetaPred[1][3] = thetaPredM[j,3]; # V1
-      thetaPred[1][4] = thetaPredM[j,4]; # V2
-      thetaPred[1][5] = thetaPredM[j,5]; # ka 
-      thetaPred[1][6] = 1; # F1
-      thetaPred[1][7] = 1; # F2
-      thetaPred[1][8] = 1; # F3
-      thetaPred[1][9] = 0; # tlag1
-      thetaPred[1][10] = 0; # tlag2
-      thetaPred[1][11] = 0; # tlag3
+      thetaPred[1] = thetaPredM[j,1]; # CL
+      thetaPred[2] = thetaPredM[j,2]; # Q 
+      thetaPred[3] = thetaPredM[j,3]; # V1
+      thetaPred[4] = thetaPredM[j,4]; # V2
+      thetaPred[5] = thetaPredM[j,5]; # ka 
     
-      xPred[start[j]:end[j],] = PKModelTwoCpt(thetaPred,
-                                        time[start[j]:end[j]],
-                                        amt[start[j]:end[j]],
-                                        rate[start[j]:end[j]],
-                                        ii[start[j]:end[j]],
-                                        evid[start[j]:end[j]],
-                                        cmt[start[j]:end[j]],
-                                        addl[start[j]:end[j]],
-                                        ss[start[j]:end[j]]);
-      for(i in start[j]:end[j]){
-        cHatPred[i] = xPred[i, 2] / thetaPred[1][3];
-      }
-    }
+      xPred[start[j]:end[j],] = PKModelTwoCpt(time[start[j]:end[j]],
+                                              amt[start[j]:end[j]],
+                                              rate[start[j]:end[j]],
+                                              ii[start[j]:end[j]],
+                                              evid[start[j]:end[j]],
+                                              cmt[start[j]:end[j]],
+                                              addl[start[j]:end[j]],
+                                              ss[start[j]:end[j]],
+                                              theta, biovar, tlag);
 
+     cHatPred = xPred[ ,2] / thetaPred[3];
+  }
+  
   for(i in 1:nObs){
       cObsCond[i] = exp(normal_rng(log(cHatObs[i]), sigma)); # individual predictions
       cObsPred[i] = exp(normal_rng(log(cHatPred[iObs[i]]), sigma)); # population predictions

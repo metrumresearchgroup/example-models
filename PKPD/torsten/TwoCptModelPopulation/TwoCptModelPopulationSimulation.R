@@ -16,11 +16,14 @@ nSub <- 10; # number of subjects
 nIIV <- 5; # number of parameters with Inter-Individual variation
 
 code <- '
-$PARAM CL=5, Q=8, V2=20, V3=70, KA=1.2
+$PARAM CL = 5, Q = 8, V2 = 20, V3 = 70, KA = 1.2
 
-$SET delta=0.1 // simulation grid
+$SET delta = 0.1  // simulation grid
 
 $CMT GUT CENT PERI
+
+$GLOBAL
+#define CP (CENT/V2)
 
 $PKMODEL ncmt = 2, depot = TRUE
 
@@ -31,48 +34,44 @@ double V2i = exp(log(V2) + ETA(3));
 double V3i = exp(log(V3) + ETA(4));
 double KAi = exp(log(KA) + ETA(5));
 
-pred_CL = CLi;
-pred_Q = Qi;
-pred_V2 = V2i;
-pred_V3 = V3i;
-pred_KA = KAi;
-
-$OMEGA name="IIV"
+$OMEGA  name="IIV"
 0.0025 0.0025 0.0025 0.0025 0.0025
 
-$SIGMA 0.025
+$SIGMA 0.01
 
 $TABLE
-table(DV) = CENT/V2*exp(EPS(1));
+capture DV = CP * exp(EPS(1));
+
+$CAPTURE DV CP
 '
 
-mod <- mread("accum", tempdir(),code)
-
-e1 <- expand.ev(amt=rep(1000, nSub)) # Create an initial dosing event
-out <- mod %>% data_set(e1) %>% carry.out(dose) %>% Req(DV) %>% mrgsim(end=50)
+mod <- mread("accum", tempdir(), code) %>% Req(DV) %>% update(end=480, delta=0.1)
+e1 <- expand.ev(amt = rep(80 * 1000, nSub), ii = 12, addl = 14) # Create dosing events
+out <- mod %>% data_set(e1) %>% carry.out(dose) %>% Req(DV) %>% mrgsim(end = 250)
 plot(out, DV~time|factor(ID),scales="same")
 
-# create time at which data will be observed 
-t1 <- seq(2,20,2)
-t2 <- seq(0.25,2,0.25)
-tall <- sort(c(t1,t2))
+## Observation times
+time <- c(0, 0.083, 0.167, 0.25, 0.5, 0.75, 1, 1.5, 2,3,4,6,8)
+time <- c(time, time + 12, seq(24, 156, by = 12), c(time, 12, 18, 24) + 168)
+time <- time[time != 0]
 
 # save data in data frame 
 SimData <- 
   mod %>%
   data_set(e1) %>%
-  carry.out(cmt,ii,addl,rate,amt,evid,ss) %>%
-  mrgsim(Req="DV", end=-1, add=tall, recsort=3) %>%
+  carry.out(cmt, ii, addl, rate, amt, evid, ss) %>%
+  mrgsim(Req = "DV", end = -1, add = time, recsort = 3) %>%
   as.data.frame
 
+head(SimData)
+
 SimData$cmt[SimData$cmt == 0] <- 2 ## adjust cmt (adopt NONMEM convention)
-SimData <- SimData[!((SimData$evid == 0)&(SimData$DV == 0)),] ## remove observation with 0 drug concentration
+## remove observation with 0 drug concentration
+SimData <- SimData[!((SimData$evid == 0)&(SimData$DV == 0)),]
 
 ################################################################################################
 ## Format data for Stan 
-
 nt <- nrow(SimData)
-
 iObs <- with(SimData, (1:nrow(SimData))[evid == 0])
 nObs <- length(iObs)
 
