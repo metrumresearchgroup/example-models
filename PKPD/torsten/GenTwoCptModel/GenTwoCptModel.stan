@@ -19,9 +19,9 @@ functions{
     real ka = parms[5];
     
     # Re-parametrization
-    real k12 = CL / V1;
-    real k21 = Q / V1;
-    real k10 = Q / V2;
+    real k10 = CL / V1;
+    real k12 = Q / V1;
+    real k21 = Q / V2;
     
     # Return object (derivative)
     real y[3]; # 1 element per compartment of
