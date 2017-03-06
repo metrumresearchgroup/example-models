@@ -195,9 +195,9 @@ In this section we go through the different functions Torsten adds to Stan. It w
 \subsection{Example 1: Two Compartment Model}
 We model drug absorption in a single patient and simulate plasma drug concentrations:
 \begin{itemize}
-  \item Single Dose: 5000 mg
+  \item Multiple Doses: 1250 mg, every 12 hours, for a total of 15 doses
   \item PK: plasma concentrations of parent drug ($c$)
-  \item PK measured at 0, 0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75, 2, 4, 6, 8, 10, 12, 14, 16, 18, and 20 hours after dosing
+  \item PK measured at 0.083, 0.167, 0.25, 0.5, 0.75, 1, 1.5, 2, 4, 6, 8, 10 and 12 hours after 1st, 2nd, and 15th dose. In addition, the PK is measured every 12 hours throughout the trial.
 \end{itemize}
 
 The plasma concentration ($c$) are simulated according to the following equations:
@@ -206,7 +206,7 @@ The plasma concentration ($c$) are simulated according to the following equation
  \widehat{c} &=& f_{2cpt}\left(t, CL, Q, V_2, V_3, k_a\right) \\
   \left(CL, Q, V_2, V_3, ka\right) &=& 
 	\left(5\ {\rm L/h}, 8\  {\rm L/h}, 20\  {\rm L},  70\ {\rm L}, 1.2\ {\rm h^{-1}} \right) \\
-  \sigma &=& 0.05
+  \sigma &=& 0.01
 \end{eqnarray*}
 
 The data are generated using the R package \textit{mrgsolve}\footnote{https://github.com/metrumresearchgroup/mrgsolve}, see \texttt{TwoCptModelSimulation.R}. We show the results obtained when using the function \texttt{PKModelTwoCpt}, which computes solutions to the ODEs analytically.
@@ -235,7 +235,7 @@ which respectively correspond to the one and two compartment model with first or
 \label{cptModels}
 \end{figure}
 
-\texttt{PKModelTwoCpt} can be used to fit example 1, see \texttt{TwoCptModel.stan}. We are interested in evaluating the ODE parameters, stored in \texttt{theta}. The bioavailability fraction and the lag times on the other hand are fixed, and we therefore declare \texttt{biovar} and \texttt{tlag} in the transformed data block. Four MCMC chains of 2000 iterations were simulated. The first 1000 iteration of each chain were discarded. Thus 1000 MCMC samples were used for the subsequent analyses.
+\texttt{PKModelTwoCpt} can be used to fit example 1, see \texttt{TwoCptModel.stan}. We are interested in evaluating the ODE parameters, stored in \texttt{theta}. The bioavailability fraction and the lag times on the other hand are fixed, and we therefore declare \texttt{biovar} and \texttt{tlag} in the transformed data block. Three MCMC chains of 2000 iterations were simulated. The first 1000 iteration of each chain were discarded. Thus 1000 MCMC samples were used for the subsequent analyses.
 
 \begin{figure}[htbp]
 \caption{Stan language for fitting a two compartment model using the \texttt{PKModelTwoCpt} function (abstract)}
@@ -306,18 +306,18 @@ which respectively correspond to the one and two compartment model with first or
 \label{TwoCptCode}
 \end{figure}
 
-\textbf{Result.} The MCMC history plots (figure~\ref{TwoCptMCMC}) suggest that the 4 chains have converged to common distributions for all of the key model parameters. The  fit to the plasma concentration data (figure~\ref{TwoCptPredictions}) are in close agreement with the data, which is not surprising since the fitted model is identical to the one used to simulate the data. Similarly the parameter estimates summarized in Table 1 are consistent with the values used for simulation.
+\textbf{Result.} The MCMC history plots (figure~\ref{TwoCptMCMC}) suggest that the 3 chains have converged to common distributions for all of the key model parameters. The  fit to the plasma concentration data (figure~\ref{TwoCptPredictions}) are in close agreement with the data, which is not surprising since the fitted model is identical to the one used to simulate the data. Similarly the parameter estimates summarized in Table 1 are consistent with the values used for simulation.
 
 \begin{figure}[htbp]
-\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/TwoCptModelExamplePlots001.pdf}
-\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/TwoCptModelExamplePlots002.pdf}
+\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/TwoCptModelPlots001.pdf}
+\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/TwoCptModelPlots002.pdf}
 \caption{{MCMC history plots for the parameters of a two compartment model with first order absorption (each color corresponds to a different chain)}}
 \label{TwoCptMCMC}
 \end{figure}
 
 \begin{figure}[!htb]
 \begin{center}
-\includegraphics[width=4.5in,trim=0in 0in 0 0in]{graphics/TwoCptModelExamplePlots004.pdf}
+\includegraphics[width=4.5in,trim=0in 0in 0 0in]{graphics/TwoCptModelPlots003.pdf}
 \caption{{Posterior Marginal Densities of the Model Parameters of a two compartment model with first order absorption (each color corresponds to a different chain)}}
 \label{TwoCptDensity}
 \end{center}
@@ -325,7 +325,7 @@ which respectively correspond to the one and two compartment model with first or
 
 \begin{figure}[!htb]
 \begin{center}
-\includegraphics[width=3.5in,trim=0in 0in 0 0in]{graphics/TwoCptModelExamplePlots006.pdf}
+\includegraphics[width=3.5in,trim=0in 0in 0 0in]{graphics/TwoCptModelPlots006.pdf}
 \caption{{Predicted (posterior median and 90 \% credible intervals) and observed plasma drug concentrations of a two compartment model with first order absorption}}
 \label{TwoCptPredictions}
 \end{center}
@@ -338,11 +338,12 @@ which respectively correspond to the one and two compartment model with first or
   \hline
  & mean & se\_mean & sd & 2.5\% & 25\% & 50\% & 75\% & 97.5\% & n\_eff & Rhat \\ 
   \hline
-CL & 5.19 & 0.01 & 0.25 & 4.60 & 5.05 & 5.21 & 5.35 & 5.62 & 971.04 & 1.00 \\ 
-  Q & 7.90 & 0.01 & 0.47 & 6.97 & 7.58 & 7.93 & 8.21 & 8.79 & 1662.02 & 1.00 \\ 
-  V2 & 20.25 & 0.08 & 2.27 & 15.71 & 18.74 & 20.23 & 21.76 & 24.67 & 896.67 & 1.00 \\ 
-  V3 & 64.10 & 0.22 & 6.98 & 52.60 & 59.48 & 63.38 & 67.74 & 80.65 & 1032.66 & 1.00 \\ 
-  ka & 1.25 & 0.00 & 0.17 & 0.94 & 1.13 & 1.24 & 1.35 & 1.62 & 940.99 & 1.00 \\ 
+CL & 4.82 & 0.002 & 0.0901 & 4.64 & 4.76 & 4.82 & 4.88 & 5.00 & 2464.73 & 1.00 \\ 
+  Q & 7.54 & 0.016 & 0.58 & 6.43 & 7.15 & 7.54 & 7.92 & 8.69 & 1385.75 & 1.00 \\ 
+  V2 & 21.14 & 0.069 & 2.45 & 16.37 & 19.44 & 21.19 & 22.78 & 25.89 & 1245.64 & 1.00 \\ 
+  V3 & 76.35 & 0.110 & 5.35 & 65.98 & 72.75 & 76.26 & 79.83 & 87.30 & 2379.15 & 1.00 \\ 
+  ka & 1.23 & 0.005 & 0.169 & 0.923 & 1.12 & 1.23 & 1.35 & 1.58 & 1295.01 & 1.00 \\
+  sigma & 0.108 &  0.000 & 0.012 & 0.0887 & 0.0999 & 0.107 & 0.115 & 0.135 & 1973.97 & 1.00 \\
    \hline
 \end{tabular}
 \end{table}

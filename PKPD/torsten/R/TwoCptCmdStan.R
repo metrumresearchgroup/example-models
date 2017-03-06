@@ -4,6 +4,7 @@ gc()
 modelName <- "TwoCptModel"
 # modelName <- "LinTwoCptModel"
 # modelName <- "GenTwoCptModel"
+# modelName <- "TwoCptModel_fixed"
 
 ## Adjust directories to your settings.
 scriptDir <- getwd()
@@ -42,9 +43,9 @@ parametersToPlot <- c("lp__", parametersToPlot)
 
 ################################################################################################
 ## run Stan
-nChains <- 4
-nPost <- 1000 ## Number of post-burn-in samples per chain after thinning
-nBurn <- 1000 ## Number of burn-in samples per chain after thinning
+nChains <- 3 # 4
+nPost <- 1000 # 1000 ## Number of post-burn-in samples per chain after thinning
+nBurn <- 1000  # 1000 ## Number of burn-in samples per chain after thinning
 nThin <- 1
 
 nIter <- nPost * nThin
@@ -61,12 +62,12 @@ mclapply(chains,
            runModel(model = model, data = data,
                     iter = iter, warmup = warmup, thin = thin,
                     init = init, seed = sample(1:999999, 1),
-                    chain = chain),
-         ##                      adapt_delta = 0.95, stepsize = 0.01),
+                    chain = chain, refresh = 100,
+                               adapt_delta = 0.95, stepsize = 0.01),
          model = file.path(modelDir, modelName),
          data = file.path(modelDir, paste0(modelName, ".data.R")),
          init = file.path(modelDir, paste0(modelName, ".init.R")),
-         iter = nIter, warmup = nBurn, thin = nThin,
+         iter = nIter, warmup = nBurnin, thin = nThin,
          mc.cores = min(nChains, detectCores()))
 
 fit <- read_stan_csv(file.path(modelDir, modelName, paste0(modelName, chains, ".csv")))
@@ -76,7 +77,6 @@ save(fit, file = file.path(outDir, paste(modelName, "Fit.Rsave", sep = "")))
 
 ################################################################################################
 ## posterior distributions of parameters
-
 dir.create(figDir)
 dir.create(tabDir)
 

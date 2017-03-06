@@ -54,7 +54,7 @@ transformed parameters{
   real theta[nTheta];  # ODE parameters
   vector<lower = 0>[nt] cHat;
   vector<lower = 0>[nObs] cHatObs;
-  matrix<lower = 0>[nt, 3] x; 
+  matrix<lower = 0>[nt, nCmt] x; 
 
   theta[1] = CL;
   theta[2] = Q;
@@ -70,9 +70,11 @@ transformed parameters{
 
   cHat = col(x, 2) ./ V1; # we're interested in the amount in the second compartment 
 
-  for(i in 1:nObs){
-    cHatObs[i] = cHat[iObs[i]]; ## predictions for observed data records
-  }
+  cHatObs = cHat[iObs]; # predictions for observed data recors
+
+  // for(i in 1:nObs){
+  //   cHatObs[i] = cHat[iObs[i]]; ## predictions for observed data records
+  // }
 }
 
 model{
@@ -95,5 +97,3 @@ generated quantities{
     }
 			 
 }
-
-

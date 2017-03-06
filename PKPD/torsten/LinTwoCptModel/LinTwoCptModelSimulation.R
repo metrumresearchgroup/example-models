@@ -13,7 +13,7 @@ set.seed(11091989) ## not required but assures repeatable results
 ## Simulate data using mrgsolve
 
 code <- '
-$PARAM CL=5, Q=8, V2=20, V3=70, KA=1.2
+$PARAM CL = 5, Q = 8, V2 = 20, V3 = 70, KA = 1.2
 
 $CMT GUT CENT PERI
 
@@ -22,47 +22,33 @@ $GLOBAL
 
 $PKMODEL ncmt = 2, depot = TRUE
 
-$SIGMA 0.01
+$SIGMA 0.01  // variance
 
-$MAIN
-pred_CL = CL;
-pred_Q = Q;
-pred_VC = V2;
-pred_VP = V3;
-pred_KA = KA;
-double DV = CP * exp(EPS(1));
+$TABLE
+capture DV = CP * exp(EPS(1));
 
-$CAPTURE CP DV
+$CAPTURE CP
 '
 
-mod <- mread("accum", tempdir(),code) %>% Req(DV) %>% update(end=480,delta=0.1)
+mod <- mcode("accum", code) %>% Req(DV) %>% update(end=480,delta=0.1)
 
-e1 <- ev(amt = 1250, ii = 12, addl = 14) # Create dosing events
+e1 <- ev(amt = 80 * 1000, ii = 12, addl = 14) # Create dosing events
 mod %>% ev(e1) %>% mrgsim(end = 250) %>% plot # plot data
 
-## Create time at which data will be observed.
-## More observations around the first two and the last dosing event.
-td <- 0
-t1 <- c(td + 0.083, td + 0.167, td + 0.25, td + 0.5, 
-        td + 0.75, td + 1, td + 1.5, td + 2, td + 3)
-t2 <- seq(4, 12, 2)
-td <- 12
-t3 <- c(td + 0.083, td + 0.167, td + 0.25, td + 0.5, 
-        td + 0.75, td + 1, td + 1.5, td + 2, td + 3)
-t4 <- c(seq(16, 20, 2), 24, seq(36, 168, 12))
-td <- 168
-t5 <- c(td + 0.083, td + 0.167, td + 0.25, td + 0.5, 
-        td + 0.75, td + 1, td + 1.5, td + 2, td + 3)
-t6 <- c(172, 174, 176, 180, 186, 192)
-tall <- sort(c(t1, t2, t3, t4, t5, t6))
+## Observation times
+time <- c(0, 0.083, 0.167, 0.25, 0.5, 0.75, 1, 1.5, 2,3,4,6,8)
+time <- c(time, time + 12, seq(24, 156, by = 12), c(time, 12, 18, 24) + 168)
+time <- time[time != 0]
 
 # save data in data frame 
 SimData <- 
   mod %>% 
   ev(e1) %>% 
-  carry.out(cmt,ii,addl,rate,amt,evid,ss) %>%
-  mrgsim(Req="CP", end=-1, add=tall,recsort=3) %>%
+  carry_out(cmt, ii, addl, rate, amt, evid, ss) %>%
+  mrgsim(Req = "DV", end = -1, add = time, recsort = 3) %>%
   as.data.frame
+
+head(SimData)
 
 SimData$cmt[SimData$cmt == 0] <- 2 ## adjust cmt (adopt NONMEM convention)
 SimData <- SimData[!((SimData$evid == 0)&(SimData$DV == 0)),] ## remove observation with 0 drug concentration

@@ -1,8 +1,8 @@
 rm(list = ls())
 gc()
 
-# modelName <- "TwoCptModel"
-modelName <- "LinTwoCptModel"
+modelName <- "TwoCptModel"
+# modelName <- "LinTwoCptModel"
 # modelName <- "GenTwoCptModel"
 
 ## Adjust directories to your settings.
@@ -51,8 +51,8 @@ parametersToPlot <- c("lp__", parametersToPlot)
 ################################################################################################
 ## run Stan
 nChains <- 3
-nPost <- 500 ## Number of post-burn-in samples per chain after thinning
-nBurn <- 500 ## Number of burn-in samples per chain after thinning
+nPost <- 1000 ## Number of post-burn-in samples per chain after thinning
+nBurn <- 1000 ## Number of burn-in samples per chain after thinning
 nThin <- 1
 
 nIter <- (nPost + nBurn) * nThin
