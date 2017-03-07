@@ -5,7 +5,7 @@
 library(dplyr)
 library(rstan)
 
-modelName <- "effCptModel"
+modelName <- "effCpt"
 
 xdata1 <- read.csv("phase1effcpt.csv", as.is = TRUE)
 xdata2 <- read.csv("phase2effcpt.csv", as.is = TRUE)
