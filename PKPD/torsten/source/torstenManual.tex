@@ -70,14 +70,15 @@ Torsten Version 0.82 \\ for Stan Version 2.14.0 \\ \ \\
 {\bf Institutions} \ \\
 We thank Metrum Research Group, Columbia University, and AstraZeneca.
 
-{\bf Grants}
+{\bf Funding}  \ \\
+This work was funded in part by the following organizations:
 \begin{itemize}
-  \item Small Business Technology Transfer from the Office of Naval Research: funds collaboration between Columbia University and Metrum Research Group for the development of tools for \textit{Fast and Flexible Differential Equation Model Fitting with Application to Pharmacometrics}.
-  \item  Bill and Melinda Gates foundation grant for the \textit{Development of a Pharmacometrics Library for Stan}
+  \item Office of Naval Research (ONR) contract N00014-16-P-2039 provided as part  of the Small Business Technology Transfer (STTR) program. The content of the information presented in this document does not necessarily reflect the position or policy of the Government and no official endorsement should be inferred.
+  \item Bill \& Melinda Gates Foundation
 \end{itemize}
 
 {\bf Individuals} \ \\
-A very special thank to the Stan Development Team for creating Stan, building new mathematical tools with applications in, among other fields, Pharmacometrics, and their support for Torsten. We also thank Kyle Baron and Hunter Ford for helpful advice on coding in C++ and using GitHub, and Curtis Johnston for reviewing the User Manual. 
+A very special thanks to the Stan Development Team for creating Stan, building new mathematical tools with applications in, among other fields, Pharmacometrics, and their support for Torsten. We also thank Kyle Baron and Hunter Ford for helpful advice on coding in C++ and using GitHub, and Curtis Johnston for reviewing the User Manual. 
 
 \section{Introduction}
 %\addcontentsline{toc}{section}{Introduction}
@@ -206,7 +207,7 @@ The plasma concentration ($c$) are simulated according to the following equation
  \widehat{c} &=& f_{2cpt}\left(t, CL, Q, V_2, V_3, k_a\right) \\
   \left(CL, Q, V_2, V_3, ka\right) &=& 
 	\left(5\ {\rm L/h}, 8\  {\rm L/h}, 20\  {\rm L},  70\ {\rm L}, 1.2\ {\rm h^{-1}} \right) \\
-  \sigma &=& 0.01
+  \sigma^2 &=& 0.01
 \end{eqnarray*}
 
 The data are generated using the R package \textit{mrgsolve}\footnote{https://github.com/metrumresearchgroup/mrgsolve}, see \texttt{TwoCptModelSimulation.R}. We show the results obtained when using the function \texttt{PKModelTwoCpt}, which computes solutions to the ODEs analytically.
@@ -218,9 +219,11 @@ The one and two compartment model functions have the form:
 \texttt{<model name>(time, amt, rate, ii, evid, cmt, addl, ss,\\
 \phantom{<model name>} theta,  biovar, tlag)} \\
 
-There is no need to skip a line, but we do so to separate what we call \textit{event} arguments and \textit{model} arguments. The event arguments describe the event schedule of the clinical trial. \texttt{time, amt, rate, ii} are arrays of real and \texttt{evid, cmt, addl, ss} arrays of integers. All arrays have the same length, which corresponds to the number of events.
+There is no need to skip a line, but we do so to separate \textit{event} arguments and \textit{model} arguments.
 
-Next we have the \textit{model} arguments: \texttt{theta} contains the ODE parameters, \texttt{biovar} the bioavailability fraction in each compartment (sometimes denoted as \textit{F} and called \textit{biovariability}), and \texttt{tlag} the lag times in each compartment. The model arguments are 2-dimensional arrays. The first dimension provides a container for the parameters and the length of that container is simply the number of parameters. The second dimension allows for variations in the parameters from one event to the other. The length of the 2D container is the number of events. The \textit{ith} row contains an array of parameters for the time interval [\texttt{time[i-1], time[i]}]. Often times, the parameters are constant for all events and the user can then pass a 2D array of length 1 or, even better, a 1D array.
+The event arguments describe the event schedule of the clinical trial. time, amt, rate,  and ii are arrays of real and evid, cmt, addl, and ss arrays of integers. All arrays have the same length, which corresponds to the number of events.
+
+Next we have the model arguments: \texttt{theta} contains the ODE parameters, \texttt{biovar} the bioavailability fraction in each compartment (sometimes denoted as \textit{F}), and \texttt{tlag} the lag times in each compartment.  The model arguments may be either one or two dimensional arrays. If they are one dimensional arrays, the parameters are constant for all events. If they are two dimensional arrays then each row should contain the listed parameters, and the number of rows should equal the lengths of the time, amt, rate, ii, evid, cmt, addl, and ss arrays. The values of the ith row should be the parameter values for the interval [\texttt{time[i-1], time[i]}]. 
 
 The options for \textit{model name} are:
 \begin{itemize}
@@ -247,7 +250,7 @@ which respectively correspond to the one and two compartment model with first or
   int<lower = 1> nt; `\textcolor{gray}{\# number of events}'
   int<lower = 1> nObs; `\textcolor{gray}{\# number of observation}'
   int<lower = 1> iObs[nObs]; `\textcolor{gray}{\# index of observation}'
-  int<lower = 1> cmt[nt];
+  int cmt[nt];
   int evid[nt];
   int addl[nt];
   int ss[nt];
@@ -293,10 +296,9 @@ which respectively correspond to the one and two compartment model with first or
                           theta, biovar, tlag);
 
   cHat = col(x, 2) ./ V2; `\textcolor{gray}{\#  get concentration in the central compartment}'
-
-  for(i in 1:nObs){
-    cHatObs[i] = cHat[iObs[i]];`\textcolor{gray}{\# predictions for observed data records}'
-  }
+  
+  cHatObs = cHat[iObs];  `\textcolor{gray}{\# predictions for observed data records}'
+ 
  }
                                     $\vdots$ 
 \end{lstlisting}
@@ -358,14 +360,19 @@ $$   K = \left[\begin{array}{ccc}
 	k_a & -\left(k_{10} + k_{12}\right) & k_{21} \\
 	0 & k_{12} & -k_{21}
 	\end{array}\right] $$ \\
-where $k_{10} = CL / V2 $, $ k_{12} = Q / V2 $, and $k_{21} = Q / V2 $.
+where $k_{10} = CL / V2 $, $ k_{12} = Q / V2 $, and $k_{21} = Q / V3 $.
 
 The linear ODE model function has the form:
 
 \texttt{linOdeModel(time, amt, rate, ii, evid, cmt, addl, ss,\\
 \phantom{linOdeModel} system, biovar, tlag)}
 
-where \texttt{system} is an array of constant rate matrices. The length of the array is the number of events. If the rate matrix is constant for all events, the user may pass an array of length 1 or directly the matrix \texttt{K}.  \texttt{system} contains all the ODE parameters, so we no longer need \texttt{theta}.
+\texttt{system} can be:
+\begin{itemize}
+  \item the matrix \texttt{K}, if the constant rate matrix is the same for all events.
+  \item an array of constant rate matrices. The length of the array is the number of events and each element corresponds to the matrix at the interval [\texttt{time[i-1], time[i]}].
+\end{itemize}
+\texttt{system} contains all the ODE parameters, so we no longer need \texttt{theta}.
 
 \begin{figure}[!htb]
 \caption{Stan language for fitting a two compartment model using the \texttt{linOdeModel} function (abstract)}
@@ -396,10 +403,9 @@ where \texttt{system} is an array of constant rate matrices. The length of the a
                        K, biovar, tlag);
 
   cHat = col(x, 2) ./ V1;
+  
+  cHatObs = cHat[iObs];  `\textcolor{gray}{\# predictions for observed data records}'
 
-  for(i in 1:nObs){
-    cHatObs[i] = cHat[iObs[i]]; `\textcolor{gray}{\# predictions for observed data records}'
-  }
 }
 
 `\bf{model}'{
@@ -518,7 +524,7 @@ model & name & names & in {\tt theta}\\
 \end{center}
 \label{precompiledModels}
 \end{table}
-
+% Table \ref{precompiledModels} contains a summary of arguments for Torsten functions.
 
 \section{Additional Examples}
 
