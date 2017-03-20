@@ -599,7 +599,7 @@ The model is simultaneously fitted to the PK and the PD data. For this effect co
 
 \begin{figure}
 \caption{Stan language for fitting an effect compartment model using \texttt{linOdeModel} (abstract)}
-\begin{tiny}
+\begin{small} 
 \begin{center}
 \begin{fmpage}{\textwidth - .75in}
 \begin{lstlisting}[basicstyle=\tiny\ttfamily,mathescape=true,flexiblecolumns=true,frame=single,escapeinside=`']
@@ -619,18 +619,7 @@ transformed parameters {
 
     k10 = CL[j] / V1[j];
     k12 = Q[j] / V1[j];
-    k21 = Q[j] / V2[j];
-
-    K = rep_matrix(0, 4, 4);
-    K[1, 1] = -ka[j];
-    K[2, 1] = ka[j];
-    K[2, 2] = -(k10 + k12);
-    K[2, 3] = k21;
-    K[3, 2] = k12;
-    K[3, 3] = -k21;
-    K[4, 2] = ke0[j];
-    K[4, 4] = -ke0[j];
-                        
+    k21 = Q[j] / V2[j];                       
     ke0[j] = exp(logKe0[j]);
     EC50[j] = exp(logEC50[j]);
 
@@ -646,10 +635,14 @@ transformed parameters {
     K[4, 4] = -ke0[j];
            
     x[start[j]:end[j],] = `\textcolor{red}{linOdeModel}'(time[start[j]:end[j]], 
-                                                 amt[start[j]:end[j]], rate[start[j]:end[j]],
-                                                 ii[start[j]:end[j]], evid[start[j]:end[j]],
-                                                 cmt[start[j]:end[j]], addl[start[j]:end[j]], 
-                                                 ss[start[j]:end[j]], K, biovar, tlag);
+                                                 amt[start[j]:end[j]], 
+                                                 rate[start[j]:end[j]],
+                                                 ii[start[j]:end[j]], 
+                                                 evid[start[j]:end[j]],
+                                                 cmt[start[j]:end[j]], 
+                                                 addl[start[j]:end[j]], 
+                                                 ss[start[j]:end[j]], 
+                                                 K, biovar, tlag);
 
     cHat[start[j]:end[j]] = 1000 * x[start[j]:end[j], 2] ./ V1[j];
     ceHat[start[j]:end[j]] = 1000 * x[start[j]:end[j], 4] ./ V1[j];
@@ -657,17 +650,15 @@ transformed parameters {
        (EC50[j] + ceHat[start[j]:end[j]]);
   }
 
-  for(i in 1:nObs){
-    cHatObs[i] = cHat[iObs[i]];
-    respHatObs[i] = respHat[iObs[i]];
-  }
+  cHatObs = cHat[iObs];
+  respHatObs = respHat[iObs];
 }
                              $\vdots$  
 } 
 \end{lstlisting}
 \end{fmpage}
 \end{center}
-\end{tiny} 
+\end{small}
 \label{effCptModelCode}
 \end{figure}
 
@@ -703,44 +694,44 @@ omegaEC50 & 0.213 & 0.001 & 0.021 & 0.174 & 0.199 & 0.213 & 0.227 & 0.255 & 190.
 \clearpage
 
 \begin{figure}[!htb]
-\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots001.pdf}
-\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots002.pdf}
-\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots003.pdf}
-\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots004.pdf}
-\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots005.pdf}
+\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots001.pdf}
+\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots002.pdf}
+\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots003.pdf}
+\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots004.pdf}
+\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots005.pdf}
 \caption{{MCMC history plots for the parameters of an Effect Compartment Model (each color corresponds to a different chain) for example 2}}
 \label{effCptModelMCMC}
 \end{figure}
 
 \begin{figure}[!htb]
-\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots006.pdf}
-\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots007.pdf}
+\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots006.pdf}
+\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots007.pdf}
 \caption{{Posterior Marginal Densities of the Model Parameters of an Effect Compartment Model (each color corresponds to a different chain) for example 2}}
 \label{effCptModelDens}
 \end{figure}
 
 \begin{figure}[htbp]
-\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots011.pdf}
-\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots012.pdf}
-\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots013.pdf}
-\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots014.pdf}
-\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots015.pdf}
-\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots016.pdf}
-\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots017.pdf}
-\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots018.pdf}
+\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots011.pdf}
+\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots012.pdf}
+\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots013.pdf}
+\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots014.pdf}
+\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots019.pdf}
+\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots020.pdf}
+\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots021.pdf}
+\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots022.pdf}
 \caption{{Predicted (posterior median and 90 \% credible intervals) and observed plasma drug concentrations for example 2 for an Effect Compartment Model}}
 \label{effCptModelPredictionsPK}
 \end{figure}
 
 \begin{figure}[htbp]
-\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots019.pdf}
-\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots020.pdf}
-\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots021.pdf}
-\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots022.pdf}
-\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots023.pdf}
-\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots024.pdf}
-\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots025.pdf}
-\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten/effCptModelTorstenPlots026.pdf}
+\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots023.pdf}
+\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots024.pdf}
+\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots025.pdf}
+\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots026.pdf}
+\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots027.pdf}
+\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots028.pdf}
+\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots029.pdf}
+\includegraphics[width=1.5in,trim=0in 0in 0 0in]{graphics/effCptModelTorsten_0.82/effCptPlots030.pdf}
 \caption{{Predicted (posterior median and 90 \% credible intervals) and observed PD Response for example 2}}
 \label{effCptModelPredictionsPD}
 \end{figure}
@@ -834,7 +825,7 @@ Since it takes a long time to run the model, we only use 100 iterations per chai
     transit2 = x[6] + circ0;
     transit3 = x[7] + circ0;
     circ = fmax(machine_precision(), x[8] + circ0); // Device for implementing a modeled 
-                                                    // initial condition
+                                                                              // initial condition
     dxdt[4] = ktr * prol * ((1 - EDrug) * ((circ0 / circ)^gamma) - 1);
     dxdt[5] = ktr * (prol - transit1);
     dxdt[6] = ktr * (transit1 - transit2);
@@ -870,7 +861,7 @@ transformed parameters {
     parms[8] = gamma;
     parms[9] = thetaM[i, 7]; # alpha
 
-    x[start[i]:end[i]] = `\textcolor{red}{generalCptModel\_rk45}'(twoCptNeutModelODE, 8,
+    x[start[i]:end[i]] = `\textcolor{red}{generalOdeModel\_rk45}'(twoCptNeutModelODE, 8,
                                                            time[start[i]:end[i]], 
                                                            amt[start[i]:end[i]], 
                                                            rate[start[i]:end[i]], 
@@ -880,15 +871,15 @@ transformed parameters {
                                                            addl[start[i]:end[i]], 
                                                            ss[start[i]:end[i]],
                                                            parms, biovar, tlag,
-                                                           1e-6, 1e-6, 1e8);
-                             
+                                                           1e-6, 1e-6, 1e6);
+
     cHat[start[i]:end[i]] = x[start[i]:end[i], 2] / parms[1][3]; # divide by V1
     neutHat[start[i]:end[i]] = x[start[i]:end[i], 8] + parms[1][7]; # Add baseline
     
   }
   
-  for(i in 1:nObsPK) cHatObs[i] = cHat[iObsPK[i]];
-  for(i in 1:nObsPD) neutHatObs[i] = neutHat[iObsPD[i]];
+  cHatObs = cHat[iObsPK];
+  neutHatObs = neutHat[iObsPD];
 
                              $\vdots$  
 \end{lstlisting}
@@ -925,24 +916,24 @@ sigmaNeut & 0.092 & 0.001 & 0.014 & 0.068 & 0.082 & 0.090 & 0.100 & 0.125 & 161.
 }
 
 \begin{figure}[htbp]
-\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/neutropenia/neutropeniaPopulation1TorstenPlots001.pdf}
-\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/neutropenia/neutropeniaPopulation1TorstenPlots002.pdf}
-\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/neutropenia/neutropeniaPopulation1TorstenPlots003.pdf}
-\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/neutropenia/neutropeniaPopulation1TorstenPlots004.pdf}
+\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/neutropenia_0.82/neutropeniaPopulationPlots001.pdf}
+\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/neutropenia_0.82/neutropeniaPopulationPlots002.pdf}
+\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/neutropenia_0.82/neutropeniaPopulationPlots003.pdf}
+\includegraphics[width=3.0in,trim=0in 0in 0 0in]{graphics/neutropenia_0.82/neutropeniaPopulationPlots004.pdf}
 \caption{{MCMC history plots for the parameters of a Friberg-Karlsson semi-mechanistic model (each color corresponds to a different chain) for example 3}}
 \label{FKMCMC}
 \end{figure}
 
 \begin{figure}[htbp]
-\includegraphics[width=2.5in,trim=0in 0in 0 0in]{graphics/neutropenia/neutropeniaPopulation1TorstenPlots005.pdf}
-\includegraphics[width=2.5in,trim=0in 0in 0 0in]{graphics/neutropenia/neutropeniaPopulation1TorstenPlots006.pdf}
+\includegraphics[width=2.5in,trim=0in 0in 0 0in]{graphics/neutropenia_0.82/neutropeniaPopulationPlots005.pdf}
+\includegraphics[width=2.5in,trim=0in 0in 0 0in]{graphics/neutropenia_0.82/neutropeniaPopulationPlots006.pdf}
 \caption{{Posterior Marginal Densities of the Model Parameters of a Friberg-Karlsson semi-mechanistic model (each color corresponds to a different chain)}}
 \label{FKDens}
 \end{figure}
 
 \begin{figure}[htbp]
-\includegraphics[width=2.5in,trim=0in 0in 0 0in]{graphics/neutropenia/neutropeniaPopulation1TorstenPlots010.pdf}
-\includegraphics[width=2.5in,trim=0in 0in 0 0in]{graphics/neutropenia/neutropeniaPopulation1TorstenPlots011.pdf}
+\includegraphics[width=2.5in,trim=0in 0in 0 0in]{graphics/neutropenia_0.82/neutropeniaPopulationPlots010.pdf}
+\includegraphics[width=2.5in,trim=0in 0in 0 0in]{graphics/neutropenia_0.82/neutropeniaPopulationPlots011.pdf}
 \caption{{Predicted (posterior median and 90 \% credible intervals) and observed plasma drug concentrations, and Neutrophil counts, for a Friberg-Karlsson semi-mechanistic model}}
 \label{FKPredictions}
 \end{figure}
