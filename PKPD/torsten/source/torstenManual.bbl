@@ -2,6 +2,11 @@
 \providecommand{\url}[1]{\texttt{#1}}
 \providecommand{\urlprefix}{URL }
 
+\bibitem{2364}
+Friberg, L.E. and Karlsson, M.O.
+\newblock Mechanistic models for myelosuppression.
+\newblock \emph{Invest New Drugs} \textbf{21} (2003):183--194.
+
 \bibitem{stan}
 Carpenter, B., Gelman, A., Hoffman, M., Lee, D., Goodrich, B., Betancourt, M.,
   Brubaker, M.A., Guo, J., Li, P. and Riddel, A.
@@ -26,9 +31,9 @@ Moler, C. and Van~Loan, C.
   twenty-five years later.
 \newblock \emph{SIAM Review}  (2003).
 
-\bibitem{2364}
-Friberg, L.E. and Karlsson, M.O.
-\newblock Mechanistic models for myelosuppression.
-\newblock \emph{Invest New Drugs} \textbf{21} (2003):183--194.
+\bibitem{StanCon2017}
+Margossian, C.C. and Gillespie, W.R.
+\newblock Differential equations based models in stan.
+\newblock In \emph{Stan Con} (Stan Development Team, 2017).
 
 \end{thebibliography}

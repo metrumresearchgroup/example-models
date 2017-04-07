@@ -12,6 +12,7 @@
 \usepackage{listings}
 %\usepackage[titles]{tocloft}
 
+
 \usepackage{siunitx}
 \usepackage{booktabs}
 
@@ -942,66 +943,165 @@ sigmaNeut & 0.092 & 0.001 & 0.014 & 0.068 & 0.082 & 0.090 & 0.100 & 0.125 & 161.
  
  
 
-\section{Under the Hood Design}
-We here discuss some background theory and the design of Torsten at a C++ level.
+\section{Technical Appendix}
+The details we cover here are not required to use Torsten but may be of interest to developers and advanced users. Our goal is to motivate the development of Torsten by looking at common challenges in pharmacometrics. The problems we address are mostly mathematical in nature but scientifically motivated. We discuss why Stan strikes us as a powerful tool to analyse data; and which needs in pharmacometrics Torsten answers. We then go over the algorithms and programming techniques we deploy in Torsten. 
 
-Our approach is heavily based on the \textit{BUGS model library}, a prototype PKPD model library for WinBUGS (\url{https://bitbucket.org/metrumrg/ bugsmodellibrary/wiki/Home}), developed by Metrum Research Group in 2009.
+\subsection{Differential Equations Based Models} \ \\ \ \\
+The following section is in part based on a presentation we gave at the 2017 Stan Conference \cite{StanCon2017} and motivates the use of Ordinary Differential Equations (ODEs) in pharmacometrics.
 
-This section is intended for developers. No knowledge of C++ is required for users.
+\subsubsection{When do Ordinary Differential Equations Arise?} \ \\ \ \\
+We deal with an ODE when we want to determine a function $y(t)$ at a specific time but only know the derivative of that function, $\frac{dy}{dt}$. In other words, we know the rate at which a quantity of interest changes but not the quantity itself. In many scenarios, the rate depends on the quantity itself.
 
+\begin{figure}[!htb]
+\begin{center}
+\includegraphics[width=2.0in,trim=0in 0in 0 0in]{graphics/appendix/gas-container.png}
+\caption{{Gas container with a hole. The rate at which the gas leaks is proportional to the amount of gas in the container. We can describe this physical process using the differential equation $ \frac{dy}{dt} = -ky(t)$, where $y$ is the amount of gas in the container. \textbf{Will need to create our own figure}}}
+\label{GasContainer}
+\end{center}
+\end{figure}
 
-\subsection{Computing Amounts in an ODE-based model} \ \\ \ \\
-Most PKPD model are based on ODEs that describe how PK and PD amounts evolve over time. For instance, the following ODEs describe drug diffusion in a one compartment model with a first-order absorption from the gut:
+To get a basic intuition, let us consider an example. Imagine a gas container with a hole in it  (figure~\ref{GasContainer}). We can think of the gas as being made of molecules that move randomly in the container. Each molecule has a small chance of leaking through the hole. Thus the more molecules inside the container, the higher the number of escaping molecules per unit time. If there are a large number of molecules, and the gas behaves like a continuous fluid, we observe that the more gas in the container, the higher the leakage. This statement can be written as the differential equation:
+
+$$ \frac{dy}{dt} = -ky(t) $$
+
+where $k$ is a positive constant.
+
+In a pharmacokinetic-pharmacodynamic (PKPD) compartment model, we treat physiological components, such as organs, tissues, and circulating blood, as compartments between which the drug flows and/or in which the drug has an effect. A compartment may refer to more than one physiological component. For example, the central compartment typically consists of the systemic circulation (the blood) plus tissues and organs into which the drug diffuses rapidly.
+
+Just like our leaking gas in a container, the rate at which the quantity of drug changes depends on the drug amount in the various compartments. Things are slightly more complicated because instead of one box, we now deal with a network of containers. This results in a system of differential equations.
+
+\subsubsection{An Example: ODE system for the Two Compartment Model} \ \\ \
+
+Consider the common scenario in which a patient orally takes a drug. The drug enters the body through the gut and is then absorbed into the blood. From there it diffuses into and circulates back and forth between various tissues and organs. Over time, the body clears the drug, i.e. the drug exits the body (for instance through urine)  (figure~\ref{TwoCptNice}).
+
+Our model divides the patient's body into three compartments:
+\begin{itemize}
+  \item \textbf{The absorption compartment}: the gut
+  \item \textbf{The central compartment}: the systemic circulation (blood) and tissues/organs into which the drug diffuses rapidly
+  \item \textbf{The peripheral compartment}: other tissues/organs into which the drug distributes more slowly
+\end{itemize}
+
+We conventionally call this a \textit{Two Compartment Model}, which may seem odd since the model has three compartments. The idea is that the ``absorption compartment" doesn't really count. We adopt this convention mostly to agree with the community.
+
+\begin{figure}[!htb]
+\begin{center}
+\includegraphics[width=3.5in,trim=0in 0in 0 0in]{graphics/appendix/twoCpt.png}
+\caption{{Two Compartment Model: Describes the absorption of a drug in a patient's body.}}
+\label{TwoCptNice}
+\end{center}
+\end{figure}
+
+We describe the drug absorption using the following differential equations:
 
 \begin{eqnarray*}
-\frac{dGUT}{dt} &=& -kaGUT \\ 
-\frac{dCENT}{dt} &=& kaGUT - \frac{CL}{V_{1}}CENT
+  \frac{dy_{\mathrm{gut}}}{dt} &=& -k_a y_{\mathrm{gut}} \\
+  \frac{dy_{\mathrm{central}}}{dt} &=& k_a y_{\mathrm{gut}} - (\frac{CL}{V_{\mathrm{central}}} + \frac{Q}{V_{\mathrm{central}}}) y_{\mathrm{central}} +  \frac{Q}{V_{\mathrm{peripheral}}} y_{\mathrm{peripheral}} \\
+\frac{dy_{\mathrm{peripheral}}}{dt} &=& \frac{Q}{V_{\mathrm{central}}} y_{\mathrm{central}} - \frac{Q}{V_{\mathrm{peripheral}}} y_{\mathrm{peripheral}}
 \end{eqnarray*}
 
-If the ODEs fully describe the PKPD system, knowing the state $y_0$ at time $t_0$ fully defines the solution at finite times. Exploiting this property, Torsten calculates the evolution of amounts in each compartment from one event to the other. The initial conditions of the ODE system are specified by the previous event, and the ODEs are integrated from $t_{previous} $ to $t_{current}$. 
+with \\  
+$y_{\mathrm{gut}}$ : the drug amount in the gut (mg)  \\
+$y_{\mathrm{central}}$ : the drug amount in the central compartment (mg)  \\
+$y_{\mathrm{peripheral}}$ : the drug amount in the peripheral compartment (mg)  \\
+$k_a$ : the rate constant at which the drug flows from the gut to the central compartment ($h^{-1}$)  \\
+$Q$ : the clearance at which the drug flows back and forth between the central and the peripheral compartment (L/h) \\ 
+$CL$ : the clearance at which the drug is cleared from the central compartment (L/h)  \\
+$V_{\mathrm{central}}$ : the volume of the central compartment (L)  \\
+$V_{\mathrm{peripheral}}$ : the volume of the peripheral compartment (L) \\
 
-Note we cannot simply integrate from $t_{first}$ to $t_{last}$ because the ODEs do not describe exterior interventions, such as additional dosing. Torsten treats these interventions independently. Most importantly, Torsten only integrates between $t_0$ and $t_1$ if no exterior interventions occur during this interval. To achieve this, it is key to properly handle the \textit{event schedule}. 
+The data we fit our model to is the drug concentration in the blood, which our model treats as the concentration in the central compartment, and is given by:
 
-All five functions in Torsten call the C++ function \texttt{pred}, which:
+$$ c = \frac{y_{\mathrm{central}}}{V_{\mathrm{central}}} $$
+
+\subsubsection{Overview of Tools for Solving Differential Equations} \ \\
+
+Solving ODEs can be notoriously hard.
+
+In the best case scenario, an ODE system has an analytical solution we can hand-code (as we have done for the one and two compartment model). The vast majority of times, we need to approximate the solution numerically. There exists a very nice technique, involving matrix exponentials, for solving linear ODEs. Nonlinear systems are significantly more difficult but fortunately we can tackle these problems with numerical integrators.
+
+Specialized algorithms for solving ODEs tend be more efficient but have a narrower application; the reverse holds for more general tools. We provide both, thereby allowing users to tackle a broad range of problems and optimize their model when possible  (figure~\ref{DiffEqTools}).
+
+\begin{figure}[!htb]
+\begin{center}
+\includegraphics[width=6.5in,trim=0in 0in 0 0in]{graphics/appendix/ODEsolvers_ext.png}
+\caption{{The ``Optimized-Applicable Spectrum" of tools for solving differential equations: the top line gives the technique to solve differential equations, the next line the type of ODE system this method should be applied to, and the third line (in blue) an example from pharmacometrics. We discuss these examples in greater details in sections 2 and 3 of the manual.}}
+\label{DiffEqTools}
+\end{center}
+\end{figure}
+
+
+\subsubsection{The Event Schedule} \ \\
+
+The ODE system only describes the natural evolution of the patient's system, i.e, how does the drug behave once it is already in the body. It does not account for outside interventions, such as drug intake. To be accurate, our models must compute these exterior events and solve ODEs in the context of an event schedule.
+
+We follow the convention set by NONMEM\textregistered\footnote{NONMEM\textregistered\ is licensed and distributed by ICON Development Solutions.}, which is popular amongst pharmacometricians and which we find acceptable.
+
+An event can either be a change in the state of the system or the observation of a certain quantity. We label these types:
 \begin{enumerate}
-  \item augments the event schedule to include all events that alter the system
-  \item calculates the amounts in each compartment at each event of the augmented schedule by:
-  \begin{itemize}
-    \item computing the \textit{natural} evolution of the system by integrating ODEs,
-    \item or computing alterations due to exterior interventions
-  \end{itemize}
-  \item returns the amounts at each event of the original schedule
+  \item \textbf{State changer}: an (exterior) intervention that alters the state of the system, such as a bolus dosing
+  \item \textbf{Observation}: usually specifies the time and the quantity of interest at which a measurement occurs
 \end{enumerate}
 
-The Event Schedule depends on the user's input (TIME, EVID, CMT, AMT, RATE, ADDL, II, SS). The event schedule may need to be augmented if, for example, an event specifies a patient receives multiple doses at a regular time interval. Consider:
+Between two subsequent events, the ODEs fully describe the PKPD system. Knowing the state $y_0$ at time $t_0$ fully defines the solution at finite times. Exploiting this property, Torsten calculates amounts in each compartment from one event to the other. The initial conditions of the ODEs are specified by the previous event and the ODEs integrated from $t_{\mathrm{previous}}$ to $t_{\mathrm{current}}$.
 
-\texttt{TIME = 0, EVID = 1, CMT = 1, AMT = 1500, RATE = 0, ADDL = 4, II = 10, SS = 0} 
+If an event is a state changer, Torsten computes the changes in the state after integrating the ODEs.
 
-This Event specifies that a time 0 (TIME = 0), a patient receives a 1500 mg (AMT = 1500) drug dose (EVID = 1) in the gut (CMT = 1), and will receive an additional dose every 10 hours (II = 10) until the patient has received a total of 5 doses (ADDL = 4, being the number of additional doses, + 1, the original dose). Such an Event really corresponds to 5 dosing events.
+The users passes the event schedule using a data table. NONMEM's convention allows one row to code for multiple events. For example, a single row can specify a patient receives multiple doses at a regular time interval. Consider:
 
-To integrate the ODEs, \texttt{pred} calls \texttt{pred1} (prediction for one event) or \texttt{predSS} (prediction for one event if the system is in a steady state, i.e SS = 1). \texttt{pred1} and \texttt{predSS} are functors and get constructed differently by each Torsten function. Under \texttt{PKModelOneCpt}, \texttt{pred1} analytically computes the solution, while under \texttt{generalCptModel\_rk45} it numerically solves the ODEs.
- 
-\subsection{Structure of a Torsten Function}  \ \\ \ \\
-Under the structural scheme described above, a Torsten function performs a very simple set of actions:
+\texttt{TIME = 0, EVID = 1, CMT = 1, AMT = 1500, RATE = 0, ADDL = 4, II = 10, SS = 0}
+
+This row specifies that a time 0 (TIME = 0), a patient receives a 1500 mg (AMT = 1500) drug dose (EVID = 1) in the gut (CMT = 1), and will receive an additional dose every 10 hours (II = 10) until the patient has taken a total of 5 doses (ADDL = 4, being the number of additional doses, + 1, the original dose). Such an event really corresponds to 5 dosing events. Torsten augments the event schedule accordingly, before solving the ODEs recursively from one event to the other.
+
+In summary, all Torsten functions:
 \begin{enumerate}
-  \item Consistent with Stan practices, check the validity of the arguments and of the parameter values
-  \item Construct the PKModel object, which contains basic information about the model, such as the number of compartments
-  \item Construct the pred1 and predSS functions
-  \item Call pred
-\end{enumerate}  
+  \item augment the event schedule to include all state changers
+  \item calculate the amounts in each compartment at each event of the augmented schedule by
+  %\renewcommand{\theenumi}{\Alph{enumi}}
+  \begin{enumerate}
+    \item integrating the ODEs and computing the \textit{natural} evolution of the system
+    \item computing the effects of state changers
+  \end{enumerate}
+  \item return the amounts at each event of the original schedule.
+\end{enumerate}
 
-\subsection{Implementing Torsten in Stan}
-\subsubsection*{Modifications in Stan-math}
-All five Torsten functions are located under the \texttt{Torsten} directory, under \texttt{stan/math}. We modified \texttt{rev/math} to include the \texttt{torsten/torsten.hpp} header file. The code can be found on GitHub: \url{https://github.com/charlesm93/math} 
+\subsection{Code Structure of Torsten Functions} \ \\
+ 
+The previous section lays out the problem from a pharmacometrics perspective. If we can solve differential equations and handle the event schedule, we can simulate data from a pharmacometrics model.
+
+What distinguishes two Torsten functions is the method they use to solve ODEs (i.e. task (2)(a) of the above list).
+
+
+
+
+
+
+\subsection{Bayesian Data Analysis with Stan}
+
+\subsection{Tools for Solving Differential Equations}
+
+\subsection{Implementing Torsten} \ \\ \ \\
+Stan's \texttt{math} library is written in C++, which offers a great deal of speed and flexibility. The Stan language provides a very handy interface that allows us to focus on statistical modeling and saves us the trouble of doing extensive coding in C++. At run time, a \textit{make} file translates our Stan model into C++, which then gets compiled and executed. Accordingly, there are two steps to add a function to Stan: (1) write the procedure in C++, (2) expose the procedure to the language so users may use it in a Stan file.
+
+The Stan code is open-source and available on GitHub. It is compartmentalized into several repos: \texttt{math} contains the mathematical functions, \texttt{stan} exposes these functions. Other repos provide code to interface Stan with higher level languages, such as R and Python. Torsten exists as a forked version of \texttt{math} and \texttt{stan}. Other repos remain unchanged.
+
+Regularly, we merge Stan's latest release into Torsten.
+
+\subsubsection*{Modifications in math}
+All Torsten files are located in the \texttt{Torsten} directory, under \texttt{stan/math}. The code can be found on GitHub: \url{https://github.com/charlesm93/math} 
 
 \subsubsection*{Modifications in Stan}
-Further modification are done in Stan to expose the Torsten functions to the Stan language. We edited \texttt{function\_signatures.h} to expose \texttt{PKModelOneCpt}, \texttt{PKModelTwoCpt}, and \texttt{linOdeModel}. The general ODE model functions are higher-order functions (i.e. they take another function as one of their arguments). They were exposed by directly modifying the grammar files, following very closely the example of \texttt{integrate\_ode\_rk45} and \texttt{integrate\_ode\_bdf}.
+We do further modifications in \texttt{stan} to expose Torsten's functions. We edit \texttt{function\_signatures.h} to expose \texttt{PKModelOneCpt}, \texttt{PKModelTwoCpt}, and \texttt{linOdeModel}. The general ODE model functions are higher-order functions (i.e. they take another function as one of their arguments). They are exposed by directly modifying the grammar files, following closely the example of \texttt{integrate\_ode\_rk45} and \texttt{integrate\_ode\_bdf}.
 
-The code can be found on GitHub:  \url{https://github.com/charlesm93/stan}
+The code can be found on GitHub:  \url{https://github.com/charlesm93/stan}.
+
+
+
+
+
+
 
 \bibliographystyle{custom}
 \bibliography{alpha,custom}
 
-%\subsection{Acknowledgments and Thanks}
 
 \end{document}
