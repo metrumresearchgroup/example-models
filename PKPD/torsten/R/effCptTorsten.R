@@ -154,11 +154,11 @@ parametersToPlot <- c("lp__", parametersToPlot)
 # run Stan
 
 nChains <- 4
-nPost <- 100 ## Number of post-burn-in samples per chain after thinning
-nBurn <- 100 ## Number of burn-in samples per chain after thinning
+nPost <- 1000 ## Number of post-burn-in samples per chain after thinning
+nBurn <- 1000 ## Number of burn-in samples per chain after thinning
 nThin <- 1
 
-nIter <- (nPost + nBurn) * nThin
+nIter <- nPost * nThin
 nBurnin <- nBurn * nThin
 
 RNGkind("L'Ecuyer-CMRG")
@@ -166,6 +166,7 @@ library(parallel)
 mc.reset.stream()
 
 source(file.path(toolsDir, "cmdStanTools.R"))
+source(file.path(toolsDir, "stanTools.R"))
 compileModel(model = file.path(modelDir, modelName), stanDir = stanDir)
 
 chains <- 1:nChains
@@ -189,11 +190,13 @@ mclapply(chains,
          iter = nIter, warmup = nBurnin, thin = nThin,
          mc.cores = min(nChains, detectCores()))
 
+
+library(metrumrg)
 fit <- read_stan_csv(file.path(modelDir, modelName, glue(modelName, chains, ".csv")))
 
 dir.create(outDir)
 save(fit, file = file.path(outDir, paste(modelName, "Fit.Rsave", sep = "")))
-##load(file.path(outDir, paste(modelName, "Fit.Rsave", sep = "")))
+load(file.path(outDir, paste(modelName, "Fit.Rsave", sep = "")))
 
 ################################################################################################
 ## posterior distributions of parameters
@@ -212,6 +215,7 @@ parametersToPlot <- c(parametersToPlot,
                                            ncol = dimRho)[upper.tri(diag(dimRho), diag = FALSE)], "]", sep = ""))
 parametersToPlot <- setdiff(parametersToPlot, "rho")
 
+library(tidyr)
 mcmcHistory(fit, parametersToPlot)
 mcmcDensity(fit, parametersToPlot, byChain = TRUE)
 mcmcDensity(fit, parametersToPlot)
