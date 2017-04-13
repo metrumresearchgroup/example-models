@@ -940,9 +940,6 @@ sigmaNeut & 0.092 & 0.001 & 0.014 & 0.068 & 0.082 & 0.090 & 0.100 & 0.125 & 161.
 \end{figure}
  
 
- 
- 
-
 \section{Technical Appendix}
 The details we cover here are not required to use Torsten but may be of interest to developers and advanced users. Our goal is to motivate the development of Torsten by looking at common challenges in pharmacometrics. The problems we address are mostly mathematical in nature but scientifically motivated. We discuss why Stan strikes us as a powerful tool to analyse data; and which needs in pharmacometrics Torsten answers. We then go over the algorithms and programming techniques we deploy in Torsten. 
 
@@ -970,8 +967,7 @@ In a pharmacokinetic-pharmacodynamic (PKPD) compartment model, we treat physiolo
 
 Just like our leaking gas in a container, the rate at which the quantity of drug changes depends on the drug amount in the various compartments. Things are slightly more complicated because instead of one box, we now deal with a network of containers. This results in a system of differential equations.
 
-\subsubsection{An Example: ODE system for the Two Compartment Model} \ \\ \
-
+\subsubsection{An Example: ODE system for the Two Compartment Model} \ \\ \ \\
 Consider the common scenario in which a patient orally takes a drug. The drug enters the body through the gut and is then absorbed into the blood. From there it diffuses into and circulates back and forth between various tissues and organs. Over time, the body clears the drug, i.e. the drug exits the body (for instance through urine)  (figure~\ref{TwoCptNice}).
 
 Our model divides the patient's body into three compartments:
@@ -1013,8 +1009,7 @@ The data we fit our model to is the drug concentration in the blood, which our m
 
 $$ c = \frac{y_{\mathrm{central}}}{V_{\mathrm{central}}} $$
 
-\subsubsection{Overview of Tools for Solving Differential Equations} \ \\
-
+\subsubsection{Overview of Tools for Solving Differential Equations} \ \\ \ \\
 Solving ODEs can be notoriously hard.
 
 In the best case scenario, an ODE system has an analytical solution we can hand-code (as we have done for the one and two compartment model). The vast majority of times, we need to approximate the solution numerically. There exists a very nice technique, involving matrix exponentials, for solving linear ODEs. Nonlinear systems are significantly more difficult but fortunately we can tackle these problems with numerical integrators.
@@ -1029,9 +1024,7 @@ Specialized algorithms for solving ODEs tend be more efficient but have a narrow
 \end{center}
 \end{figure}
 
-
-\subsubsection{The Event Schedule} \ \\
-
+\subsubsection{The Event Schedule} \ \\ \ \\
 The ODE system only describes the natural evolution of the patient's system, i.e, how does the drug behave once it is already in the body. It does not account for outside interventions, such as drug intake. To be accurate, our models must compute these exterior events and solve ODEs in the context of an event schedule.
 
 We follow the convention set by NONMEM\textregistered\footnote{NONMEM\textregistered\ is licensed and distributed by ICON Development Solutions.}, which is popular amongst pharmacometricians and which we find acceptable.
@@ -1052,10 +1045,10 @@ The users passes the event schedule using a data table. NONMEM's convention allo
 
 This row specifies that a time 0 (TIME = 0), a patient receives a 1500 mg (AMT = 1500) drug dose (EVID = 1) in the gut (CMT = 1), and will receive an additional dose every 10 hours (II = 10) until the patient has taken a total of 5 doses (ADDL = 4, being the number of additional doses, + 1, the original dose). Such an event really corresponds to 5 dosing events. Torsten augments the event schedule accordingly, before solving the ODEs recursively from one event to the other.
 
-In summary, all Torsten functions:
+In summary, each Torsten function:
 \begin{enumerate}
-  \item augment the event schedule to include all state changers
-  \item calculate the amounts in each compartment at each event of the augmented schedule by
+  \item augments the event schedule to include all state changers
+  \item calculates the amounts in each compartment at each event of the augmented schedule by
   %\renewcommand{\theenumi}{\Alph{enumi}}
   \begin{enumerate}
     \item integrating the ODEs and computing the \textit{natural} evolution of the system
@@ -1064,20 +1057,14 @@ In summary, all Torsten functions:
   \item return the amounts at each event of the original schedule.
 \end{enumerate}
 
-\subsection{Code Structure of Torsten Functions} \ \\
- 
-The previous section lays out the problem from a pharmacometrics perspective. If we can solve differential equations and handle the event schedule, we can simulate data from a pharmacometrics model.
-
-What distinguishes two Torsten functions is the method they use to solve ODEs (i.e. task (2)(a) of the above list).
-
-
-
-
-
-
 \subsection{Bayesian Data Analysis with Stan}
 
-\subsection{Tools for Solving Differential Equations}
+\subsection{Solving Differential Equations}
+
+\subsection{C++ Implementation} \ \\ \ \\
+The only thing that distinguishes two Torsten functions is the method they use to solve ODEs (i.e. task (2)(a) of the above list). This structural scheme allows us to take advantage of the object-oriented nature of C++. All Torsten functions call the same procedure, \texttt{pred}, which predicts the amounts. In the process \texttt{pred} calls the specialized procedure, \texttt{pred1}, to solve the ODEs, i.e. perform task (2)(a).
+
+Rather than using a simple function, we define \texttt{pred1\_structure}, a functor or structure of functions. Each Torsten function constructs a \texttt{pred1\_structure} object and determines the ODE solver.
 
 \subsection{Implementing Torsten} \ \\ \ \\
 Stan's \texttt{math} library is written in C++, which offers a great deal of speed and flexibility. The Stan language provides a very handy interface that allows us to focus on statistical modeling and saves us the trouble of doing extensive coding in C++. At run time, a \textit{make} file translates our Stan model into C++, which then gets compiled and executed. Accordingly, there are two steps to add a function to Stan: (1) write the procedure in C++, (2) expose the procedure to the language so users may use it in a Stan file.
