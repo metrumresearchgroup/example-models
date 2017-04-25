@@ -5,8 +5,11 @@ scriptDir <- getwd()
 lib <- file.path(scriptDir, "lib")
 .libPaths(lib)
 
-## Download and edit StanHeaders
-install.packages("StanHeaders")
+library(devtools)
+
+## Download and edit StanHeaders (version 2.14)
+install.packages("https://cran.r-project.org/src/contrib/Archive/StanHeaders/StanHeaders_2.14.0-1.tar.gz", 
+                 repos = NULL)
 setwd(lib)
 system("git clone https://github.com/charlesm93/stan.git")
 setwd("stan")
@@ -23,6 +26,5 @@ system("rm -rf StanHeaders/include/stan")
 system("mv math/stan StanHeaders/include/stan")
 system("rm -rf math")
 
-install.packages("rstan", type = "source")
-
 setwd(scriptDir)
+source("pkgSetup.R")
