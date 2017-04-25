@@ -1012,7 +1012,7 @@ $$ c = \frac{y_{\mathrm{central}}}{V_{\mathrm{central}}} $$
 \subsubsection{Overview of Tools for Solving Differential Equations} \ \\ \ \\
 Solving ODEs can be notoriously hard.
 
-In the best case scenario, an ODE system has an analytical solution we can hand-code (as we have done for the one and two compartment model). The vast majority of times, we need to approximate the solution numerically. There exists a very nice technique, involving matrix exponentials, for solving linear ODEs. Nonlinear systems are significantly more difficult but fortunately we can tackle these problems with numerical integrators.
+In the best case scenario, an ODE system has an analytical solution we can hand-code (as we have done for the one and two compartment models). The vast majority of times, we need to approximate the solution numerically. There exists a very nice technique, involving matrix exponentials, for solving linear ODEs. Nonlinear systems are significantly more difficult but fortunately we can tackle these problems with numerical integrators.
 
 Specialized algorithms for solving ODEs tend be more efficient but have a narrower application; the reverse holds for more general tools. We provide both, thereby allowing users to tackle a broad range of problems and optimize their model when possible  (figure~\ref{DiffEqTools}).
 
@@ -1025,21 +1025,21 @@ Specialized algorithms for solving ODEs tend be more efficient but have a narrow
 \end{figure}
 
 \subsubsection{The Event Schedule} \ \\ \ \\
-The ODE system only describes the natural evolution of the patient's system, i.e, how does the drug behave once it is already in the body. It does not account for outside interventions, such as drug intake. To be accurate, our models must compute these exterior events and solve ODEs in the context of an event schedule.
+The ODE system only describes the natural evolution of the patient's system, that is how the drug behaves once it is already in the body. It does not account for outside interventions during the treatment, such as the intake of a drug. To be accurate, our model must compute these exterior events and solve ODEs in the context of an event schedule.
 
 We follow the convention set by NONMEM\textregistered\footnote{NONMEM\textregistered\ is licensed and distributed by ICON Development Solutions.}, which is popular amongst pharmacometricians and which we find acceptable.
 
-An event can either be a change in the state of the system or the observation of a certain quantity. We label these types:
+An event can either be a change in the state of the system or the measurement of a certain quantity. We distinguish two types of events:
 \begin{enumerate}
-  \item \textbf{State changer}: an (exterior) intervention that alters the state of the system, such as a bolus dosing
-  \item \textbf{Observation}: usually specifies the time and the quantity of interest at which a measurement occurs
+  \item \textbf{State Changer}: an (exterior) intervention that alters the state of the system (for example, a bolus dosing)
+  \item \textbf{Observation}: the measurement of a quantity of interest at a certain time
 \end{enumerate}
 
 Between two subsequent events, the ODEs fully describe the PKPD system. Knowing the state $y_0$ at time $t_0$ fully defines the solution at finite times. Exploiting this property, Torsten calculates amounts in each compartment from one event to the other. The initial conditions of the ODEs are specified by the previous event and the ODEs integrated from $t_{\mathrm{previous}}$ to $t_{\mathrm{current}}$.
 
 If an event is a state changer, Torsten computes the changes in the state after integrating the ODEs.
 
-The users passes the event schedule using a data table. NONMEM's convention allows one row to code for multiple events. For example, a single row can specify a patient receives multiple doses at a regular time interval. Consider:
+The user passes the event schedule using a data table. NONMEM's convention allows one row to code for multiple events. For example, a single row can specify a patient receives multiple doses at a regular time interval. Consider:
 
 \texttt{TIME = 0, EVID = 1, CMT = 1, AMT = 1500, RATE = 0, ADDL = 4, II = 10, SS = 0}
 
@@ -1049,20 +1049,41 @@ In summary, each Torsten function:
 \begin{enumerate}
   \item augments the event schedule to include all state changers
   \item calculates the amounts in each compartment at each event of the augmented schedule by
-  %\renewcommand{\theenumi}{\Alph{enumi}}
+  %\renewcommand{\theenumi}{\Alph{enumi}} 
   \begin{enumerate}
     \item integrating the ODEs and computing the \textit{natural} evolution of the system
     \item computing the effects of state changers
   \end{enumerate}
-  \item return the amounts at each event of the original schedule.
+  \item returns the amounts at each event of the original schedule.
 \end{enumerate}
 
-\subsection{Bayesian Data Analysis with Stan}
+\subsection{Bayesian Data Analysis with Stan} \ \\
 
-\subsection{Solving Differential Equations}
+Stan is primarily designed for bayesian data analysis. It provides users with great flexibility, both for implementing stochastic and deterministic features. This allows users to specify complex mixed-effect models, as the ones we may encounter in pharmacometrics.
+
+Its default algorithm for full bayesian inference is the No-U-Turns Sampler (NUTS) \cite{nuts}. NUTS, an adaptative Hamiltonian Monte Carlo (HMC) \cite{HMC} algorithm, has proven more efficient than commonly used random walk Monte Carlo Markov Chains algorithms, such as Metropolis-Hastings and Gibbs sampling, for complex high-dimensional problems \cite{nuts}. Here, by ``complex" we mean a non-trivial relationship between the independent and dependent variables, such as one that involves solving ODEs and unlike one that is simply linear. The dimensionality of a model relates to the number of parameters, and scales up rapidly in hierarchical models. In pharmacometrics, this hierarchy may for instance result from modeling variability between patients or studies.
+
+\subsubsection{Hamiltonian Monte Carlo} \ \\
+
+The basic idea behind HMC is to treat the Markov Chain as a particle that moves in the parameter space and the posterior as a physical potential. More precisely, the potential is set to the negative of the log posterior. Instead of a random step, we give the particle a random shove or momentum. The particle accelerates when the potential decreases (i.e. when the posterior increases) and decelerates when the potential increases. We obtain this behavior by simulating the laws of classical mechanics, elegantly described by Hamilton's equations. See [?] for a more thorough introduction to HMC.
+
+From a developer's perspective, the key consideration is we need to compute the gradient of the log posterior. Considering the gradient may have a complex expression, this is not a trivial task. Stan calculates gradients with reverse automatic differentiation. The posterior is \textit{translated} into an expression graph and the derivatives calculated by  applying the chain rule at the nodes of the graph \cite{AD}. 
+
+\subsubsection{The \texttt{var} class} \ \\
+
+At a C++ level, this scheme requires the use of a new class, \texttt{var}, which contains (1) the value of the variable and (2) its adjoint with respect to the log posterior\footnote{The adjoint of $x$ with respect to $f$ is the derivative of $f$ with respect to x.}. This introduces an important distinction between parameters, with respect to which we need to calculate the gradient of the log posterior and which must therefore be coded as \texttt{var}, and data, which are more simply coded as \texttt{double}.
+
+A Stan function must be templated to allow for both \texttt{var} or \texttt{double} type arguments. At the API level, this allows the user to call the function on both parameters or data.
+
+In addition, the chain rule must be applicable to any operation used in the function (for example addition (\texttt{+}) or multiplication (\texttt{*}), or other functions in the \texttt{Stan-math} library such as \texttt{exp} or \texttt{cos}). Alternatively, we can hand-code the jacobian\footnote{The jacobian is the generalized gradient and accounts for the case in which the output of a function contains more than one element, and its input more than one parameter.} of a function's output with respect to its input parameters. Doing the latter is often preferable, because automatic differentiation is an approximation and can be computationally costly. If the jacobian is known, we gain much by hand-coding it. 
+
+
+\subsection{Solving Differential Equations in Stan's Geometrical Framework} \ \\
+
+We need to solve differential equations and compute the Jacobian of the solutions with respect to the parameters. 
 
 \subsection{C++ Implementation} \ \\ \ \\
-The only thing that distinguishes two Torsten functions is the method they use to solve ODEs (i.e. task (2)(a) of the above list). This structural scheme allows us to take advantage of the object-oriented nature of C++. All Torsten functions call the same procedure, \texttt{pred}, which predicts the amounts. In the process \texttt{pred} calls the specialized procedure, \texttt{pred1}, to solve the ODEs, i.e. perform task (2)(a).
+The only thing that distinguishes two Torsten functions is the method they use to solve ODEs (i.e.s task (2)(a) of the above list). This structural scheme allows us to take advantage of the object-oriented nature of C++. All Torsten functions call the same procedure, \texttt{pred}, which predicts the amounts. In the process \texttt{pred} calls the specialized procedure, \texttt{pred1}, to solve the ODEs, i.e. perform task (2)(a).
 
 Rather than using a simple function, we define \texttt{pred1\_structure}, a functor or structure of functions. Each Torsten function constructs a \texttt{pred1\_structure} object and determines the ODE solver.
 

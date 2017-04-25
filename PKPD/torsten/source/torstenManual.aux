@@ -16,8 +16,7 @@
 \gdef\HyperFirstAtBeginDocument#1{#1}
 \providecommand\HyField@AuxAddToFields[1]{}
 \providecommand\HyField@AuxAddToCoFields[2]{}
-\citation{2364}
-\@writefile{toc}{\contentsline {section}{\tocsection {}{}{Acknowledgements}}{3}{section*.2}}
+\@writefile{toc}{\contentsline {section}{\tocsection {}{}{Acknowledgements}}{3}{section*.1}}
 \citation{stan}
 \citation{nuts}
 \@writefile{toc}{\contentsline {section}{\tocsection {}{1}{Introduction}}{4}{section.1}}
@@ -55,13 +54,13 @@
 \newlabel{precompiledModels}{{2}{15}{Summary: Arguments of Torsten functions}{table.2}{}}
 \@writefile{toc}{\contentsline {section}{\tocsection {}{3}{Additional Examples}}{16}{section.3}}
 \@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{3.1}{Effect Compartment Model}}{16}{subsection.3.1}}
-\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{}{Population Model for Plasma Drug Concentration ($c$)}}{16}{section*.4}}
+\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{}{Population Model for Plasma Drug Concentration ($c$)}}{16}{section*.3}}
 \@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Effect Compartment Model}}{17}{figure.8}}
 \newlabel{effCptModel}{{8}{17}{Effect Compartment Model}{figure.8}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{}{Effect Compartment Model for PD response ($R$)}}{17}{section*.6}}
+\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{}{Effect Compartment Model for PD response ($R$)}}{17}{section*.5}}
 \@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Stan language for fitting an effect compartment model using \texttt  {linOdeModel} (abstract)}}{18}{figure.9}}
 \newlabel{effCptModelCode}{{9}{18}{Stan language for fitting an effect compartment model using \texttt {linOdeModel} (abstract)}{lstnumber.-4.52}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{}{Results}}{18}{section*.7}}
+\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{}{Results}}{18}{section*.6}}
 \@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Summary of the MCMC simulations of the marginal posterior distributions of the model parameters for example 2}}{19}{table.3}}
 \@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces {MCMC history plots for the parameters of an Effect Compartment Model (each color corresponds to a different chain) for example 2}}}{20}{figure.10}}
 \newlabel{effCptModelMCMC}{{10}{20}{MCMC history plots for the parameters of an Effect Compartment Model (each color corresponds to a different chain) for example 2}{figure.10}{}}
@@ -80,7 +79,7 @@
 \newlabel{FKODECode}{{15}{24}{Stan language for coding an ODE system describing a Friberg-Karlsson Mechanism}{lstnumber.-5.47}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces Stan language for fitting a Friberg-Karlsson model using \texttt  {genCptModel\_rk45} (abstract)}}{25}{figure.16}}
 \newlabel{FKCode}{{16}{25}{Stan language for fitting a Friberg-Karlsson model using \texttt {genCptModel\_rk45} (abstract)}{lstnumber.-6.35}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{}{Results}}{25}{section*.8}}
+\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{}{Results}}{25}{section*.7}}
 \@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Summary of the MCMC simulations of the marginal posterior distributions of the model parameters for example 3}}{25}{table.4}}
 \@writefile{lof}{\contentsline {figure}{\numberline {17}{\ignorespaces {MCMC history plots for the parameters of a Friberg-Karlsson semi-mechanistic model (each color corresponds to a different chain) for example 3}}}{26}{figure.17}}
 \newlabel{FKMCMC}{{17}{26}{MCMC history plots for the parameters of a Friberg-Karlsson semi-mechanistic model (each color corresponds to a different chain) for example 3}{figure.17}{}}
@@ -101,14 +100,20 @@
 \@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{4.1.4}{The Event Schedule}}{30}{subsubsection.4.1.4}}
 \@writefile{lof}{\contentsline {figure}{\numberline {22}{\ignorespaces {The ``Optimized-Applicable Spectrum" of tools for solving differential equations: the top line gives the technique to solve differential equations, the next line the type of ODE system this method should be applied to, and the third line (in blue) an example from pharmacometrics. We discuss these examples in greater details in sections 2 and 3 of the manual.}}}{31}{figure.22}}
 \newlabel{DiffEqTools}{{22}{31}{The ``Optimized-Applicable Spectrum" of tools for solving differential equations: the top line gives the technique to solve differential equations, the next line the type of ODE system this method should be applied to, and the third line (in blue) an example from pharmacometrics. We discuss these examples in greater details in sections 2 and 3 of the manual}{figure.22}{}}
+\citation{nuts}
+\citation{HMC}
+\citation{nuts}
+\citation{AD}
+\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{4.2}{Bayesian Data Analysis with Stan}}{32}{subsection.4.2}}
+\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{4.2.1}{Hamiltonian Monte Carlo}}{32}{subsubsection.4.2.1}}
+\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{4.2.2}{The \texttt  {var} class}}{32}{subsubsection.4.2.2}}
+\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{4.3}{Solving Differential Equations in Stan's Geometrical Framework}}{33}{subsection.4.3}}
+\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{4.4}{C++ Implementation}}{33}{subsection.4.4}}
+\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{4.5}{Implementing Torsten}}{33}{subsection.4.5}}
+\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in math}}{33}{section*.8}}
+\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in Stan}}{33}{section*.9}}
 \bibstyle{custom}
 \bibdata{alpha,custom}
-\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{4.2}{Bayesian Data Analysis with Stan}}{32}{subsection.4.2}}
-\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{4.3}{Solving Differential Equations}}{32}{subsection.4.3}}
-\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{4.4}{C++ Implementation}}{32}{subsection.4.4}}
-\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{4.5}{Implementing Torsten}}{32}{subsection.4.5}}
-\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in math}}{32}{section*.9}}
-\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in Stan}}{32}{section*.10}}
 \bibcite{2364}{1}
 \bibcite{stan}{2}
 \bibcite{nuts}{3}
@@ -120,4 +125,4 @@
 \newlabel{tocindent1}{19.4667pt}
 \newlabel{tocindent2}{32.18062pt}
 \newlabel{tocindent3}{0pt}
-\@writefile{toc}{\contentsline {section}{\tocsection {}{}{References}}{34}{section*.11}}
+\@writefile{toc}{\contentsline {section}{\tocsection {}{}{References}}{35}{section*.10}}
