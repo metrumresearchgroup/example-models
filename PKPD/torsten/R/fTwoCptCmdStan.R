@@ -1,8 +1,8 @@
 rm(list = ls())
 gc()
 
-modelName <- "fTwoCpt"
-# modelName <- "fTwoCpt_mixed"
+# modelName <- "fTwoCpt"
+modelName <- "fTwoCpt_mixed"
 
 ## Adjust directories to your settings.
 scriptDir <- getwd()
@@ -14,7 +14,6 @@ outDir <- file.path(modelDir, modelName)
 toolsDir <- file.path("tools")
 stanDir <- file.path("cmdstan")
 
-# source(file.path(scriptDir, "pkgSetup.R"))
 # .libPaths(...)
 library(rstan)
 library(ggplot2)
@@ -51,13 +50,56 @@ chains <- 1:nChains
 
 ## Having issues using this on Metworx.
 runModelFixed(model = file.path(modelDir, modelName),
-              data = file.path(modelDir, paste0(modelName, ".data.R")),
-              init = file.path(modelDir, paste0(modelName, ".init.R")),
+              data = file.path(modelDir, paste0(modelName, "Det.data.R")),
+              init = file.path(modelDir, paste0(modelName, "Det.init.R")),
               iter = 1, warmup = 0, thin = 1,
               refresh = 1, seed = sample(1:99999, 1))
 
 fit <- read_stan_csv(file.path(modelDir, modelName, paste0(modelName, chains, ".csv")))
+data <- read_rdump(file.path(modelDir, paste0(modelName,"Det.data.R")))
 
+## Plot data for comparisons
+## PK
+dataPK <- data.frame(data$cObs, data$time[data$iObsPK])
+dataPK <- plyr::rename(dataPK, c("data.cObs" = "cObs", "data.time.data.iObsPK." = "time"))
+
+pred <- as.data.frame(fit, pars = "cObsPred") %>%
+  gather(factor_key = TRUE) %>%
+  group_by(key) %>% bind_cols(dataPK)
+
+p1 <- ggplot(pred, aes(x = time, y = cObs))
+p1 <- p1 + geom_point() +
+  labs(x = "time (h)", y = "plasma concentration (mg/L)") +
+  theme(text = element_text(size = 12), axis.text = element_text(size = 12),
+        legend.position = "none", strip.text = element_text(size = 8)) 
+p1 + geom_line(aes(x = time, y = value))
+
+maxDiffPK <- max(abs(pred$value - pred$cObs) / pred$cObs)
+## For numerical model: 4.735332e-6
+## For mixed model: 4.735332e-06
+
+## PD
+dataPD <- data.frame(data$neutObs, data$time[data$iObsPD])
+dataPD <- plyr::rename(dataPD, c("data.neutObs" = "neutObs", 
+                                 "data.time.data.iObsPD." = "time"))
+
+pred <- as.data.frame(fit, pars = "neutPred") %>%
+  gather(factor_key = TRUE) %>%
+  group_by(key) %>% bind_cols(dataPD)
+
+p1 <- ggplot(pred, aes(x = time, y = neutObs))
+p1 <- p1 + geom_point() +
+  labs(x = "time (h)", y = "Absolute Neutrophil Count") +
+  theme(text = element_text(size = 12), axis.text = element_text(size = 12),
+        legend.position = "none", strip.text = element_text(size = 8)) 
+p1 + geom_line(aes(x = time, y = value))
+
+maxDiffPD <- max(abs(pred$value - pred$neutObs) / pred$neutObs)
+## For numerical model: 3.412185e-06
+## For mixed model: 3.412185e-06
+
+## The two Stan models spit out the same deviation from the mrgsolve model. I'll take
+## it there are in very close (exact?) agreement with one another.
 
 ################################################################################################
 ## run Stan

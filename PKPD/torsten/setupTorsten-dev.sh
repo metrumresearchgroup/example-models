@@ -17,10 +17,12 @@ git clone https://github.com/charlesm93/stan.git
 rm -r stan_2.14.0
 mv stan stan_2.14.0
 cd stan_2.14.0
-git checkout torsten-develop
+git checkout issue-8-mixed_solver
+# git checkout torsten-develop
 mkdir lib
 cd lib
 git clone https://github.com/charlesm93/math.git
 mv math stan_math_2.14.0
 cd stan_math_2.14.0
-git checkout torsten-develop
+# git checkout torsten-develop
+git checkout issue-31-mixed_solver
