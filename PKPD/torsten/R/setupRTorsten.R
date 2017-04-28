@@ -1,5 +1,5 @@
 ## Install RStan, with Torsten built inside of it.
-## This file won't installs the RStan's dependencies.
+## WARNING: This file won't installs RStan's dependencies.
 
 ## Adjust directories to your setting.
 scriptDir <- getwd()
