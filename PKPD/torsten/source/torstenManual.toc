@@ -1,4 +1,4 @@
-\contentsline {section}{\tocsection {}{}{Acknowledgements}}{3}{section*.2}
+\contentsline {section}{\tocsection {}{}{Acknowledgements}}{3}{section*.1}
 \contentsline {section}{\tocsection {}{1}{Introduction}}{4}{section.1}
 \contentsline {subsection}{\tocsubsection {}{1.1}{Preface}}{4}{subsection.1.1}
 \contentsline {subsection}{\tocsubsection {}{1.2}{Installing Torsten}}{4}{subsection.1.2}
@@ -15,13 +15,30 @@
 \contentsline {subsection}{\tocsubsection {}{2.4}{General ODE Model Function}}{12}{subsection.2.4}
 \contentsline {section}{\tocsection {}{3}{Additional Examples}}{16}{section.3}
 \contentsline {subsection}{\tocsubsection {}{3.1}{Effect Compartment Model}}{16}{subsection.3.1}
-\contentsline {subsubsection}{\tocsubsubsection {}{}{Population Model for Plasma Drug Concentration ($c$)}}{16}{section*.4}
-\contentsline {subsubsection}{\tocsubsubsection {}{}{Effect Compartment Model for PD response ($R$)}}{17}{section*.6}
-\contentsline {subsubsection}{\tocsubsubsection {}{}{Results}}{18}{section*.7}
+\contentsline {subsubsection}{\tocsubsubsection {}{}{Population Model for Plasma Drug Concentration ($c$)}}{16}{section*.3}
+\contentsline {subsubsection}{\tocsubsubsection {}{}{Effect Compartment Model for PD response ($R$)}}{17}{section*.5}
+\contentsline {subsubsection}{\tocsubsubsection {}{}{Results}}{18}{section*.6}
 \contentsline {subsection}{\tocsubsection {}{3.2}{Friberg-Karlsson Semi-Mechanistic Model \cite {2364}}}{23}{subsection.3.2}
-\contentsline {subsubsection}{\tocsubsubsection {}{}{Results}}{25}{section*.8}
+\contentsline {subsubsection}{\tocsubsubsection {}{}{Results}}{25}{section*.7}
 \contentsline {section}{\tocsection {}{4}{Technical Appendix}}{28}{section.4}
+<<<<<<< HEAD
 \contentsline {subsection}{\tocsubsection {}{4.1}{Implementing Torsten}}{28}{subsection.4.1}
 \contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in math}}{28}{section*.9}
 \contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in Stan}}{28}{section*.10}
 \contentsline {section}{\tocsection {}{}{References}}{29}{section*.11}
+=======
+\contentsline {subsection}{\tocsubsection {}{4.1}{Differential Equations Based Models}}{28}{subsection.4.1}
+\contentsline {subsubsection}{\tocsubsubsection {}{4.1.1}{When do Ordinary Differential Equations Arise?}}{28}{subsubsection.4.1.1}
+\contentsline {subsubsection}{\tocsubsubsection {}{4.1.2}{An Example: ODE system for the Two Compartment Model}}{29}{subsubsection.4.1.2}
+\contentsline {subsubsection}{\tocsubsubsection {}{4.1.3}{Overview of Tools for Solving Differential Equations}}{30}{subsubsection.4.1.3}
+\contentsline {subsubsection}{\tocsubsubsection {}{4.1.4}{The Event Schedule}}{30}{subsubsection.4.1.4}
+\contentsline {subsection}{\tocsubsection {}{4.2}{Bayesian Data Analysis with Stan}}{32}{subsection.4.2}
+\contentsline {subsubsection}{\tocsubsubsection {}{4.2.1}{Hamiltonian Monte Carlo}}{32}{subsubsection.4.2.1}
+\contentsline {subsubsection}{\tocsubsubsection {}{4.2.2}{The \texttt {var} class}}{32}{subsubsection.4.2.2}
+\contentsline {subsection}{\tocsubsection {}{4.3}{Solving Differential Equations in Stan's Geometrical Framework}}{33}{subsection.4.3}
+\contentsline {subsection}{\tocsubsection {}{4.4}{C++ Implementation}}{33}{subsection.4.4}
+\contentsline {subsection}{\tocsubsection {}{4.5}{Implementing Torsten}}{33}{subsection.4.5}
+\contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in math}}{33}{section*.8}
+\contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in Stan}}{33}{section*.9}
+\contentsline {section}{\tocsection {}{}{References}}{35}{section*.10}
+>>>>>>> torsten-0.82
