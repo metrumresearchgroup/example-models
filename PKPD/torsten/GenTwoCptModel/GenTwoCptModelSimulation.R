@@ -75,6 +75,8 @@ data <- with(SimData,
                   ss = ss))
 
 ## create initial estimates
+## Note: you really want to create different initial estimates for each
+## chain. This is done TwoCptCmdStan.R.
 init <- function() 
   list(CL = exp(rnorm(1, log(10), 0.2)),
        Q = exp(rnorm(1, log(20), 0.2)),

@@ -318,19 +318,16 @@ compileModel(model = file.path(modelDir, modelName), stanDir = stanDir)
 chains <- 1:nChains
 
 if (FALSE) {
-  with(data, stan_rdump(ls(data), file = file.path(tempDir, "data.R")))
-  inits <- init()
-  with(inits, stan_rdump(ls(inits), file = file.path(tempDir, "init.R")))
-  
   ## Run model with fixed parameters 
   mclapply(chains,
-           function(chain, model, data, iter, warmup, thin, init)
+           function(chain, model, data, iter, warmup, thin, init) {
              runModelFixed(model = model, data = data,
                            # iter = iter, warmup = warmup, 
                            thin = thin,
                            init = init, seed = sample(1:999999, 1),
                            chain = chain,
-                           refresh = 1),
+                           refresh = 1)
+             },
            model = file.path(modelDir, modelName),
            data = file.path(tempDir, "data.R"),
            init = file.path(tempDir, "init.R"),

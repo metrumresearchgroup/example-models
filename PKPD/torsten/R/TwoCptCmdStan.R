@@ -5,6 +5,7 @@ modelName <- "TwoCptModel"
 # modelName <- "LinTwoCptModel"
 # modelName <- "GenTwoCptModel"
 # modelName <- "TwoCptModel_fixed"
+# modelName <- "fOneCpt"
 
 ## Adjust directories to your settings.
 scriptDir <- getwd()
@@ -15,6 +16,7 @@ modelDir <- file.path(projectDir, modelName)
 outDir <- file.path(modelDir, modelName)
 toolsDir <- file.path("tools")
 stanDir <- file.path("cmdstan")
+tempDir <- file.path(modelDir, modelName, "temp")
 
 # source(file.path(scriptDir, "pkgSetup.R"))
 # .libPaths(...)
@@ -41,9 +43,20 @@ otherRVs <- c("cObsPred")
 parameters <- c(parametersToPlot, otherRVs)
 parametersToPlot <- c("lp__", parametersToPlot)
 
+## Randomly generate initial estimates
+init <- function() 
+  list(CL = exp(rnorm(1, log(10), 0.2)),
+       Q = exp(rnorm(1, log(20), 0.2)),
+       V1 = exp(rnorm(1, log(70), 0.2)),
+       V2 = exp(rnorm(1, log(70), 0.2)),
+       ka = exp(rnorm(1, log(1), 0.2)),
+       sigma = runif(1, 0.5, 2))
+
+dir.create(tempDir)  ## directory to store initial estimates for each chain
+
 ################################################################################################
 ## run Stan
-nChains <- 3 # 4
+nChains <- 4 # 4
 nPost <- 1000 # 1000 ## Number of post-burn-in samples per chain after thinning
 nBurn <- 1000  # 1000 ## Number of burn-in samples per chain after thinning
 nThin <- 1
@@ -58,15 +71,22 @@ compileModel(model = file.path(modelDir, modelName), stanDir = stanDir)
 
 chains <- 1:nChains
 mclapply(chains,
-         function(chain, model, data, iter, warmup, thin, init)
+         function(chain, model, data, iter, warmup, thin, init) {
+           tempDir <- file.path(tempDir, chain)
+           dir.create(tempDir)
+           inits <- init()
+           with(inits, stan_rdump(ls(inits), file = file.path(tempDir,
+                                                              "init.R")))
            runModel(model = model, data = data,
                     iter = iter, warmup = warmup, thin = thin,
-                    init = init, seed = sample(1:999999, 1),
+                    init = file.path(tempDir, "init.R"), 
+                    seed = sample(1:999999, 1),
                     chain = chain, refresh = 100,
-                               adapt_delta = 0.95, stepsize = 0.01),
+                               adapt_delta = 0.95, stepsize = 0.01)
+           },
          model = file.path(modelDir, modelName),
          data = file.path(modelDir, paste0(modelName, ".data.R")),
-         init = file.path(modelDir, paste0(modelName, ".init.R")),
+         init = init,
          iter = nIter, warmup = nBurnin, thin = nThin,
          mc.cores = min(nChains, detectCores()))
 
