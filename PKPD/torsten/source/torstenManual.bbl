@@ -31,9 +31,4 @@ Moler, C. and Van~Loan, C.
   twenty-five years later.
 \newblock \emph{SIAM Review}  (2003).
 
-\bibitem{StanCon2017}
-Margossian, C.C. and Gillespie, W.R.
-\newblock Differential equations based models in stan.
-\newblock In \emph{Stan Con} (Stan Development Team, 2017).
-
 \end{thebibliography}

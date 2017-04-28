@@ -1,12 +1,16 @@
 ## Install RStan, with Torsten built inside of it.
+## WARNING: This file won't installs RStan's dependencies.
 
 ## Adjust directories to your setting.
 scriptDir <- getwd()
 lib <- file.path(scriptDir, "lib")
 .libPaths(lib)
 
-## Download and edit StanHeaders
-install.packages("StanHeaders")
+# library(devtools)
+
+## Download and edit StanHeaders (version 2.14)
+install.packages("https://cran.r-project.org/src/contrib/Archive/StanHeaders/StanHeaders_2.14.0-1.tar.gz", 
+                 repos = NULL)
 setwd(lib)
 system("git clone https://github.com/charlesm93/stan.git")
 setwd("stan")
@@ -23,6 +27,7 @@ system("rm -rf StanHeaders/include/stan")
 system("mv math/stan StanHeaders/include/stan")
 system("rm -rf math")
 
-install.packages("rstan", type = "source")
+## Download rstan 2.14.1 without the dependencies.
+install.packages("https://cran.r-project.org/src/contrib/Archive/rstan/rstan_2.14.2.tar.gz", repos = NULL)
 
 setwd(scriptDir)

@@ -104,7 +104,11 @@ Installation files are available on GitHub: \url{https://github.com/charlesm93/e
 
 There is currently no mechanism to install Torsten on top of your version of Stan. This is still a work in progress. In the meantime, we offer a version of Stan with Torsten built inside of it. Torsten 0.82 works with Stan 2.14.0. Torsten is built inside the Stan and Stan-math repositories and is agnostic to the interface. We offer support to install Torsten with RStan and CmdStan.
 
-\subsubsection{Intalling Torsten with RStan} The easiest way to install the RStan interface with Stan and Torsten is to run the R script \texttt{R/setupRTorsten.R}. You'll need to make a few minor adjustments, notably by specifying the location at which you wish to install the libraries rstan (and its dependency StanHeaders). If you already have these packages installed, the script will not automatically overwrite them, which is why you should remove them prior to running \texttt{setupRTorsten.R}. 
+\subsubsection{Intalling Torsten with RStan} The easiest way to install the RStan interface with Stan and Torsten is to run the script \texttt{R/setupRTorsten.R}. You'll need to make a few minor adjustments, notably by specifying the location at which you wish to install the libraries RStan (and its dependency StanHeaders).
+
+If you already have these packages installed, the script will not automatically overwrite them, which is why you should remove them prior to running \texttt{setupRTorsten.R}. 
+
+The script currently doesn't install all the dependencies for RStan\footnote{See \url{https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started} for details on RStan}. This is to prevent the edited StanHeaders package from getting overwritten by the \texttt{install.packages()} procedure. If you wish to install RStan's dependencies, you could run \texttt{install.package("rstan")}, remove the RStan and the StanHeaders packages and then run \texttt{SetupRTorsten.R}. We realize this is not optimal and are working on a more elegant solution\footnote{See the issue tracker: \url{https://github.com/charlesm93/example-models/issues/3}}.
 
 \subsubsection{Installing Torsten with CmdStan} Similarly, you can install the CmdStan interface with Stan and Torsten using the bash file \texttt{setupTorsten.sh}\footnote{To get the development version of Torsten use \texttt{setupTorsten-dev.sh}.}.
 
@@ -941,6 +945,10 @@ sigmaNeut & 0.092 & 0.001 & 0.014 & 0.068 & 0.082 & 0.090 & 0.100 & 0.125 & 161.
  
 
 \section{Technical Appendix}
+
+(Note: this section is still being worked on and is far from finished)
+
+\iffalse
 The details we cover here are not required to use Torsten but may be of interest to developers and advanced users. Our goal is to motivate the development of Torsten by looking at common challenges in pharmacometrics. The problems we address are mostly mathematical in nature but scientifically motivated. We discuss why Stan strikes us as a powerful tool to analyse data; and which needs in pharmacometrics Torsten answers. We then go over the algorithms and programming techniques we deploy in Torsten. 
 
 \subsection{Differential Equations Based Models} \ \\ \ \\
@@ -1086,6 +1094,8 @@ We need to solve differential equations and compute the Jacobian of the solution
 The only thing that distinguishes two Torsten functions is the method they use to solve ODEs (i.e.s task (2)(a) of the above list). This structural scheme allows us to take advantage of the object-oriented nature of C++. All Torsten functions call the same procedure, \texttt{pred}, which predicts the amounts. In the process \texttt{pred} calls the specialized procedure, \texttt{pred1}, to solve the ODEs, i.e. perform task (2)(a).
 
 Rather than using a simple function, we define \texttt{pred1\_structure}, a functor or structure of functions. Each Torsten function constructs a \texttt{pred1\_structure} object and determines the ODE solver.
+
+\fi
 
 \subsection{Implementing Torsten} \ \\ \ \\
 Stan's \texttt{math} library is written in C++, which offers a great deal of speed and flexibility. The Stan language provides a very handy interface that allows us to focus on statistical modeling and saves us the trouble of doing extensive coding in C++. At run time, a \textit{make} file translates our Stan model into C++, which then gets compiled and executed. Accordingly, there are two steps to add a function to Stan: (1) write the procedure in C++, (2) expose the procedure to the language so users may use it in a Stan file.
