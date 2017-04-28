@@ -1,8 +1,8 @@
 rm(list = ls())
 gc()
 
-# modelName <- "fTwoCpt"
-modelName <- "fTwoCpt_mixed"
+modelName <- "fTwoCpt"
+# modelName <- "fTwoCpt_mixed"
 
 ## Adjust directories to your settings.
 scriptDir <- getwd()
@@ -27,24 +27,43 @@ source(file.path(toolsDir, "stanTools.R"))
 source(file.path(toolsDir, "cmdStanTools.R"))
 
 rstan_options(auto_write = TRUE)
-
 set.seed(11191951) ## not required but assures repeatable results
 
 ## Specify the variables for which you want history and density plots
-parametersToPlot <- c("CL", "VC", "ka", "sigma", "mtt", "circ0", "alpha",
+parametersToPlot <- c("CL", "Q", "VC", "VP", "ka", "sigma", "mtt", "circ0", "alpha",
                       "gamma", "sigmaNeut")
 
 ## Additional variables to monitor
-otherRVs <- c("cObsPred")
+otherRVs <- c("cObsPred", "neutPred")
 
 parameters <- c(parametersToPlot, otherRVs)
 parametersToPlot <- c("lp__", parametersToPlot)
 
+compileModel(model = file.path(modelDir, modelName), stanDir = stanDir)
+
+################################################################################################
+## Deterministic Tests
+## Make sure the model produces the data, when it uses the true parameters and the
+## random variations are set to 0.
+
+nChains <- 1
+chains <- 1:nChains
+
+## Having issues using this on Metworx.
+runModelFixed(model = file.path(modelDir, modelName),
+              data = file.path(modelDir, paste0(modelName, ".data.R")),
+              init = file.path(modelDir, paste0(modelName, ".init.R")),
+              iter = 1, warmup = 0, thin = 1,
+              refresh = 1, seed = sample(1:99999, 1))
+
+fit <- read_stan_csv(file.path(modelDir, modelName, paste0(modelName, chains, ".csv")))
+
+
 ################################################################################################
 ## run Stan
 nChains <- 1 # 4
-nPost <- 100 # 1000 ## Number of post-burn-in samples per chain after thinning
-nBurn <- 100  # 1000 ## Number of burn-in samples per chain after thinning
+nPost <- 1 # 1000 ## Number of post-burn-in samples per chain after thinning
+nBurn <- 1  # 1000 ## Number of burn-in samples per chain after thinning
 nThin <- 1
 chains <- 1:nChains
 
@@ -53,8 +72,6 @@ nBurnin <- nBurn * nThin
 
 RNGkind("L'Ecuyer-CMRG")
 mc.reset.stream()
-
-compileModel(model = file.path(modelDir, modelName), stanDir = stanDir)
 
 ## Run diagnose
 mclapply(chains,

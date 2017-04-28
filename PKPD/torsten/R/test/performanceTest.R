@@ -1,0 +1,198 @@
+## Performance Test for mixed solver
+## The working directory should still be the R directory
+## Check: use same initial estimates for each model? seems fair...
+
+rm(list = ls())
+gc()
+
+modelName <- "fTwoCpt"
+# modelName <- "fTwoCpt_mixed"
+testName <- modelName
+
+
+N <- 100  # 100 # number of times we want to run the test
+
+## Adjust directories to your settings.
+## CHECK which directories are needed?
+scriptDir <- getwd()
+projectDir <- dirname(scriptDir)
+figDir <- file.path("deliv", "figure", modelName)
+tabDir <- file.path("deliv", "table", modelName)
+modelDir <- file.path(projectDir, modelName)
+outDir <- file.path(modelDir, modelName)
+toolsDir <- file.path("tools")
+stanDir <- file.path("cmdstan")
+
+# source(file.path(scriptDir, "pkgSetup.R"))
+# .libPaths(...)
+library(rstan)
+library(ggplot2)
+library(plyr)
+library(dplyr)
+library(tidyr)
+library(parallel)
+
+library(qapply)
+
+source(file.path(toolsDir, "stanTools.R"))
+source(file.path(toolsDir, "cmdStanTools.R"))
+
+rstan_options(auto_write = TRUE)
+
+set.seed(11191951) ## not required but assures repeatable results
+
+###############################################################################
+
+## True parameters used to simulate the data
+## (see *Simulation.R file)
+nParameters <- 11
+thetaTrue <- rep(0, nParameters)
+thetaTrue[1] <- 10  # CL
+thetaTrue[2] <- 15  # Q
+thetaTrue[3] <- 35  # VC
+thetaTrue[4] <- 105  # VP
+thetaTrue[5] <- 2.0  # KA
+thetaTrue[6] <- sqrt(0.001)  # sigma_PK
+thetaTrue[7] <- 125  # MTT
+thetaTrue[8] <- 5  # Circ0
+thetaTrue[9] <- 3e-4  # alpha
+thetaTrue[10] <- 0.17  # gamma
+thetaTrue[11] <- sqrt(0.001)  # sigma_PD
+
+## Compile Stan Model
+compileModel(model = file.path(modelDir, modelName), stanDir = stanDir)
+
+## 4 performance metrics (only the first two really matter):
+# 1) fractional difference between estimated and real mean value of parameters
+# 2) time to compute 1000 effective independent samples
+# 3) Run times
+# 4) flag: simulation iteration
+nMetrics = 4
+
+## Write function to run test
+StanFit <- function(iSim) {
+  
+  ## Matrix to store results
+  ## Add one row for the log posterior
+  pMatrix <- matrix(nrow = nParameters + 1, ncol = nMetrics)
+  
+  ## CHECK - do I need parametersToPlot?
+  parametersToPlot <- c("CL", "Q", "VC", "VP", "ka", "sigma", "mtt", "circ0", "alpha",
+                        "gamma", "sigmaNeut")
+  parametersToPlot <- c("lp__", parametersToPlot)
+  otherRVs <- c("cObsPred", "neutPred")
+  parameters <- c(parametersToPlot, otherRVs)
+  
+  nChains <- 4 # 4
+  nPost <- 100 # 1000 ## Number of post-burn-in samples per chain after thinning
+  nBurn <- 100  # 1000 ## Number of burn-in samples per chain after thinning
+  nThin <- 1
+  chains <- 1:nChains
+  
+  nIter <- nPost * nThin
+  nBurnin <- nBurn * nThin
+  
+  RNGkind("L'Ecuyer-CMRG")
+  mc.reset.stream()
+  
+  mclapply(chains,
+           function(chain, model, data, iter, warmup, thin, init)
+             runModel(model = model, data = data,
+                      iter = iter, warmup = warmup, thin = thin,
+                      init = init, seed = sample(1:999999, 1),
+                      chain = chain, refresh = 100,
+                      adapt_delta = 0.95, stepsize = 0.01,
+                      tag = iSim),
+           model = file.path(modelDir, modelName),
+           data = file.path(modelDir, paste0(modelName, ".data.R")),
+           init = file.path(modelDir, paste0(modelName, ".init.R")),
+           iter = nIter, warmup = nBurnin, thin = nThin,
+           mc.cores = min(nChains, detectCores()))
+
+  ## Save results 
+  fit <- read_stan_csv(file.path(modelDir, modelName, 
+                                 paste0(modelName, "_", iSim, "_",
+                                        chains, ".csv")))
+  outputName <- paste0(modelName, iSim)
+  dir.create(outDir)
+  save(fit, file = file.path(outDir, paste0(outputName, "Fit.Rsave_", iSim)))
+
+  #############################################################################
+  ## compute performance metrics
+
+  ## Get the run-time (sum of run time for all 4 chains)
+  RunTimes <- rep(0, nChains)
+  for(chain in 1:nChains)
+  {
+    filename <- paste(file.path(modelDir, modelName, modelName), 
+                      paste0("_",iSim,"_",chain), ".csv", sep = "")
+    l <- length(readLines(filename))
+    x <- read.csv(filename, header=FALSE, nrows=1, skip=l-2)
+    y <- x[1,1]
+    RunTimes[chain] <- as.numeric(unlist(regmatches(y,gregexpr("[[:digit:]]+\\.*[[:digit:]]*",y))))
+  }
+  RunTime <- sum(RunTimes)
+  
+  ## create a table that contains the mean value of the parameters
+  ## (obtained by combining all the chains), n_eff, and computation 
+  ## time required to generated 1000 independent samples.
+  mean <- as.vector(get_posterior_mean(fit, 
+                                       pars = parametersToPlot)[ , nChains + 1])
+  n_eff <- as.vector(summary(fit, pars = parametersToPlot)$summary[ ,"n_eff"])
+  comp_time <- RunTime/n_eff * 1000
+  
+  ## save parameters in the parameter matrix
+  pMatrix[ , 1] <- mean
+  pMatrix[ , 2] <- n_eff
+  pMatrix[ , 3] <- comp_time
+  pMatrix[ , 4] <- iSim
+  
+  pMatrix
+  
+} ## end of Stan fit definition
+
+## Run Job
+## Check status with qstat("-f"), qdel("-u charlesm")
+qapply(1:N, StanFit, global = TRUE, nCores = N, tag = "StanFit",
+       internalize = FALSE)
+object <- qinternalize(file.path("out", "StanFit"))
+
+pMatrix <- array(0, dim = c(dim(object[[1]]), length(object)))
+for (i in 1:length(object)) {
+  pMatrix[ , , i] <- object[[i]]
+}
+
+## write pMatrix into csv file (want to save raw data) -- FIX ME
+save(pMatrix, file = file.path(outDir, paste0(modelName, "pMatrixSave")))
+
+###############################################################################
+## save results in performance table and output in a csv file
+N <- dim(pMatrix)[3]  ## FIX ME - shouldn't need this
+performance_table <- matrix(0, nrow = N, ncol = nParameters * 3)
+
+## compute:
+##  1) fractional difference with real parameters
+##  2) effective number of independent samples
+##  3) Run times
+performance_table[ , 1:nParameters] <- t((pMatrix[2:(nParameters + 1), 1, 1:N] - thetaTrue)
+                                         / thetaTrue * 100)
+performance_table[ , (nParameters + 1):(2 * nParameters)] <- t((pMatrix[2:(nParameters + 1), 
+                                                                    2, 1:N]))
+performance_table[ , (2 * nParameters + 1):(3 * nParameters)] <- t((pMatrix[2:(nParameters + 1), 3, 1:N]))
+
+## save file in test directory
+testDeliv <- "test/deliv"
+
+dir.create(testDeliv)
+write.csv(performance_table, file.path(testDeliv, paste0(testName, ".summary.csv")))
+
+###############################################################################
+## other calculations for quick checks
+
+## calculate the mean runtime
+meanTime <- mean((pMatrix[1:nParameters, 3, 1:N]))
+
+## histogram of the run time distribution for first parameter (CL)
+hist(pMatrix[1, 3, 1:N])
+
+## see other R script for analysis of results.

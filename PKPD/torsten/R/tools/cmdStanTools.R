@@ -40,50 +40,38 @@ runDiagnose <- function(model, data, init, seed, chain = 1, refresh=100){
                sep = ""))
 }
 
-# runModelFixed <- function(model, data, iter, warmup, thin, init, seed, chain = 1,
-#                           stepsize = 1, adapt_delta = 0.8, max_depth = 10, refresh = 100){
+
+runModelFixed <- function(model, data, iter, warmup, thin, init, seed, chain = 1,
+                          stepsize = 1, adapt_delt = 0.8, max_depth = 10, refresh = 100){
+  modelName <- basename(model)
+  model <- file.path(model, modelName)
+  print(paste0(model, " sample algorithm=fixed_param",
+               " num_samples=1 num_warmup=0",
+               " data file=", data,
+               " random seed=", seed,
+               " output file=", paste(model, chain, ".csv", sep = ""),
+               " refresh=", refresh))
+  
+  system(paste0(model, " sample algorithm=fixed_param",
+                " num_samples=1 num_warmup=0",
+                " data file=", data,
+                " init=", init,
+                " random seed=", seed,
+                " output file=", paste(model, chain, ".csv", sep = ""),
+                " refresh=", refresh), invisible = FALSE)
+  
+}
+
+# runModelFixed <- function(model, data, iter = 1, warmup, thin, init, seed, chain = 1,
+#                           stepsize = 1, adapt_delta = 0.8, max_depth = 10, refresh = 1,
+#                           output = paste0(model, chain, ".csv")){
 #   modelName <- basename(model)
 #   model <- file.path(model, modelName)
 #   system(paste(model, " sample algorithm=fixed_param",
 #                " num_samples=", iter,
 #                " data file=", data,
 #                " random seed=", seed,
-#                " output file=", paste(model, chain, ".csv", sep = ""),
+#                " output file=", output,
 #                " refresh=", refresh,
 #                sep = ""), invisible = FALSE)
 # }
-
-# runModelFixed <- function(model, data, iter, warmup, thin, init, seed, chain = 1,
-#                           stepsize = 1, adapt_delt = 0.8, max_depth = 10, refresh = 100){
-#   modelName <- basename(model)
-#   model <- file.path(model, modelName)
-#   print(paste0(model, " sample algorithm=fixed_param",
-#                " num_samples=1 num_warmup=0",
-#                " data file=", data,
-#                " random seed=", seed,
-#                " output file=", paste(model, chain, ".csv", sep = ""),
-#                " refresh=", refresh))
-#   
-#   system(paste0(model, " sample algorithm=fixed_param",
-#                " num_samples=1 num_warmup=0",
-#                " data file=", data,
-#                " init=", init,
-#                " random seed=", seed,
-#                " output file=", paste(model, chain, ".csv", sep = ""),
-#                " refresh=", refresh), invisible = FALSE)
-#   
-# }
-
-runModelFixed <- function(model, data, iter, warmup, thin, init, seed, chain = 1,
-                          stepsize = 1, adapt_delta = 0.8, max_depth = 10, refresh = 100){
-  modelName <- basename(model)
-  model <- file.path(model, modelName)
-  system(paste(model, " sample algorithm=fixed_param",
-               " num_samples=", iter,
-               " data file=", data,
-               " random seed=", seed,
-               " output file=", paste(model, chain, ".csv", sep = ""),
-               " refresh=", refresh,
-               sep = ""), invisible = FALSE)
-}
-

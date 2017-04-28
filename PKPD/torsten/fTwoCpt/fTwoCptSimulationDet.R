@@ -1,4 +1,5 @@
 ## Template to simulate PKPD data
+## Use to test deterministic features of model, i.e. no random variation.
 ## Friberg-Karlsson model, one patient
 ## Data is generated for version of model which does NOT use Torsten,
 ## i.e the event schedule is augmented in R.
@@ -9,7 +10,7 @@ library(mrgsolve)
 library(rstan)
 library(dplyr)
 
-modelName <- "fTwoCpt"
+modelName <- "fTwoCptDet"
 
 ## Simulate ME-2 plasma concentrations and ANC values
 ## using mrgsolve.
@@ -39,7 +40,7 @@ dxdt_TRANSIT2 = ktr * (TRANSIT1 - TRANSIT2);
 dxdt_TRANSIT3 = ktr * (TRANSIT2 - TRANSIT3);
 dxdt_CIRC = ktr * (TRANSIT3 - CIRC);
 
-$SIGMA 0.001 0.001 
+// $SIGMA 0.001 0.001 
 
 $TABLE
 double CP = CENT/VC;
@@ -182,19 +183,19 @@ data <- with(xdata,
                alphaPriorCV = alphaPriorCV
              ))
 
-## create initial estimates
+## create initial estimates using real values of parameters
 init <- function(){
-  list(CL = exp(rnorm(1, log(CLPrior), CLPriorCV)),
-       Q = exp(rnorm(1, log(QPrior), QPriorCV)),
-       VC = exp(rnorm(1, log(VCPrior), VCPriorCV)),
-       VP = exp(rnorm(1, log(VPPrior), VPPriorCV)),
-       ka = exp(rnorm(1, log(kaPrior), kaPriorCV)),
-       sigma = 0.2,
-       alpha = exp(rnorm(1, log(alphaPrior), alphaPriorCV)),
-       mtt = exp(rnorm(1, log(mttPrior), mttPriorCV)),
-       circ0 = exp(rnorm(1, log(circ0Prior), circ0PriorCV)),
-       gamma = exp(rnorm(1, log(gammaPrior), gammaPriorCV)),
-       sigmaNeut = 0.2)
+  list(CL = 10,
+       Q = 15,
+       VC = 35,
+       VP = 105,
+       ka = 2.0,
+       sigma = 1e-6,
+       alpha = 3e-4,
+       mtt = 125,
+       circ0 = 5,
+       gamma = 0.17,
+       sigmaNeut =1e-6)
 }
 
 with(data, stan_rdump(ls(data), file = paste0(modelName,".data.R")))
