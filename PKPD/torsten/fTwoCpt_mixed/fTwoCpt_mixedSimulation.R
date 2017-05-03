@@ -2,6 +2,9 @@
 ## Simplified Friberg-Karlsson model, one patient
 ## Data is generated for version of model which does NOT use Torsten,
 ## i.e the event schedule is augmented in R.
+##
+## For comparison test, use data simulated by fTwoCptSimulation.R. This
+## insures the same data set is used for both models.
 rm(list = ls())
 gc()
 

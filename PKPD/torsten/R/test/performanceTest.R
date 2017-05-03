@@ -1,14 +1,16 @@
 ## Performance Test for mixed solver
 ## The working directory should still be the R directory
-## Check: use same initial estimates for each model? seems fair...
+## Randomly generate initial estimates (but from same distributions)
 
 rm(list = ls())
 gc()
 
-modelName <- "fTwoCpt"
-# modelName <- "fTwoCpt_mixed"
-testName <- modelName
+## Load rstan 2.15 -- load rstan before seeting lib path
+library(rstan)
 
+# modelName <- "fTwoCpt"
+modelName <- "fTwoCpt_mixed"
+testName <- modelName
 
 N <- 100  # 100 # number of times we want to run the test
 
@@ -22,10 +24,11 @@ modelDir <- file.path(projectDir, modelName)
 outDir <- file.path(modelDir, modelName)
 toolsDir <- file.path("tools")
 stanDir <- file.path("cmdstan")
+tempDir <- file.path(modelDir, modelName, "temp")
 
 # source(file.path(scriptDir, "pkgSetup.R"))
-# .libPaths(...)
-library(rstan)
+.libPaths("lib")
+# library(rstan)
 library(ggplot2)
 library(plyr)
 library(dplyr)
@@ -62,6 +65,43 @@ thetaTrue[11] <- sqrt(0.001)  # sigma_PD
 ## Compile Stan Model
 compileModel(model = file.path(modelDir, modelName), stanDir = stanDir)
 
+## Randomly generate initial estimates
+CLPrior = 10
+QPrior = 15
+VCPrior = 35
+VPPrior = 105
+kaPrior = 2
+CLPriorCV = 0.10
+QPriorCV = 0.18
+VCPriorCV = 0.14
+VPPriorCV = 0.17
+kaPriorCV = 0.16
+
+circ0Prior <- 5
+circ0PriorCV <- 0.20
+mttPrior <- 125
+mttPriorCV <- 0.2
+gammaPrior <- 0.17
+gammaPriorCV <- 0.2
+alphaPrior <- 2.0E-4
+alphaPriorCV <- 0.2
+
+init <- function(){
+  list(CL = exp(rnorm(1, log(CLPrior), CLPriorCV)),
+       Q = exp(rnorm(1, log(QPrior), QPriorCV)),
+       VC = exp(rnorm(1, log(VCPrior), VCPriorCV)),
+       VP = exp(rnorm(1, log(VPPrior), VPPriorCV)),
+       ka = exp(rnorm(1, log(kaPrior), kaPriorCV)),
+       sigma = runif(1, 0.5, 2),
+       alpha = exp(rnorm(1, log(alphaPrior), alphaPriorCV)),
+       mtt = exp(rnorm(1, log(mttPrior), mttPriorCV)),
+       circ0 = exp(rnorm(1, log(circ0Prior), circ0PriorCV)),
+       gamma = exp(rnorm(1, log(gammaPrior), gammaPriorCV)),
+       sigmaNeut = runif(1, 0.5, 2))
+}
+
+dir.create(tempDir)  ## directory to store initial estimates for each chain
+
 ## 4 performance metrics (only the first two really matter):
 # 1) fractional difference between estimated and real mean value of parameters
 # 2) time to compute 1000 effective independent samples
@@ -83,6 +123,8 @@ StanFit <- function(iSim) {
   otherRVs <- c("cObsPred", "neutPred")
   parameters <- c(parametersToPlot, otherRVs)
   
+  
+  
   nChains <- 4 # 4
   nPost <- 100 # 1000 ## Number of post-burn-in samples per chain after thinning
   nBurn <- 100  # 1000 ## Number of burn-in samples per chain after thinning
@@ -96,16 +138,23 @@ StanFit <- function(iSim) {
   mc.reset.stream()
   
   mclapply(chains,
-           function(chain, model, data, iter, warmup, thin, init)
+           function(chain, model, data, iter, warmup, thin, init) {
+             tempDir <- file.path(tempDir, iSim, chain)
+             dir.create(tempDir)
+             inits <- init()
+             with(inits, stan_rdump(ls(inits), file = file.path(tempDir,
+                                                                "init.R")))
              runModel(model = model, data = data,
                       iter = iter, warmup = warmup, thin = thin,
-                      init = init, seed = sample(1:999999, 1),
+                      init = file.path(tempDir, "init.R"), 
+                      seed = sample(1:999999, 1),
                       chain = chain, refresh = 100,
                       adapt_delta = 0.95, stepsize = 0.01,
-                      tag = iSim),
+                      tag = iSim)
+             },
            model = file.path(modelDir, modelName),
            data = file.path(modelDir, paste0(modelName, ".data.R")),
-           init = file.path(modelDir, paste0(modelName, ".init.R")),
+           init = init,
            iter = nIter, warmup = nBurnin, thin = nThin,
            mc.cores = min(nChains, detectCores()))
 
@@ -121,21 +170,23 @@ StanFit <- function(iSim) {
   ## compute performance metrics
 
   ## Get the run-time (sum of run time for all 4 chains)
-  RunTimes <- rep(0, nChains)
-  for(chain in 1:nChains)
-  {
-    filename <- paste(file.path(modelDir, modelName, modelName), 
-                      paste0("_",iSim,"_",chain), ".csv", sep = "")
-    l <- length(readLines(filename))
-    x <- read.csv(filename, header=FALSE, nrows=1, skip=l-2)
-    y <- x[1,1]
-    RunTimes[chain] <- as.numeric(unlist(regmatches(y,gregexpr("[[:digit:]]+\\.*[[:digit:]]*",y))))
-  }
-  RunTime <- sum(RunTimes)
+  ## FIX ME - use built-in method for runtimes
+  # RunTimes <- rep(0, nChains)
+  # for(chain in 1:nChains)
+  # {
+  #   filename <- paste(file.path(modelDir, modelName, modelName), 
+  #                     paste0("_",iSim,"_",chain), ".csv", sep = "")
+  #   l <- length(readLines(filename))
+  #   x <- read.csv(filename, header=FALSE, nrows=1, skip=l-2)
+  #   y <- x[1,1]
+  #   RunTimes[chain] <- as.numeric(unlist(regmatches(y,gregexpr("[[:digit:]]+\\.*[[:digit:]]*",y))))
+  # }
+  RunTimes <- get_elapsed_time(fit, parametersToPlot)
+  RunTime <- sum(RunTimes[ ,1]) + sum(RunTimes[ , 2])
   
   ## create a table that contains the mean value of the parameters
-  ## (obtained by combining all the chains), n_eff, and computation 
-  ## time required to generated 1000 independent samples.
+  ## (obtained by combining the mean of all the chains, with index nChains + 1), 
+  ## n_eff, and computation time required to generated 1000 independent samples.
   mean <- as.vector(get_posterior_mean(fit, 
                                        pars = parametersToPlot)[ , nChains + 1])
   n_eff <- as.vector(summary(fit, pars = parametersToPlot)$summary[ ,"n_eff"])
@@ -196,3 +247,4 @@ meanTime <- mean((pMatrix[1:nParameters, 3, 1:N]))
 hist(pMatrix[1, 3, 1:N])
 
 ## see other R script for analysis of results.
+

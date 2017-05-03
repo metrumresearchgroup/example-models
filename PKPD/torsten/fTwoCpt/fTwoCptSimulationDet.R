@@ -52,6 +52,7 @@ $CAPTURE CP DV1 DV2
 
 mod <- mread("acum", tempdir(), code)
 e1 <- ev(amt = 80 * 1000, ii = 12, addl = 14) # Create dosing events
+e1 <- ev(amt = 80 * 1000)  ## TEST
 # out <- mod %>% data_set(e1) %>% carry.out(dose) %>% Req(CP,DV1,DV2) %>% mrgsim(end=500)
 mod %>% ev(e1) %>% mrgsim(end = 500) %>% plot # plot data
 
@@ -201,3 +202,4 @@ init <- function(){
 with(data, stan_rdump(ls(data), file = paste0(modelName,".data.R")))
 inits <- init()
 with(inits, stan_rdump(ls(inits), file = paste0(modelName,".init.R")))
+
