@@ -3,6 +3,7 @@ gc()
 
 # modelName <- "fTwoCpt"
 modelName <- "fTwoCpt_mixed"
+dataName <- "fTwoCpt"
 
 ## Adjust directories to your settings.
 scriptDir <- getwd()
@@ -10,12 +11,14 @@ projectDir <- dirname(scriptDir)
 figDir <- file.path("deliv", "figure", modelName)
 tabDir <- file.path("deliv", "table", modelName)
 modelDir <- file.path(projectDir, modelName)
+dataDir <- file.path(projectDir, dataName)
 outDir <- file.path(modelDir, modelName)
 toolsDir <- file.path("tools")
 stanDir <- file.path("cmdstan")
+tempDir <- file.path(modelDir, modelName, "temp")
 
 # .libPaths(...)
-library(rstan)
+library(rstan)  ## Strongly recommend v2.15 (at least for Metworx)
 library(ggplot2)
 library(plyr)
 library(dplyr)
@@ -38,27 +41,62 @@ otherRVs <- c("cObsPred", "neutPred")
 parameters <- c(parametersToPlot, otherRVs)
 parametersToPlot <- c("lp__", parametersToPlot)
 
-compileModel(model = file.path(modelDir, modelName), stanDir = stanDir)
+## Randomly generate initial estimates
+CLPrior = 10
+QPrior = 15
+VCPrior = 35
+VPPrior = 105
+kaPrior = 2
+CLPriorCV = 0.10
+QPriorCV = 0.18
+VCPriorCV = 0.14
+VPPriorCV = 0.17
+kaPriorCV = 0.16
+
+circ0Prior <- 5
+circ0PriorCV <- 0.20
+mttPrior <- 125
+mttPriorCV <- 0.2
+gammaPrior <- 0.17
+gammaPriorCV <- 0.2
+alphaPrior <- 2.0E-4
+alphaPriorCV <- 0.2
+
+init <- function(){
+  list(CL = exp(rnorm(1, log(CLPrior), CLPriorCV)),
+       Q = exp(rnorm(1, log(QPrior), QPriorCV)),
+       VC = exp(rnorm(1, log(VCPrior), VCPriorCV)),
+       VP = exp(rnorm(1, log(VPPrior), VPPriorCV)),
+       ka = exp(rnorm(1, log(kaPrior), kaPriorCV)),
+       sigma = runif(1, 0.5, 2),
+       alpha = exp(rnorm(1, log(alphaPrior), alphaPriorCV)),
+       mtt = exp(rnorm(1, log(mttPrior), mttPriorCV)),
+       circ0 = exp(rnorm(1, log(circ0Prior), circ0PriorCV)),
+       gamma = exp(rnorm(1, log(gammaPrior), gammaPriorCV)),
+       sigmaNeut = runif(1, 0.5, 2))
+}
+
+dir.create(tempDir)  ## directory to store initial estimates for each chain
 
 ################################################################################################
 ## Deterministic Tests
 ## Make sure the model produces the data, when it uses the true parameters and the
 ## random variations are set to 0.
 
-nChains <- 1
-chains <- 1:nChains
+compileModel(model = file.path(modelDir, modelName), stanDir = stanDir)
 
-## Having issues using this on Metworx.
+## Having issues using this on Metworx with version 2.14.1
+## works fine with 2.15
 runModelFixed(model = file.path(modelDir, modelName),
-              data = file.path(modelDir, paste0(modelName, "Det.data.R")),
+              data = file.path(dataDir, paste0(dataName, "Det.data.R")),
               init = file.path(modelDir, paste0(modelName, "Det.init.R")),
               iter = 1, warmup = 0, thin = 1,
               refresh = 1, seed = sample(1:99999, 1))
 
 fit <- read_stan_csv(file.path(modelDir, modelName, paste0(modelName, chains, ".csv")))
-data <- read_rdump(file.path(modelDir, paste0(modelName,"Det.data.R")))
+data <- read_rdump(file.path(dataDir, paste0(dataName,"Det.data.R")))
 
-## Plot data for comparisons
+## Plot data for visual check
 ## PK
 dataPK <- data.frame(data$cObs, data$time[data$iObsPK])
 dataPK <- plyr::rename(dataPK, c("data.cObs" = "cObs", "data.time.data.iObsPK." = "time"))
@@ -75,8 +113,8 @@ p1 <- p1 + geom_point() +
 p1 + geom_line(aes(x = time, y = value))
 
 maxDiffPK <- max(abs(pred$value - pred$cObs) / pred$cObs)
-## For numerical model: 4.735332e-6
-## For mixed model: 4.735332e-06
+## For numerical model: 4.735332e-6 (local mac) / 4.056694e-06 (Metworx)
+## For mixed model: 4.735332e-06 (local mac) / 4.056694e-06 (Metworx)
 
 ## PD
 dataPD <- data.frame(data$neutObs, data$time[data$iObsPD])
@@ -95,17 +133,17 @@ p1 <- p1 + geom_point() +
 p1 + geom_line(aes(x = time, y = value))
 
 maxDiffPD <- max(abs(pred$value - pred$neutObs) / pred$neutObs)
-## For numerical model: 3.412185e-06
-## For mixed model: 3.412185e-06
+## For numerical model: 3.412185e-06 / 2e-06 (Metworx)
+## For mixed model: 3.412185e-06 (local mac) / 2e-06 (Metworx)
 
 ## The two Stan models spit out the same deviation from the mrgsolve model. I'll take
-## it there are in very close (exact?) agreement with one another.
+## it there are in very close (exact?) agreement with one another. SUSPICIOUS
 
 ################################################################################################
 ## run Stan
-nChains <- 1 # 4
-nPost <- 1 # 1000 ## Number of post-burn-in samples per chain after thinning
-nBurn <- 1  # 1000 ## Number of burn-in samples per chain after thinning
+nChains <- 4 # 4
+nPost <- 100 # 1000 ## Number of post-burn-in samples per chain after thinning
+nBurn <- 100  # 1000 ## Number of burn-in samples per chain after thinning
 nThin <- 1
 chains <- 1:nChains
 
@@ -117,27 +155,42 @@ mc.reset.stream()
 
 ## Run diagnose
 mclapply(chains,
-         function(chain, model, data, init)
+         function(chain, model, data, init) {
+           tempDir <- file.path(tempDir, chain)
+           dir.create(tempDir)
+           inits <- init()
+           with(inits, stan_rdump(ls(inits), file = file.path(tempDir,
+                                                              "init.R")))
            runDiagnose(model = model, data = data,
-                       init = init, seed = sample(1:99999, 1),
+                       init = file.path(tempDir, "init.R"),
+                       seed = sample(1:99999, 1),
                        chain = chain,
-                       refresh = 100),
+                       refresh = 100)
+           },
          model = file.path(modelDir, modelName),
-         data = file.path(modelDir, paste0(modelName, ".data.R")),
-         init = file.path(modelDir, paste0(modelName, ".init.R")),
+         data = file.path(dataDir, paste0(dataName, ".data.R")),
+         init = init,
          mc.cores = min(nChains, detectCores()))
 
 ## Run model
 mclapply(chains,
-         function(chain, model, data, iter, warmup, thin, init)
+         function(chain, model, data, iter, warmup, thin, init) {
+           tempDir <- file.path(tempDir, chain)
+           dir.create(tempDir)
+           inits <- init()
+           with(inits, stan_rdump(ls(inits), file = file.path(tempDir,
+                                                              "init.R")))
            runModel(model = model, data = data,
                     iter = iter, warmup = warmup, thin = thin,
-                    init = init, seed = sample(1:999999, 1),
+                    init = file.path(tempDir, "init.R"), 
+                    seed = sample(1:999999, 1),
                     chain = chain, refresh = 100,
-                               adapt_delta = 0.95, stepsize = 0.01),
+                               adapt_delta = 0.95, stepsize = 0.01)
+           },
          model = file.path(modelDir, modelName),
-         data = file.path(modelDir, paste0(modelName, ".data.R")),
-         init = file.path(modelDir, paste0(modelName, ".init.R")),
+         data = file.path(dataDir, paste0(dataName, ".data.R")),
+         init = init,
+         # init = file.path(modelDir, paste0(modelName, ".init.R")),
          iter = nIter, warmup = nBurnin, thin = nThin,
          mc.cores = min(nChains, detectCores()))
 
