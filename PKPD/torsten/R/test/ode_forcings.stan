@@ -205,6 +205,79 @@ functions {
 	                                       x_r, x_i)));
 	}
 	
+  ## Evolution operator for mixed solver
+  real[] feedbackModel_forced(real t0, real[]  t, real[] init,
+                               real amt, int cmt, int evid,
+                               real[] parms,
+                               real[] rate) {
+    int idummy[0];
+    real x[8];
+    real temp[1, 5];
+    real augmentedParms[12];
+    augmentedParms[1:9] = parms;
+    augmentedParms[10:12] = init[1:3];
+
+    if (t0 == t[1]) x = init;
+    else {
+      x[1:3] = to_array_1d(twoCptModel1(t[1] - t0, 
+                           to_vector(init[1:3]), to_vector(parms[1:5])));
+
+      temp = integrate_ode_rk45(feedbackODE_forced, init[4:8], t0, t, 
+                                augmentedParms,
+                                rate, idummy);
+      x[4:8] = to_array_1d(temp);
+    }
+    
+    if (evid == 1) x[cmt] = x[cmt] + amt;
+    
+    return x;
+  }
+  
+  ## Evolution operator for numerical solver
+  ## (only take PD data from numerical solver)
+  real[] feedbackModel_coupled(real t0, real[]  t, real[] init,
+                                real amt, int cmt, int evid,
+                                real[] parms,
+                                real[] rate) {
+    int idummy[0];
+    real x[8];
+    real temp[1, 8];
+
+    if (t0 == t[1]) x = init;
+    else {
+      temp = integrate_ode_rk45(feedbackODE_coupled, init, t0, t, parms,
+                                rate, idummy);
+      x = to_array_1d(temp);
+    }
+    if (evid == 1) x[cmt] = x[cmt] + amt;
+
+    return x;
+  }
+  
+  matrix feedbackModel(real[] time, real[] amt, int[] cmt, int[] evid,
+                       real[] parms, real[] x_r, int isForced) {
+    int idummy[0];
+    int nCmt = 8;
+    real init[nCmt] = rep_array(0.0, nCmt);
+    int nt = size(time);
+    matrix[nt, nCmt] pred;
+    real t0 = time[1];
+
+    for (i in 1:nt) {
+      if (isForced) {
+      init = feedbackModel_forced(time[max(1, i - 1)], time[i:i], init, amt[i], cmt[i],
+                            evid[i], parms, x_r);
+      } else {
+      init = feedbackModel_coupled(time[max(1, i - 1)], time[i:i], init, amt[i], cmt[i],
+                            evid[i], parms, x_r);
+      }
+      for (j in 1:8) pred[i, j] = init[j];
+    }
+    return pred;
+  }
+	
+	
+
 }
   
 model { }
