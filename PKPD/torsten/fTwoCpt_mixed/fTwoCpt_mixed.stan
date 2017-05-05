@@ -110,11 +110,7 @@ functions {
     predPK = twoCptModel2(t, initPK, to_vector(parms[1:5]));
 
     conc = predPK[2] / VC;
-    // conc = initPK[2] / VC;
     Edrug = alpha * conc;
-
-    // print(initPK[2]);
-    // print(predPK[2]);
 
     dxdt[1] = ktr * prol * ((1 - Edrug) * ((circ0 / circ)^gamma) - 1);
     dxdt[2] = ktr * (prol - transit1);
@@ -204,6 +200,7 @@ functions {
 	}
 
   ## Evolution operator for numerical solver
+  ## (only take PD data from numerical solver)
   real[] feedbackModel1_num(real t0, real[]  t, real[] init,
                             real amt, int cmt, int evid,
                             real[] parms,

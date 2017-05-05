@@ -76,8 +76,14 @@ max(abs(forced - coupled))
 ##
 
 
-## TEST 4: Do with the event Handler
+## TEST 4: Do with the event Handler -- FAILS
 data <- read_rdump(file.path(dataDir, paste0(dataName,".data.R")))
+
+if (0) {
+  length(data$evid)
+  data$evid <- rep(0, 79)
+  data$evid[1] <- 1
+}
 
 ## The last argument of the Event Handler determines which evolution
 ## operator gets used.
@@ -88,14 +94,14 @@ coupled <- feedbackModel(data$time, data$amt, data$cmt, data$evid,
                         theta, x_r, 0)
 
 max(abs(forced - coupled))
-## 2.932129
+## 0.00517639
 
 ## Compare PK graphs
-plot(data$time, coupled[ , 2], type="l", main="PK Solution")
+plot(data$time, coupled[ , 2], type="l", main="PK")
 lines(data$time, forced[ , 2], type="l", lty=2, col="red")
 
 ## Compare PD graphs
-plot(data$time, coupled[ , 8], type="l", main="PK Solution")
+plot(data$time, coupled[ , 8], type="l", main="PD")
 lines(data$time, forced[ , 8], type="l", lty=2, col="red")
 
 

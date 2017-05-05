@@ -97,53 +97,6 @@ functions {
 
     return dxdt;
   }
-  
-    ## ODE system for numerical solver
-  real[] feedbackODE (real t,
-			                real[] x,
-			                real[] parms,
-			                real[] rdummy,
-			                int[] idummy) {
-    ## PK variables
-    real CL = parms[1];
-    real Q = parms[2];
-    real VC = parms[3];
-    real VP = parms[4];
-    real ka = parms[5];
-    real k10 = CL / VC;
-    real k12 = Q / VC;
-    real k21 = Q / VP;
-    real conc;
-    real Edrug;
-
-    ## PD variables
-    real MTT = parms[6];
-    real circ0 = parms[7];
-    real alpha = parms[8];
-    real gamma = parms[9];
-    real ktr = 4 / MTT;
-    real prol = x[4] + circ0;
-    real transit1 = x[5] + circ0;
-    real transit2 = x[6] + circ0;
-    real transit3 = x[7] + circ0;
-    real circ = fmax(machine_precision(), x[8] + circ0);
-
-    real dxdt[8];
-
-    dxdt[1] = -ka * x[1];
-    dxdt[2] = ka * x[1] - (k10 + k12) * x[2] + k21 * x[3];
-    dxdt[3] = k12 * x[2] - k21 * x[3];
-    conc = x[2] / VC;
-    Edrug = alpha * conc;
-
-    dxdt[4] = ktr * prol * ((1 - Edrug) * ((circ0 / circ)^gamma) - 1);
-    dxdt[5] = ktr * (prol - transit1);
-    dxdt[6] = ktr * (transit1 - transit2);
-    dxdt[7] = ktr * (transit2 - transit3);
-    dxdt[8] = ktr * (transit3 - circ);
-
-    return dxdt;
-	}  
 
 	## ODE system for numerical solver
   real[] feedbackODE_coupled (real t,
@@ -221,8 +174,12 @@ functions {
     else {
       x[1:3] = to_array_1d(twoCptModel1(t[1] - t0, 
                            to_vector(init[1:3]), to_vector(parms[1:5])));
+      
+      
 
-      temp = integrate_ode_rk45(feedbackODE_forced, init[4:8], t0, t, 
+      // temp = integrate_ode_rk45(feedbackODE_forced, init[4:8], t0, t,
+      temp = integrate_ode_rk45(feedbackODE_forced, init[4:8], 0,
+                                to_array_1d(to_vector(t) - t0),
                                 augmentedParms,
                                 rate, idummy);
       x[4:8] = to_array_1d(temp);

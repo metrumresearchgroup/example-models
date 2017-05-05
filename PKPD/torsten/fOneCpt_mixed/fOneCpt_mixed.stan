@@ -208,8 +208,8 @@ generated quantities {
   real neutPred[nObsPD];
   
   for (i in 1:nObsPK)
-    cObsPred[i] = exp(normal_rng(logCObs[i], sigma));
+    cObsPred[i] = exp(normal_rng(log(cHatObs[i]), sigma));
     
   for (i in 1:nObsPD)
-    neutPred[i] = exp(normal_rng(logNeutObs[i], sigma));
+    neutPred[i] = exp(normal_rng(log(neutHatObs[i]), sigma));
 }
