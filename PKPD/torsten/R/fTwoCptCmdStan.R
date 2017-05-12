@@ -83,6 +83,9 @@ dir.create(tempDir)  ## directory to store initial estimates for each chain
 ## Make sure the model produces the data, when it uses the true parameters and the
 ## random variations are set to 0.
 
+nChains <- 1
+chains <- 1:nChains
+
 compileModel(model = file.path(modelDir, modelName), stanDir = stanDir)
 
 ## Having issues using this on Metworx with version 2.14.1
@@ -112,9 +115,9 @@ p1 <- p1 + geom_point() +
         legend.position = "none", strip.text = element_text(size = 8)) 
 p1 + geom_line(aes(x = time, y = value))
 
-maxDiffPK <- max(abs(pred$value - pred$cObs) / pred$cObs)
-## For numerical model: 4.735332e-6 (local mac) / 4.056694e-06 (Metworx)
-## For mixed model: 4.735332e-06 (local mac) / 4.056694e-06 (Metworx)
+max(abs(pred$value - pred$cObs) / pred$cObs)
+## For numerical model: 4.188311e-06 (metworx)
+## For mixed model: 6.381572e-06 (metworx)
 
 ## PD
 dataPD <- data.frame(data$neutObs, data$time[data$iObsPD])
@@ -132,12 +135,10 @@ p1 <- p1 + geom_point() +
         legend.position = "none", strip.text = element_text(size = 8)) 
 p1 + geom_line(aes(x = time, y = value))
 
-maxDiffPD <- max(abs(pred$value - pred$neutObs) / pred$neutObs)
-## For numerical model: 3.412185e-06 / 2e-06 (Metworx)
-## For mixed model: 3.412185e-06 (local mac) / 2e-06 (Metworx)
+max(abs(pred$value - pred$neutObs) / pred$neutObs)
+## For numerical model: 2.42397e-06 (Metworx)
+## For mixed model: 2e-06 (Metworx)
 
-## The two Stan models spit out the same deviation from the mrgsolve model. I'll take
-## it there are in very close (exact?) agreement with one another. SUSPICIOUS
 
 ################################################################################################
 ## run Stan
@@ -190,7 +191,6 @@ mclapply(chains,
          model = file.path(modelDir, modelName),
          data = file.path(dataDir, paste0(dataName, ".data.R")),
          init = init,
-         # init = file.path(modelDir, paste0(modelName, ".init.R")),
          iter = nIter, warmup = nBurnin, thin = nThin,
          mc.cores = min(nChains, detectCores()))
 
@@ -218,7 +218,7 @@ write.csv(ptable, file = file.path(tabDir, paste(modelName, "ParameterTable.csv"
 
 ################################################################################################
 ## posterior predictive plot
-data <- read_rdump(file.path(modelDir, paste0(modelName,".data.R")))
+data <- read_rdump(file.path(dataDir, paste0(dataName,".data.R")))
 
 ## PK
 dataPK <- data.frame(data$cObs, data$time[data$iObsPK])

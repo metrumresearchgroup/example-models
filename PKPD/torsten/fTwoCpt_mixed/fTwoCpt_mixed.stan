@@ -54,36 +54,13 @@ functions {
     // if(evid == 1) x[cmt] = x[cmt] + amt;
     return x;
   }
-  
-  ## Matrix exponential solution
-  vector twoCptModel2(real dt, vector init, vector parms) {
-    real CL = parms[1];
-    real Q = parms[2];
-    real V1 = parms[3];
-    real V2 = parms[4];
-    real ka = parms[5];
-    real k10 = CL / V1;
-    real k12 = Q / V1;
-    real k21 = Q / V2;
-    matrix[3, 3] K;
-    
-    K =  rep_matrix(0, 3, 3);
-    K[1, 1] = -ka;
-    K[2, 1] = ka;
-    K[2, 2] = - (k10 + k12);
-    K[2, 3] = k21;
-    K[3, 2] = k12;
-    K[3, 3] = - k21;
-    
-    return matrix_exp(dt * K) * init;
-  }
 
   ## ODE sytem for mixed solver
-  real[] feedbackODE_m(real t, 
-                     real[] x,
-                     real[] parms,
-                     real[] rate, 
-                     int[] idummy) {
+  real[] feedbackODE_mixed(real t, 
+                             real[] x,
+                             real[] parms,
+                             real[] rate, 
+                             int[] idummy) {
     ## PK variables
     real VC = parms[3];
 
@@ -105,9 +82,7 @@ functions {
     real Edrug;
     real dxdt[5];
 
-    // predPK = fTwoCpt(t, to_vector(parms[1:5]), initPK, rate);
-    // predPK = twoCptModel1(t, initPK, to_vector(parms[1:5]));
-    predPK = twoCptModel2(t, initPK, to_vector(parms[1:5]));
+    predPK = twoCptModel1(t, initPK, to_vector(parms[1:5]));
 
     conc = predPK[2] / VC;
     Edrug = alpha * conc;
@@ -122,10 +97,10 @@ functions {
   }
 
 	## Evolution operator for mixed solver
-  real[] feedbackModel1(real t0, real[]  t, real[] init,
-                        real amt, int cmt, int evid,
-                        real[] parms,
-                        real[] rate, int[] idummy) {
+  real[] feedbackModel1_mixed(real t0, real[]  t, real[] init,
+                              real amt, int cmt, int evid,
+                              real[] parms,
+                              real[] rate, int[] idummy) {
     real x[8];
     real temp[1, 5];
     real augmentedParms[12];
@@ -134,14 +109,13 @@ functions {
 
     if (t0 == t[1]) x = init;
     else {
-      // x[1:3] = to_array_1d(fTwoCpt(t[1] - t0,
-      //                      to_vector(parms[1:5]),
-      //                      to_vector(init[1:3]),
-      //                      rate));
-      x[1:3] = to_array_1d(twoCptModel2(t[1] - t0, 
+      x[1:3] = to_array_1d(twoCptModel1(t[1] - t0, 
                            to_vector(init[1:3]), to_vector(parms[1:5])));
 
-      temp = integrate_ode_rk45(feedbackODE_m, init[4:8], t0, t, 
+      ## integrate from 0 to dt, instead of t0 to t. This is because
+      ## we pass the argument dt in the analytical solution
+      temp = integrate_ode_rk45(feedbackODE_mixed, init[4:8], 0,
+                                to_array_1d(to_vector(t) - t0),
                                 augmentedParms,
                                 rate, idummy);
       x[4:8] = to_array_1d(temp);
@@ -153,11 +127,11 @@ functions {
   }
 
   ## ODE system for numerical solver
-  real[] feedbackODE (real t,
-			                real[] x,
-			                real[] parms,
-			                real[] rdummy,
-			                int[] idummy) {
+  real[] feedbackODE_coupled (real t,
+			                        real[] x,
+			                        real[] parms,
+			                        real[] rdummy,
+			                        int[] idummy) {
     ## PK variables
     real CL = parms[1];
     real Q = parms[2];
@@ -200,30 +174,24 @@ functions {
 	}
 
   ## Evolution operator for numerical solver
-  ## (only take PD data from numerical solver)
-  real[] feedbackModel1_num(real t0, real[]  t, real[] init,
-                            real amt, int cmt, int evid,
-                            real[] parms,
-                            real[] rate, int[] idummy) {
+  real[] feedbackModel1_coupled(real t0, real[]  t, real[] init,
+                                real amt, int cmt, int evid,
+                                real[] parms,
+                                real[] rate, int[] idummy) {
     real x[8];
     real temp[1, 8];
 
     if (t0 == t[1]) x = init;
     else {
-      x[1:3] = to_array_1d(fTwoCpt(t[1] - t0,
-                           to_vector(parms[1:5]),
-                           to_vector(init[1:3]),
-                           rate));
-      temp = integrate_ode_rk45(feedbackODE, init, t0, t, parms,
+      temp = integrate_ode_rk45(feedbackODE_coupled, init, t0, t, parms,
                                 rate, idummy);
-      x[4:8] = to_array_1d(temp)[4:8];
+      x = to_array_1d(temp);
     }
 
     if (evid == 1) x[cmt] = x[cmt] + amt;
 
     return x;
   }
-
 
   ## Event Handler
   matrix feedbackModel(real[] time, real[] amt, int[] cmt, int[] evid,
@@ -236,17 +204,18 @@ functions {
 
     for (i in 1:nt) {
       if (1) {
-      init = feedbackModel1(time[max(1, i - 1)], time[i:i], init, amt[i], cmt[i],
-                            evid[i], parms, rate, idummy);
+      init = feedbackModel1_mixed(time[max(1, i - 1)], time[i:i], init,
+                                 amt[i], cmt[i], evid[i], parms, rate,
+                                 idummy);
       } else {
-      init = feedbackModel1_num(time[max(1, i - 1)], time[i:i], init, amt[i], cmt[i],
-                            evid[i], parms, rate, idummy);
+      init = feedbackModel1_coupled(time[max(1, i - 1)], time[i:i], init,
+                                    amt[i], cmt[i], evid[i], parms, rate, 
+                                    idummy);
       }
       for (j in 1:8) pred[i, j] = init[j];
     }
     return pred;
   }
-  
 }
 
 data{
@@ -295,10 +264,7 @@ transformed data{
   int nCmt = 8;
   real rdummy[0];
   int idummy[0];
-  real rate1[8] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-  
-  // FOR TEST
-  real t[1] = {400.0};
+  real rate1[8] = rep_array(0.0, 8);
 }
 
 parameters {
@@ -323,13 +289,6 @@ transformed parameters {
   real theta[nParms];  # ODE parameters
   matrix[nt, nCmt] x;
   
-  // for test
-  real y[8];
-  real y1[8];
-  real init[8] = {67763.7,11871.8,218.363,-0.00070153,-6.32359e-07,-4.24429e-10,
-                  -2.26959e-13,-1.2264e-16};
-  real theta_full[nParms + 3];
-  
   theta[1] = CL;
   theta[2] = Q;
   theta[3] = VC;
@@ -341,8 +300,7 @@ transformed parameters {
   theta[9] = gamma;
 
   x = feedbackModel(time, amt, cmt, evid, theta, rate1, idummy);
-  // print(x);
-  
+
   cHat = x[ , 2] / VC;
   neutHat = x[ , 8] + circ0;
 
@@ -350,10 +308,10 @@ transformed parameters {
   neutHatObs = neutHat[iObsPD];
   
   // FOR TEST
-  theta_full[1:nParms] = theta;
-  theta_full[10:12] = init[1:3];
-  y = feedbackModel1(0.0, t, init, 0.0, 0, 0, theta, rate1, idummy);
-  y1 = feedbackModel1_num(0.0, t, init, 0.0, 0, 0, theta, rate1, idummy);
+  // theta_full[1:nParms] = theta;
+  // theta_full[10:12] = init[1:3];
+  // y = feedbackModel1(0.0, t, init, 0.0, 0, 0, theta, rate1, idummy);
+  // y1 = feedbackModel1_num(0.0, t, init, 0.0, 0, 0, theta, rate1, idummy);
   // print(y);
   // print(y1);
   

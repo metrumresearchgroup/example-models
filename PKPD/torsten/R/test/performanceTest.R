@@ -1,15 +1,18 @@
+rm(list = ls())
+gc()
+
 ## Performance Test for mixed solver
 ## The working directory should still be the R directory
 ## Randomly generate initial estimates (but from same distributions)
 
+setwd("/data/example-models/PKPD/torsten/R")
+
 rm(list = ls())
 gc()
 
-## Load rstan 2.15 -- load rstan before seeting lib path
-library(rstan)
-
-# modelName <- "fTwoCpt"
-modelName <- "fTwoCpt_mixed"
+modelName <- "fTwoCpt"
+# modelName <- "fTwoCpt_mixed"
+dataName <- "fTwoCpt"  ## use the same data for both models
 testName <- modelName
 
 N <- 100  # 100 # number of times we want to run the test
@@ -21,6 +24,7 @@ projectDir <- dirname(scriptDir)
 figDir <- file.path("deliv", "figure", modelName)
 tabDir <- file.path("deliv", "table", modelName)
 modelDir <- file.path(projectDir, modelName)
+dataDir <- file.path(projectDir, dataName)
 outDir <- file.path(modelDir, modelName)
 toolsDir <- file.path("tools")
 stanDir <- file.path("cmdstan")
@@ -28,7 +32,7 @@ tempDir <- file.path(modelDir, modelName, "temp")
 
 # source(file.path(scriptDir, "pkgSetup.R"))
 .libPaths("lib")
-# library(rstan)
+library(rstan)  ## make sure rstan 2.15 gets used
 library(ggplot2)
 library(plyr)
 library(dplyr)
@@ -62,6 +66,8 @@ thetaTrue[9] <- 3e-4  # alpha
 thetaTrue[10] <- 0.17  # gamma
 thetaTrue[11] <- sqrt(0.001)  # sigma_PD
 
+dir.create(file.path(modelDir, modelName))
+
 ## Compile Stan Model
 compileModel(model = file.path(modelDir, modelName), stanDir = stanDir)
 
@@ -92,12 +98,12 @@ init <- function(){
        VC = exp(rnorm(1, log(VCPrior), VCPriorCV)),
        VP = exp(rnorm(1, log(VPPrior), VPPriorCV)),
        ka = exp(rnorm(1, log(kaPrior), kaPriorCV)),
-       sigma = runif(1, 0.5, 2),
+       sigma = runif(1, 0.0001, 2),
        alpha = exp(rnorm(1, log(alphaPrior), alphaPriorCV)),
        mtt = exp(rnorm(1, log(mttPrior), mttPriorCV)),
        circ0 = exp(rnorm(1, log(circ0Prior), circ0PriorCV)),
        gamma = exp(rnorm(1, log(gammaPrior), gammaPriorCV)),
-       sigmaNeut = runif(1, 0.5, 2))
+       sigmaNeut = runif(1, 0.0001, 2))
 }
 
 dir.create(tempDir)  ## directory to store initial estimates for each chain
@@ -123,7 +129,8 @@ StanFit <- function(iSim) {
   otherRVs <- c("cObsPred", "neutPred")
   parameters <- c(parametersToPlot, otherRVs)
   
-  
+  rstan_options(auto_write = TRUE)
+  options(mc.cores = parallel::detectCores())
   
   nChains <- 4 # 4
   nPost <- 100 # 1000 ## Number of post-burn-in samples per chain after thinning
@@ -139,21 +146,22 @@ StanFit <- function(iSim) {
   
   mclapply(chains,
            function(chain, model, data, iter, warmup, thin, init) {
-             tempDir <- file.path(tempDir, iSim, chain)
-             dir.create(tempDir)
+             dir.create(file.path(tempDir, iSim))
+             tempDirSim <- file.path(tempDir, iSim, chain)
+             dir.create(tempDirSim)
              inits <- init()
-             with(inits, stan_rdump(ls(inits), file = file.path(tempDir,
+             with(inits, stan_rdump(ls(inits), file = file.path(tempDirSim,
                                                                 "init.R")))
              runModel(model = model, data = data,
                       iter = iter, warmup = warmup, thin = thin,
-                      init = file.path(tempDir, "init.R"), 
+                      init = file.path(tempDirSim, "init.R"), 
                       seed = sample(1:999999, 1),
                       chain = chain, refresh = 100,
                       adapt_delta = 0.95, stepsize = 0.01,
                       tag = iSim)
              },
            model = file.path(modelDir, modelName),
-           data = file.path(modelDir, paste0(modelName, ".data.R")),
+           data = file.path(dataDir, paste0(dataName, ".data.R")),
            init = init,
            iter = nIter, warmup = nBurnin, thin = nThin,
            mc.cores = min(nChains, detectCores()))
@@ -170,17 +178,6 @@ StanFit <- function(iSim) {
   ## compute performance metrics
 
   ## Get the run-time (sum of run time for all 4 chains)
-  ## FIX ME - use built-in method for runtimes
-  # RunTimes <- rep(0, nChains)
-  # for(chain in 1:nChains)
-  # {
-  #   filename <- paste(file.path(modelDir, modelName, modelName), 
-  #                     paste0("_",iSim,"_",chain), ".csv", sep = "")
-  #   l <- length(readLines(filename))
-  #   x <- read.csv(filename, header=FALSE, nrows=1, skip=l-2)
-  #   y <- x[1,1]
-  #   RunTimes[chain] <- as.numeric(unlist(regmatches(y,gregexpr("[[:digit:]]+\\.*[[:digit:]]*",y))))
-  # }
   RunTimes <- get_elapsed_time(fit, parametersToPlot)
   RunTime <- sum(RunTimes[ ,1]) + sum(RunTimes[ , 2])
   
@@ -247,4 +244,6 @@ meanTime <- mean((pMatrix[1:nParameters, 3, 1:N]))
 hist(pMatrix[1, 3, 1:N])
 
 ## see other R script for analysis of results.
+
+
 

@@ -84,6 +84,8 @@ functions {
     // predPK = fTwoCpt(t, to_vector(parms[1:5]), initPK, rate);
     predPK = twoCptModel1(t, initPK, to_vector(parms[1:5]));
     // predPK = twoCptModel2(t, initPK, to_vector(parms[1:5]));
+    
+    dxdt = user_function(predPK, parms, ...);
 
     conc = predPK[2] / VC;
     Edrug = alpha * conc;
@@ -174,10 +176,7 @@ functions {
     else {
       x[1:3] = to_array_1d(twoCptModel1(t[1] - t0, 
                            to_vector(init[1:3]), to_vector(parms[1:5])));
-      
-      
 
-      // temp = integrate_ode_rk45(feedbackODE_forced, init[4:8], t0, t,
       temp = integrate_ode_rk45(feedbackODE_forced, init[4:8], 0,
                                 to_array_1d(to_vector(t) - t0),
                                 augmentedParms,
