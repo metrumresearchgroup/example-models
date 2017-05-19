@@ -57,8 +57,8 @@ charlesm@metrumrg.com \` metrumrg.com \\
 {\Huge \textbf{Torsten} \\ \ \\  \huge A Prototype Library for Bayesian Pharmacometrics Modeling in Stan \\ \ \\
 User Manual \\ \ \\ 
 \Large Charles Margossian and Bill Gillespie \\ \ \\ \ \\ \ \\ \ \\
-Torsten Version 0.82 \\ for Stan Version 2.14.0 \\ \ \\ 
-\large Tuesday March 3rd 2017 }
+Torsten Version 0.83 beta \\ for Stan Version 2.15.0 \\ \ \\ 
+\large May 2017 }
 \end{center}
 
 \clearpage
@@ -140,12 +140,13 @@ This library provides Stan language functions that calculate amounts in each com
     
 \subsection{Implementation details}
 \begin{itemize}
-  \item Stan version 2.14.0 (\url{http://mc-stan.org/})
+  \item Stan version 2.15.0 (\url{http://mc-stan.org/})
   \item All functions are programmed in C++ and are compatible with the Stan-math automatic differentiation library \cite{AD}
   \item All functions can be called directly in a Stan file in a manner identical to other built-in functions
   \item One and two compartment models: hand-coded analytical solutions
   \item General linear compartment models with semi-analytical solutions using a built-in Matrix Exponential function (Pade approximation coupled with scaling and squaring \cite{matrixExp})
   \item General compartment models with numerical solutions to ODEs using built-in ODE integrators in Stan (Runge-Kutta 4th/5th and backward differentiation methods from CVODES library), with adjustable tuning parameters
+  \item Mix compartment model, with analytical solutions to the base PK ODE sub-system and numerical solutions to the other ODEs, using built-in ODE integrators, with adjustable tuning parameters
 \end{itemize}
 
 
@@ -155,9 +156,6 @@ Our current plans for future development of Torsten include the following:
 \begin{itemize}
   \item A system to easily share packages of Stan functions (written in C++ or in the Stan language)
   \item Steady state calculation for the General compartment model
-  \begin{itemize}
-    \item This requires a solver for nonlinear algebraic equations (aka a root solver)
-  \end{itemize}
   \item Optimize Matrix exponential functions
   \begin{itemize}
     \item Function for the action of Matrix Exponential on a vector
@@ -178,15 +176,12 @@ Our current plans for future development of Torsten include the following:
   \end{itemize}
 \end{itemize}
 
-\subsection{Updates since Torsten 0.81}
+\subsection{Updates since Torsten 0.82}
 \begin{itemize}
-  \item Torsten is now up to date with Stan version 2.14.0
-  \item We fixed a bug that prevented the user from passing tuning parameters for the ODE integrators.
-  \item We split the parameter argument into three arguments: \texttt{pMatrix} (parameters for the ODE system), \texttt{biovar} (parameters for the bioavailability), and \texttt{tlag} (parameters for lag times). This gives the users more control over which arguments get passed as data and as parameters. The model is most efficient when all fixed values are passed as data.
-  \item We changed the order of the arguments: the user first passes the data arguments and then the parameter arguments. This is because in future versions we will want optional arguments to be passed last.
-  \item The user can now pass parameter arguments as 1D or 2D arrays, depending on whether the parameters are constant or change from one event to the other.
-  \item We have significantly increased the number of unit tests -- but we still have more to do!
-  \item The unit tests now check automatic differentiation against finite differentiation calculations.
+  \item Torsten is now up to date with Stan version 2.15.0
+  \item Add ``mix solver" functions
+  \item Add algebraic solver
+  \item Fix bug that prevented users from using a print statement inside a function that specifies an ODE system.
   \item Fixed minor bugs and report issues.
 \end{itemize}
  
@@ -194,7 +189,7 @@ Our current plans for future development of Torsten include the following:
 
 \section{Using Torsten}
 
-The reader should have a basic understanding of how Stan works before tackling this chapter. There are excellent resources online to get started with Stan (\url{http://mc-stan.org/documentation/}). 
+The reader should have a basic understanding of how Stan works before reading this chapter. There are excellent resources online to get started with Stan (\url{http://mc-stan.org/documentation/}). 
 
 In this section we go through the different functions Torsten adds to Stan. It will be helpful to apply these functions to a simple example. We have uploaded code and data on \url{https://github.com/charlesm93/example-models/tree/torsten-0.82/PKPD/torsten}.
 
@@ -423,6 +418,8 @@ The linear ODE model function has the form:
 \label{LinTwoCptCode}
 \end{figure}
 
+\pagebreak
+
 \subsection{General ODE Model Function} \ \\
 
 Torsten may be used to fit models described by a system of first-order ODEs, i.e., differential equations of the form:
@@ -446,6 +443,8 @@ The options for \texttt{model\_name} are:
 
 They respectively call the built-in Runge-Kutta 4th/5th order (rk45) integrator, recommended for non-stiff ODEs, and the Backward Differentiation (BDF) integrator, recommended for stiff ODEs. Which value to use for the tuning parameters depends on the integrator and the specifics of the ODE system. Reducing the tolerance parameters and increasing the number of steps make for a more robust integrator but can significantly slow down the algorithm. The following can be used as a starting point:  \mbox{\texttt{rel\_tol = 1e-6}}, \mbox{\texttt{abs\_tol = 1e-6}} and \mbox{\texttt{max\_step = 1e+6}} for the rk45 integrator and \mbox{\texttt{rel\_tol = 1e-10}}, \mbox{\texttt{abs\_tol = 1e-10}} and \mbox{\texttt{max\_step = 1e+8}} for the bdf integrator\footnote{These are the default tuning parameters for integrate\_ode\_rk45() and integrate\_ode\_bdf(). The Torsten functions do not have a default value. The user must explicitly pass the tuning parameters for generalOdeModel\_*().}. The user should be prepared to adjust these values. For additional information, see Stan's reference manual (section 19).
 
+\pagebreak
+
 \begin{figure}
 \caption{Stan language for fitting a two compartment model using the \texttt{genOdeModel\_rk45} function (abstract)}
 \begin{center}
@@ -455,7 +454,7 @@ They respectively call the built-in Runge-Kutta 4th/5th order (rk45) integrator,
 `\bf{functions}'{
   # define ODE system for two compartment model
   real[] `\textcolor{red}{twoCptModelODE}'(real t,
-			       real[] x,
+			       real[] y,
 			       real[] theta,
 			       real[] dummy_real,
 			       int[] dummy_int){
@@ -469,11 +468,11 @@ They respectively call the built-in Runge-Kutta 4th/5th order (rk45) integrator,
     real k10 = CL / V2;
     real y[3]; 
 
-    y[1] = -ka * x[1];
-    y[2] = ka * x[1] - (k10 + k12)*x[2] + k21*x[3];
-    y[3] = k12 * x[2] - k21 * x[3];
+    dydt[1] = -ka * y[1];
+    dydt[2] = ka * y[1] - (k10 + k12)*y[2] + k21*y[3];
+    dydy[3] = k12 * y[2] - k21 * y[3];
 
-    return y;
+    return dydt;
   }
 }
                                     $\vdots$
@@ -496,6 +495,69 @@ They respectively call the built-in Runge-Kutta 4th/5th order (rk45) integrator,
 \end{center}
 \label{GenTwoCptModelCode}
 \end{figure}
+
+
+
+\subsection{Mix ODE Model Function} \ \\
+
+In certain cases, an ODE system can be divided in two subsystems:
+
+\begin{eqnarray*}
+  y_1^\prime &=& f(t, y_1) \\
+  y_2^\prime &=& f(t, y_1, y_2)
+\end{eqnarray*} 
+
+where $y_1$, $y_2$, and $f$ are vector-valued functions, and  $y_1^\prime$ is independent of $y_2$. This structure arises, for instance, in PKPD models, where $y_1$ describes to the PK components and $y_2$ the PD effects. If $y_1$ has an analytical solution, we can construct a \textit{mix solver}, which analytically solves $y_1$ and numerically integrates $y_2$. This approach leads to an appreciable gain in computational efficiency. In the example of a Friberg-Karlsson semi-mechanistic model \cite{FK}, we observe an average $\sim 44\%$ speedup when using the mix solver in lieu of the numerical integrator\footnote{A manuscript on the subject is in progress.}.
+
+Torsten supports the mix solver for cases where $y_1$ is either a One or Two Compartment model with a first-order absorption.
+
+The mix ODE model functions have the form:
+
+\texttt{<model\_name>(ODE\_reduced\_system, nOde, \\
+\phantom{<model\_name>} time, amt, rate, ii, evid, cmt, addl, ss, \\
+\phantom{<model\_name>} theta, biovar, tlag, \\                              
+\phantom{<model\_name>} rel\_tol, abs\_tol, max\_step)}
+
+where \texttt{ODE\_reduced\_system} is the system which gets numerically solved ($y_2$ in the above discussion) and \texttt{nOde} the number of equations in that system. Section 19.2 of the Stan user manual explains how to code an ODE system is the \texttt{functions} block of a Stan file. The function that defines a \textit{reduced system} has an almost identical signature but takes one additional argument: $y_1$, the solution to base PK ODEs (figure~\ref{reducedODESystem}).
+
+\begin{figure}
+\caption{Stan language for defining a reduced ODE system}
+\begin{center}
+\begin{small}
+\begin{fmpage}{\textwidth - .75in}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily,mathescape=true,flexiblecolumns=true,frame=single,escapeinside=`']
+`\bf{functions}'{
+  real[] reducedODE(real t,  // time
+			  real[] y,  // reduced state
+			  `\textcolor{red}{real[] y1,  // solution to base PK state}'
+			  real[] theta,  // parameters
+			  real[] x_r,  // data (real)
+			  int[] x_int) {  // data (integer)	        
+                                    $\vdots$			       
+  }
+}
+\end{lstlisting}
+\end{fmpage}
+\end{small}
+\end{center}
+\label{reducedODESystem}
+\end{figure}
+
+ 
+
+The options for \texttt{modelName} are:
+\begin{itemize}
+  \item mixOde1CptModel\_rk45
+  \item mixOde1CptModel\_bdf
+  \item mixOde2CptModel\_rk45
+  \item mixOde2CptModel\_bdf
+\end{itemize}
+
+These four functions correspond to all the permutations we can obtain when using either a base One or Two Compartment function, and the Runge-Kutta 4th/5th order (rk45) or Backward Differentiation (BDF) integration method.
+
+We cannot apply the mix solver to the Two Compartment example we have been using so far, but we'll discuss a more sophisticated case, where the mix solver comes in very handy, in the next section.
+
+
 
 \begin{table}[!htb] %[htdp]
 \caption{Summary: Arguments of Torsten functions.}
