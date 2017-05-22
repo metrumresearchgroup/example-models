@@ -11,17 +11,19 @@
 \contentsline {section}{\tocsection {}{2}{Using Torsten}}{7}{section.2}
 \contentsline {subsection}{\tocsubsection {}{2.1}{Example 1: Two Compartment Model}}{7}{subsection.2.1}
 \contentsline {subsection}{\tocsubsection {}{2.2}{Linear One and Two Compartment Model Function}}{7}{subsection.2.2}
-\contentsline {subsection}{\tocsubsection {}{2.3}{General Linear ODE Model Function}}{11}{subsection.2.3}
-\contentsline {subsection}{\tocsubsection {}{2.4}{General ODE Model Function}}{13}{subsection.2.4}
+\contentsline {subsection}{\tocsubsection {}{2.3}{General Linear ODE Model Function}}{9}{subsection.2.3}
+\contentsline {subsection}{\tocsubsection {}{2.4}{General ODE Model Function}}{12}{subsection.2.4}
 \contentsline {subsection}{\tocsubsection {}{2.5}{Mix ODE Model Function}}{14}{subsection.2.5}
-\contentsline {section}{\tocsection {}{3}{Additional Examples}}{17}{section.3}
-\contentsline {subsection}{\tocsubsection {}{3.1}{Effect Compartment Model}}{17}{subsection.3.1}
-\contentsline {subsubsection}{\tocsubsubsection {}{}{Population Model for Plasma Drug Concentration ($c$)}}{17}{section*.4}
-\contentsline {subsubsection}{\tocsubsubsection {}{}{Effect Compartment Model for PD response ($R$)}}{18}{section*.6}
-\contentsline {subsubsection}{\tocsubsubsection {}{}{Results}}{19}{section*.7}
-\contentsline {subsection}{\tocsubsection {}{3.2}{Friberg-Karlsson Semi-Mechanistic Model \cite {2364}}}{24}{subsection.3.2}
-\contentsline {subsubsection}{\tocsubsubsection {}{}{Results}}{26}{section*.8}
-\contentsline {section}{\tocsection {}{4}{Technical Appendix}}{29}{section.4}
-\contentsline {subsection}{\tocsubsection {}{4.1}{Implementing Torsten}}{29}{subsection.4.1}
-\contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in math}}{29}{section*.9}
-\contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in Stan}}{29}{section*.10}
+\contentsline {subsection}{\tocsubsection {}{2.6}{Example 2: Friberg-Karlsson Semi-Mechanistic Model \cite {2364}}}{16}{subsection.2.6}
+\contentsline {section}{\tocsection {}{3}{Additional Examples}}{20}{section.3}
+\contentsline {subsection}{\tocsubsection {}{3.1}{Example 3: Effect Compartment Population Model}}{20}{subsection.3.1}
+\contentsline {subsubsection}{\tocsubsubsection {}{}{Population Model for Plasma Drug Concentration ($c$)}}{20}{section*.4}
+\contentsline {subsubsection}{\tocsubsubsection {}{}{Effect Compartment Model for PD response ($R$)}}{21}{section*.6}
+\contentsline {subsubsection}{\tocsubsubsection {}{}{Results}}{22}{section*.7}
+\contentsline {subsection}{\tocsubsection {}{3.2}{Example 4: Friberg-Karlsson Semi-Mechanistic Population Model}}{27}{subsection.3.2}
+\contentsline {subsubsection}{\tocsubsubsection {}{}{Results}}{28}{section*.8}
+\contentsline {section}{\tocsection {}{4}{Technical Appendix}}{32}{section.4}
+\contentsline {subsection}{\tocsubsection {}{4.1}{Implementing Torsten}}{32}{subsection.4.1}
+\contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in math}}{32}{section*.9}
+\contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in Stan}}{32}{section*.10}
+\contentsline {section}{\tocsection {}{}{References}}{33}{section*.11}

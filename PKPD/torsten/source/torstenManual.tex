@@ -193,7 +193,8 @@ The reader should have a basic understanding of how Stan works before reading th
 
 In this section we go through the different functions Torsten adds to Stan. It will be helpful to apply these functions to a simple example. We have uploaded code and data on \url{https://github.com/charlesm93/example-models/tree/torsten-0.82/PKPD/torsten}.
 
-\subsection{Example 1: Two Compartment Model}
+\subsection{Example 1: Two Compartment Model} \ \\
+
 We model drug absorption in a single patient and simulate plasma drug concentrations:
 \begin{itemize}
   \item Multiple Doses: 1250 mg, every 12 hours, for a total of 15 doses
@@ -209,6 +210,15 @@ The plasma concentration ($c$) are simulated according to the following equation
 	\left(5\ {\rm L/h}, 8\  {\rm L/h}, 20\  {\rm L},  70\ {\rm L}, 1.2\ {\rm h^{-1}} \right) \\
   \sigma^2 &=& 0.01
 \end{eqnarray*}
+
+where the mass of drug in the central compartment ($y_2$) is obtained by solving the system of ordinary differential equations (ODEs):
+\begin{eqnarray}
+  \frac{dy_1}{dt} &=& -k_a y_1 \\
+  \frac{dy_2}{dt} &=& k_a y_1 - \left(\frac{CL}{V_2} + \frac{Q}{V_2}\right) y_2 +  \frac{Q}{V_3} y_3 \\
+  \frac{dy_3}{dt} &=& \frac{Q}{V_2} y_2 - \frac{Q}{V_3} y_3
+\end{eqnarray}
+
+and the drug concentration is given by $c = \frac{y_2}{V_2}$.
 
 The data are generated using the R package \textit{mrgsolve}\footnote{https://github.com/metrumresearchgroup/mrgsolve}, see \texttt{TwoCptModelSimulation.R}. We show the results obtained when using the function \texttt{PKModelTwoCpt}, which computes solutions to the ODEs analytically.
 
@@ -507,7 +517,7 @@ In certain cases, an ODE system can be divided in two subsystems:
   y_2^\prime &=& f(t, y_1, y_2)
 \end{eqnarray*} 
 
-where $y_1$, $y_2$, and $f$ are vector-valued functions, and  $y_1^\prime$ is independent of $y_2$. This structure arises, for instance, in PKPD models, where $y_1$ describes to the PK components and $y_2$ the PD effects. If $y_1$ has an analytical solution, we can construct a \textit{mix solver}, which analytically solves $y_1$ and numerically integrates $y_2$. This approach leads to an appreciable gain in computational efficiency. In the example of a Friberg-Karlsson semi-mechanistic model \cite{FK}, we observe an average $\sim 44\%$ speedup when using the mix solver in lieu of the numerical integrator\footnote{A manuscript on the subject is in progress.}.
+where $y_1$, $y_2$, and $f$ are vector-valued functions, and  $y_1^\prime$ is independent of $y_2$. This structure arises, for instance, in PKPD models, where $y_1$ describes the PK of the drug and $y_2$ the PD effects. If $y_1$ has an analytical solution, we can construct a \textit{mix solver}, which analytically solves $y_1$ and numerically integrates $y_2$. This approach leads to an appreciable gain in computational efficiency. In the example of a Friberg-Karlsson semi-mechanistic model \cite{2364}, we observe an average $\sim 44\%$ speedup when using the mix solver in lieu of the numerical integrator\footnote{A manuscript on the subject is in progress.}.
 
 Torsten supports the mix solver for cases where $y_1$ is either a One or Two Compartment model with a first-order absorption.
 
@@ -518,7 +528,7 @@ The mix ODE model functions have the form:
 \phantom{<model\_name>} theta, biovar, tlag, \\                              
 \phantom{<model\_name>} rel\_tol, abs\_tol, max\_step)}
 
-where \texttt{ODE\_reduced\_system} is the system which gets numerically solved ($y_2$ in the above discussion) and \texttt{nOde} the number of equations in that system. Section 19.2 of the Stan user manual explains how to code an ODE system is the \texttt{functions} block of a Stan file. The function that defines a \textit{reduced system} has an almost identical signature but takes one additional argument: $y_1$, the solution to base PK ODEs (figure~\ref{reducedODESystem}).
+where \texttt{ODE\_reduced\_system} is the system which gets numerically solved ($y_2$ in the above discussion) and \texttt{nOde} the number of equations in that system. Section 19.2 of the Stan user manual explains how to code an ODE system in the \texttt{functions} block of a Stan file. The function that defines a \textit{reduced system} has an almost identical signature but takes one additional argument: $y_1$, the solution to the base PK ODEs (figure~\ref{reducedODESystem}).
 
 \begin{figure}
 \caption{Stan language for defining a reduced ODE system}
@@ -529,7 +539,7 @@ where \texttt{ODE\_reduced\_system} is the system which gets numerically solved 
 `\bf{functions}'{
   real[] reducedODE(real t,  // time
 			  real[] y,  // reduced state
-			  `\textcolor{red}{real[] y1,  // solution to base PK state}'
+			  `\textcolor{red}{real[] y1,  // solution to the base PK states}'
 			  real[] theta,  // parameters
 			  real[] x_r,  // data (real)
 			  int[] x_int) {  // data (integer)	        
@@ -555,7 +565,141 @@ The options for \texttt{modelName} are:
 
 These four functions correspond to all the permutations we can obtain when using either a base One or Two Compartment function, and the Runge-Kutta 4th/5th order (rk45) or Backward Differentiation (BDF) integration method.
 
-We cannot apply the mix solver to the Two Compartment example we have been using so far, but we'll discuss a more sophisticated case, where the mix solver comes in very handy, in the next section.
+We cannot apply the mix solver to the Two Compartment example we have been using so far. Instead, we'll consider the very model which motivated the implementation of the method in the first place.
+
+\subsection{Example 2: Friberg-Karlsson Semi-Mechanistic Model \cite{2364}} \ \\
+
+In this second example, we add to our two Compartment model a PD effect, described by a system of nonlinear ODEs.
+
+Neutropenia is observed in patients receiving an ME-2 drug. Our goal is to model the relation between neutrophil counts and drug exposure. Using a feedback mechanism, the body maintains the number of neutrophils at a baseline value (figure~\ref{FK}). While in the patient's blood, the drug impedes the production of neutrophils. As a result, the neutrophil count goes down, and after  the drug clears out, the feedback mechanism kicks in and brings the neutrophil count back to baseline.
+
+{\bf Friberg-Karlsson Model for drug-induced myelosuppression ($ANC$)}
+
+\begin{eqnarray*}
+  \log(ANC_i) &\sim& N(\log(Circ), \sigma^2_{ANC})  \\
+  Circ &=& f_{FK}(MTT, Circ_{0}, \alpha, \gamma, c)  \\
+  (MTT, Circ_{0}, \alpha, \gamma, ktr) &=& (125, 5.0, 3 \times 10^{-4}, 0.17) \\
+  \sigma^2_{ANC} &=& 0.001
+\end{eqnarray*}
+
+where $c$ is the drug concentration in the blood we get from the Two Compartment model, and $Circ$ is obtained by solving the following system of nonlinear ODEs:
+
+\begin{eqnarray}
+   \frac{dy_{\mathrm{prol}}}{dt} &=& k_{\mathrm{prol}} y_{\mathrm{prol}} (1 - E_{drug})\left(\frac{Circ_0}{y_{\mathrm{circ}}}\right)^\gamma - k_{\mathrm{tr}}y_{\mathrm{prol}} \\
+   \frac{dy_{\mathrm{trans1}}}{dt} &=& k_{\mathrm{tr}} y_{\mathrm{prol}} - k_{\mathrm{tr}} y_{\mathrm{trans1}} \\
+   \frac{dy_{\mathrm{trans2}}}{dt} &=& k_{\mathrm{tr}} y_{\mathrm{trans1}} - k_{\mathrm{tr}} y_{\mathrm{trans2}}  \\
+   \frac{dy_{\mathrm{trans3}}}{dt} &=& k_{\mathrm{tr}} y_{\mathrm{trans2}} - k_{\mathrm{tr}} y_{\mathrm{trans3}}  \\
+   \frac{dy_{\mathrm{circ}}}{dt} &=& k_{\mathrm{tr}} y_{\mathrm{trans3}} - k_{\mathrm{tr}} y_{\mathrm{circ}}
+\end{eqnarray}
+
+where $E_{drug}  = \alpha c$.
+
+The ODEs specifying the Two Compartment Model (equations 1 - 3) do not depend on the PD ODEs (equations 4 - 8) and can be solved analytically by Torsten. We therefore specify our model using a mix solver function. We do not expect our system to be stiff and use the Runge-Kutta 4th/5th order integrator.
+
+
+\begin{figure}[htbp]
+\includegraphics[width=4.5in,trim=0in 0in 0 0in]{graphics/neutrophilModel.jpg}
+\caption{Friberg-Karlsson semi-mechanistic Model \cite{2364}}
+\label{FK}
+\end{figure}
+
+\begin{figure}
+\caption{Stan language to define a reduced ODE system}
+\begin{center}
+\begin{small}
+\begin{fmpage}{\textwidth - .75in}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily,mathescape=true,flexiblecolumns=true,frame=single,escapeinside=`']
+`\bf{functions}'{
+  # define reduced ODE system for two compartment model
+  real[] `\textcolor{red}{FK\_ODE}'(real t,
+		    real[] y,
+		    real[] y_pk,
+		    real[] theta,
+		    real[] dummy_real,
+		    int[] dummy_int){
+    real V2 = theta[3];
+
+    ## PK variables
+    real VC = parms[3];
+
+    ## PD variables
+    real MTT = parms[6];
+    real circ0 = parms[7];
+    real alpha = parms[8];
+    real gamma = parms[9];
+    real ktr = 4 / MTT;
+    real prol = y[1] + circ0;
+    real transit1 = y[2] + circ0;
+    real transit2 = y[3] + circ0;
+    real transit3 = y[4] + circ0;
+    real circ = fmax(machine_precision(), y[5] + circ0);
+    real conc = y_pk[2] / VC;
+    real Edrug = alpha * conc;
+    real dydt[5];
+
+    conc = y_pk[2] / VC;
+    Edrug = alpha * conc;
+
+    dydt[1] = ktr * prol * ((1 - Edrug) * ((circ0 / circ)^gamma) - 1);
+    dydt[2] = ktr * (prol - transit1);
+    dydt[3] = ktr * (transit1 - transit2);
+    dydt[4] = ktr * (transit2 - transit3);
+    dydt[5] = ktr * (transit3 - circ);
+
+    return dydt;
+  }
+}
+\end{lstlisting}
+\end{fmpage}
+\end{small}
+\end{center}
+\label{FK_reduced}
+\end{figure}
+
+\begin{figure}
+\caption{Stan language for fitting a Friberg-Karlsson model using \texttt{mixOde2CptModel\_rk45}}
+\begin{center}
+\begin{small}
+\begin{fmpage}{\textwidth - .75in}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily,mathescape=true,flexiblecolumns=true,frame=single,escapeinside=`']
+transformed parameters {
+  vector[nt] cHat;
+  vector[nObsPK] cHatObs;
+  vector[nt] neutHat;
+  vector<lower = 0>[nObsPD] neutHatObs;
+  real theta[nParms];  # ODE parameters
+  matrix[nt, nCmt] x;
+  
+  theta[1] = CL;
+  theta[2] = Q;
+  theta[3] = VC;
+  theta[4] = VP;
+  theta[5] = ka;
+  theta[6] = mtt;
+  theta[7] = circ0;
+  theta[8] = alpha;
+  theta[9] = gamma;
+
+  x = `\textcolor{red}{mixOde2CptModel\_rk45}'(FK_ODE, nOde,
+                                   time, amt, rate, ii, evid, cmt, addl, ss,
+                                   theta, biovar, tlag,
+                                   1e-6, 1e-6, 1e+6);
+
+  cHat = x[ , 2] / VC;
+  neutHat = x[ , 8] + circ0;
+
+  cHatObs = cHat[iObsPK];
+  neutHatObs = neutHat[iObsPD];
+}
+\end{lstlisting}
+\end{fmpage}
+\end{small}
+\end{center}
+\label{FK_mix2}
+\end{figure}
+
+
+
 
 
 
@@ -585,7 +729,17 @@ model & name & names & in {\tt theta}\\
 {\raggedright general compartment \\ models} & {\tt genOdeModel\_*} &  
 	{\tt ODE\_system}, {\tt nCmt}, {\tt time}, {\tt amt}, {\tt rate}, {\tt ii}, {\tt evid},
         {\tt cmt}, {\tt addl}, {\tt ss}, {\tt theta}, {\tt biovar}, {\tt tlag}, {\tt rel\_tol}, {\tt abs\_tol}, {\tt max\_num\_steps}  &
-	Parameters that get passed to ODE system
+	Parameters that get passed to ODE system  \\
+\hline
+{\raggedright mix 1 compartment \\ model} & {\tt mixOde1Cpt\_*} &
+       {\tt reduced\_ODE\_system}, {\tt nOde}, {\tt time}, {\tt amt}, {\tt rate}, {\tt ii}, {\tt evid},
+       {\tt cmt}, {\tt addl}, {\tt ss}, {\tt theta}, {\tt biovar}, {\tt tlag}, {\tt rel\_tol}, {\tt abs\_tol}, {\tt max\_num\_steps} &
+       $CL$, $V_2$, $k_a$, followed by the parameters that get passed to the reduced ODE system \\
+\hline
+{\raggedright mix 2 compartment \\ model} & {\tt mixOde2Cpt\_*} &
+       {\tt reduced\_ODE\_system}, {\tt nOde}, {\tt time}, {\tt amt}, {\tt rate}, {\tt ii}, {\tt evid},
+       {\tt cmt}, {\tt addl}, {\tt ss}, {\tt theta}, {\tt biovar}, {\tt tlag}, {\tt rel\_tol}, {\tt abs\_tol}, {\tt max\_num\_steps} &
+       $CL$, $Q$, $V_2$, $V_3$, $k_a$, followed by the parameters that get passed to the reduced ODE system  
 \end{tabular}
 \end{minipage}
 \end{center}
@@ -607,7 +761,7 @@ All the files to run a model are stored under the directory that bears the model
 
 \texttt{data.R} contains the data we fit the model to and \texttt{init.R} the initial estimates of the parameters. These two files are generated using \texttt{Simulation.R}. The \texttt{R} folder contains R scripts to compile and run the models, as well as code to output diagnostic plots and statistics.
 
-\subsection {Effect Compartment Model} \ \\ \ \\
+\subsection {Example 3: Effect Compartment Population Model} \ \\ \ \\
 Let us expand example 1 to a population model fitted to the combined data from phase I and phase IIa studies. The parameters exhibit inter-individual variations (IIV), due to both random effects and to the patients' body weight, treated as a covariate and denoted $bw$:
 
 \subsubsection*{Population Model for Plasma Drug Concentration ($c$)}
@@ -805,13 +959,11 @@ omegaEC50 & 0.213 & 0.001 & 0.021 & 0.174 & 0.199 & 0.213 & 0.227 & 0.255 & 190.
 
 \clearpage
 
-\subsection{Friberg-Karlsson Semi-Mechanistic Model \cite{2364}} \ \\ 
+\subsection{Example 4: Friberg-Karlsson Semi-Mechanistic Population Model} \ \\ 
 
-In this third example, we deal with a more sophisticated PD effect, described by a system of nonlinear ODEs. The PK effects are still described by a two compartment model with a first-order absorption. 
+We now return to example 2 and extend it to a population model. While we recommend using the mix solver, for completeness we'll show how to specify the model with the \texttt{generalOdeModel\_*} function. We leave it as a (trivial) exercise to the reader to rewrite the model with \texttt{mixOde2CptModel\_*}. 
 
-Neutropenia is observed in patients receiving an ME-2 drug. Our goal is to model the relation between neutrophil counts and drug exposure. Using a feedback mechanism, the body maintains the number of neutrophils at a baseline value (figure~\ref{FK}). While in the patient's blood, the drug impedes the production of neutrophils. As a result, the neutrophil count goes down, and after  the drug clears out, the feedback mechanism kicks in and brings the neutrophil count back to baseline.
-
-{\bf Friberg-Karlsson Model for drug-induced myelosuppression ($ANC$)}
+{\bf Friberg-Karlsson Population Model for drug-induced myelosuppression ($ANC$)}
 
 \begin{eqnarray*}
 \log(ANC_{ij}) &\sim& N(Circ_{ij}, \sigma^2_{ANC}) \\
@@ -821,12 +973,6 @@ Neutropenia is observed in patients receiving an ME-2 drug. Our goal is to model
 \Omega_{PK} &=& \left(\begin{array}{ccccc} 0.25^2 & 0 &a 0 & 0 & 0 \\ 0 & 0.4^2 & 0 & 0 & 0 \\
 0 & 0 & 0.25^2 & 0 & 0 \\ 0 & 0 & 0 & 0.4^2 & 0 \\ 0 & 0 & 0 & 0 & 0.25^2  \end{array}\right)
 \end{eqnarray*}
-
-\begin{figure}[htbp]
-\includegraphics[width=3.5in,trim=0in 0in 0 0in]{graphics/neutrophilModel.jpg}
-\caption{Friberg-Karlsson semi-mechanistic Model \cite{2364}}
-\label{FK}
-\end{figure}
 
 The PK and the PD data are simulated using the following treatment.
 \begin{itemize}
@@ -842,7 +988,7 @@ The PK and the PD data are simulated using the following treatment.
   \end{itemize}
 \end{itemize}
 
-Once again, we simultaneously fit the model to the PK and the PD data. From a computational perspective, this is a much more difficult problem than the one we dealt with in previous examples. The nonlinear nature of the ODEs forces us to use a numerical solver, which is significantly slower than the linear methods we have employed so far. Because the ODE system of interest is non-stiff, we use the \textit{rk45} version of \texttt{genOdeModel}.
+Once again, we simultaneously fit the model to the PK and the PD data. From a computational perspective, this is a much more difficult problem than the one we dealt with in previous example. The nonlinear nature of the ODEs forces us to use a numerical solver, which is significantly slower than the linear methods we have employed so far. Because the ODE system of interest is non-stiff, we use the \textit{rk45} version of \texttt{genOdeModel}.
 
 It pays off to construct informative priors. For instance, we could fit the PK data first, as was done in  example 1, and get informative priors on the PK parameters. The PD parameters are drug independent, so we can use information from the neutropenia literature. In this example, we choose to use weakly informative priors on the PK parameters and strongly informative priors on the PD parameters. 
 
