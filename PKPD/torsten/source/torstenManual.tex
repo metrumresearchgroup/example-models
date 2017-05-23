@@ -530,7 +530,7 @@ The mix ODE model functions have the form:
 
 where \texttt{ODE\_reduced\_system} is the system which gets numerically solved ($y_2$ in the above discussion) and \texttt{nOde} the number of equations in that system. Section 19.2 of the Stan user manual explains how to code an ODE system in the \texttt{functions} block of a Stan file. The function that defines a \textit{reduced system} has an almost identical signature but takes one additional argument: $y_1$, the solution to the base PK ODEs (figure~\ref{reducedODESystem}).
 
-\begin{figure}
+\begin{figure}[htbp]
 \caption{Stan language for defining a reduced ODE system}
 \begin{center}
 \begin{small}
@@ -697,10 +697,6 @@ transformed parameters {
 \end{center}
 \label{FK_mix2}
 \end{figure}
-
-
-
-
 
 
 \begin{table}[!htb] %[htdp]
@@ -1152,10 +1148,96 @@ sigmaNeut & 0.092 & 0.001 & 0.014 & 0.068 & 0.082 & 0.090 & 0.100 & 0.125 & 161.
 \end{figure}
  
 
-\section{Technical Appendix}
+\section{Appendix}
 
 (Note: this section is still being worked on and is far from finished)
 
+\subsection{Solving Systems of Algebraic Equations} \ \\ \ \\
+In order to compute a steady state solution for a general compartment model, we need an algebraic solver. Such a solver will be added to Stan's core language\footnote{A pull request has been submitted on Stan's gitHub page. This prototype builds on the Hybrid Nonlinear solver from the C++ \textit{Eigen} library\cite{eigen}. Their implementation follows closely the one in MINPACK-1\cite{MINPACK}.}. A prototype is available in Torsten's development branch on GitHub.
+
+The \texttt{algebra\_solver} function uses the Powell hybrid method (also called the ``dogleg" method)\cite{dogleg} to find the solution to a system of nonlinear algebraic equations. In other words, we wish to solve:
+
+$$ f(x) = 0 $$
+
+for $x$, where $f$ and $x$ are vector valued functions.
+
+The user first defines $f$, the algebraic system, in the \textbf{functions} block, using a pre-specified signature:
+
+\texttt{real[] f(vector x,  // unknown  \\
+\phantom{real[] f} vector y,  // parameters  \\
+\phantom{real[] f} real[] dat\_r,  // data (real)  \\
+\phantom{real[] f} int[] dat\_int) {  // data (integer)  \\	        
+  }  \\
+}
+
+
+
+The algebraic solver has the form: 
+
+\texttt{algebra\_solver(f,  x, theta,  x\_r, x\_i \\                              
+\phantom{algebra\_solver} rel\_tol, f\_tol, max\_step)}
+
+where \texttt{f} is the algebraic system defined in the function block, \texttt{x} a vector which contains the initial guesses for the solution, \texttt{y} a vector of parameters, \texttt{dat\_r} an array of real data, and \texttt{dat\_int} an array of integer data.
+
+The last three arguments are optional and specify the tuning parameters of the solver. The relative tolerance (\texttt{rel\_tol}, default value $1 \times 10^{-10}$) sets an upper bound for the error in the computed solution relative to the real solution. Given an estimated solution $\theta$, the function tolerance (\texttt{f\_tol}, default value $1 \times 10^{-6}$) specifies the maximum value of $||f(\theta)||$\footnote{It helps to think geometrically about this. Ideally we would want the point $f(\theta)$ to be at the origin; the norm represents deviations from this ideal. Users should keep in mind the norm scales up with the square-root of $x$'s dimension.}. The maximum number of steps (\texttt{max\_num\_steps}, default value $1000$) is the maximum number of times the solver will compute $f(x)$ before ``giving up". While these parameters have default values, the user should be prepared to adjust them.
+
+\subsubsection{Example} \ \\ \ \\
+Let's suppose we wish to solve the following algebraic system:
+
+\begin{eqnarray*}
+  z_1 &=& x_1 - y_1  \\
+  z_2 &=& x_2 - y_2
+\end{eqnarray*} 
+
+where $(y_1, y_2) = (0.9, 1.1)$. We would code this in Stan as follows:
+
+\begin{figure}[htbp]
+\caption{Stan language for solving an algebraic system}
+\begin{center}
+\begin{small}
+\begin{fmpage}{\textwidth - .75in}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily,mathescape=true,flexiblecolumns=true,frame=single,escapeinside=`']
+`\bf{functions}'{
+  real[] algebraSystem(vector x,
+                              vector y,
+                              real[ ] dat,
+                              int[ ] dat_int) {	        
+    vector[2] f_x;
+    f_x[1] = x[1] - y[1];
+    f_x[2] = x[2] - y[2];
+    return f_x;
+  }
+}
+    $\vdots$
+
+`\bf{transformed data}' {
+  vector[2] x;
+  vector[2] y;
+  real dat[0];
+  int dat_int[0];
+  
+  x[1] = 1;
+  x[2] = 1;
+}
+
+`\bf{transformed parameters}'{
+  vector y[2];
+  vector theta[2];
+  
+  y_p[1] = 0.9;
+  y_p[2] = 1.1;
+  
+  theta = algebra_solver(algebra_system, x, y, dat, dat_int);
+}
+    $\vdots$
+\end{lstlisting}
+\end{fmpage}
+\end{small}
+\end{center}
+\label{algebraStan}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \iffalse
 The details we cover here are not required to use Torsten but may be of interest to developers and advanced users. Our goal is to motivate the development of Torsten by looking at common challenges in pharmacometrics. The problems we address are mostly mathematical in nature but scientifically motivated. We discuss why Stan strikes us as a powerful tool to analyse data; and which needs in pharmacometrics Torsten answers. We then go over the algorithms and programming techniques we deploy in Torsten. 
 
@@ -1304,6 +1386,7 @@ The only thing that distinguishes two Torsten functions is the method they use t
 Rather than using a simple function, we define \texttt{pred1\_structure}, a functor or structure of functions. Each Torsten function constructs a \texttt{pred1\_structure} object and determines the ODE solver.
 
 \fi
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Implementing Torsten} \ \\ \ \\
 Stan's \texttt{math} library is written in C++, which offers a great deal of speed and flexibility. The Stan language provides a very handy interface that allows us to focus on statistical modeling and saves us the trouble of doing extensive coding in C++. At run time, a \textit{make} file translates our Stan model into C++, which then gets compiled and executed. Accordingly, there are two steps to add a function to Stan: (1) write the procedure in C++, (2) expose the procedure to the language so users may use it in a Stan file.

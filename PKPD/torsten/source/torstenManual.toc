@@ -22,8 +22,10 @@
 \contentsline {subsubsection}{\tocsubsubsection {}{}{Results}}{22}{section*.7}
 \contentsline {subsection}{\tocsubsection {}{3.2}{Example 4: Friberg-Karlsson Semi-Mechanistic Population Model}}{27}{subsection.3.2}
 \contentsline {subsubsection}{\tocsubsubsection {}{}{Results}}{28}{section*.8}
-\contentsline {section}{\tocsection {}{4}{Technical Appendix}}{32}{section.4}
-\contentsline {subsection}{\tocsubsection {}{4.1}{Implementing Torsten}}{32}{subsection.4.1}
-\contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in math}}{32}{section*.9}
-\contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in Stan}}{32}{section*.10}
-\contentsline {section}{\tocsection {}{}{References}}{33}{section*.11}
+\contentsline {section}{\tocsection {}{4}{Appendix}}{32}{section.4}
+\contentsline {subsection}{\tocsubsection {}{4.1}{Solving Systems of Algebraic Equations}}{32}{subsection.4.1}
+\contentsline {subsubsection}{\tocsubsubsection {}{4.1.1}{Example}}{32}{subsubsection.4.1.1}
+\contentsline {subsection}{\tocsubsection {}{4.2}{Implementing Torsten}}{33}{subsection.4.2}
+\contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in math}}{34}{section*.9}
+\contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in Stan}}{34}{section*.10}
+\contentsline {section}{\tocsection {}{}{References}}{35}{section*.11}
