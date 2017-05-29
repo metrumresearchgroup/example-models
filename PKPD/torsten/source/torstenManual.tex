@@ -360,6 +360,8 @@ CL & 4.82 & 0.002 & 0.0901 & 4.64 & 4.76 & 4.82 & 4.88 & 5.00 & 2464.73 & 1.00 \
 \end{tabular}
 \end{table}
 
+\clearpage
+
 \subsection{General Linear ODE Model Function} \ \\
 
 A general linear ODE model refers to a model that may be described in terms of a system of first order linear differential equations with (piecewise) constant coefficients, i.e., a differential equation of the form:
@@ -389,7 +391,7 @@ The linear ODE model function has the form:
 \begin{center}
 \begin{small}
 \begin{fmpage}{\textwidth - .75in}
-\begin{lstlisting}[basicstyle=\footnotesize\ttfamily,mathescape=true,flexiblecolumns=true,frame=single,escapeinside=`']
+\begin{lstlisting}[basicstyle=\footnotesize\tiny\ttfamily,mathescape=true,flexiblecolumns=true,frame=single,escapeinside=`']
 `\bf{transformed parameters}' {
   `\textcolor{red}{matrix[3, 3] K;}'
   real k10 = CL / V2;
@@ -433,17 +435,22 @@ The linear ODE model function has the form:
 \subsection{General ODE Model Function} \ \\
 
 Torsten may be used to fit models described by a system of first-order ODEs, i.e., differential equations of the form:
-$$ y^\prime\left(t\right) = f\left(t, y\left(t\right)\right) $$
-where $y$ and $f$ are vector-valued functions.
+$$ y^\prime(t) = f(t, y(t)) $$
 
-The general ODE model functions have the form:
+In the case where the rate vector $R$ is non-zero, this equation becomes:
+$$ y^\prime(t) = f(t, y(t)) + R $$
+  
+The general ODE model functions have the form: \ \\
 
 \texttt{<model\_name>(ODE\_system, nCmt, \\
 \phantom{<model\_name>} time, amt, rate, ii, evid, cmt, addl, ss, \\
 \phantom{<model\_name>} theta, biovar, tlag, \\                              
 \phantom{<model\_name>} rel\_tol, abs\_tol, max\_step)}
-                              
-where \texttt{ODE\_system} is a system of first-order ODEs defined in the function block of Stan (see section 19.2 of the Stan reference manual) and \texttt{nCmt} is the number of compartments (or, equivalently, the number of ODEs) in the model. \texttt{rel\_tol}, \texttt{abs\_tol}, and \texttt{max\_step} are the tuning parameters for the ODE integrator: respectively the relative tolerance, the absolute tolerance, and the maximum number of steps.
+
+\ \\
+where \texttt{ODE\_system} specifies $f(t, y(t))$, which the user defines inside the \textbf{functions} block (see section 19.2 of the Stan reference manual for details and figure~\ref{GenTwoCptModelCode} for an example). The user does NOT include the rates in their definition of $f$. Torsten automatically corrects the derivatives when the rates are non-zero.
+
+\texttt{nCmt} is the number of compartments (or, equivalently, the number of ODEs) in the model. \texttt{rel\_tol}, \texttt{abs\_tol}, and \texttt{max\_step} are tuning parameters for the ODE integrator: respectively the relative tolerance, the absolute tolerance, and the maximum number of steps.
 
 The options for \texttt{model\_name} are:
 \begin{itemize}
@@ -451,7 +458,7 @@ The options for \texttt{model\_name} are:
   \item generalOdeModel\_bdf
 \end{itemize}
 
-They respectively call the built-in Runge-Kutta 4th/5th order (rk45) integrator, recommended for non-stiff ODEs, and the Backward Differentiation (BDF) integrator, recommended for stiff ODEs. Which value to use for the tuning parameters depends on the integrator and the specifics of the ODE system. Reducing the tolerance parameters and increasing the number of steps make for a more robust integrator but can significantly slow down the algorithm. The following can be used as a starting point:  \mbox{\texttt{rel\_tol = 1e-6}}, \mbox{\texttt{abs\_tol = 1e-6}} and \mbox{\texttt{max\_step = 1e+6}} for the rk45 integrator and \mbox{\texttt{rel\_tol = 1e-10}}, \mbox{\texttt{abs\_tol = 1e-10}} and \mbox{\texttt{max\_step = 1e+8}} for the bdf integrator\footnote{These are the default tuning parameters for integrate\_ode\_rk45() and integrate\_ode\_bdf(). The Torsten functions do not have a default value. The user must explicitly pass the tuning parameters for generalOdeModel\_*().}. The user should be prepared to adjust these values. For additional information, see Stan's reference manual (section 19).
+They respectively call the built-in Runge-Kutta 4th/5th order (rk45) integrator, recommended for non-stiff ODEs, and the Backward Differentiation (BDF) integrator, recommended for stiff ODEs. Which value to use for the tuning parameters depends on the integrator and the specifics of the ODE system. Reducing the tolerance parameters and increasing the number of steps make for a more robust integrator but can significantly slow down the algorithm. The following can be used as a starting point:  \mbox{\texttt{rel\_tol = 1e-6}}, \mbox{\texttt{abs\_tol = 1e-6}} and \mbox{\texttt{max\_step = 1e+6}} for the rk45 integrator and \mbox{\texttt{rel\_tol = 1e-10}}, \mbox{\texttt{abs\_tol = 1e-10}} and \mbox{\texttt{max\_step = 1e+8}} for the bdf integrator\footnote{These are the default tuning parameters for integrate\_ode\_rk45() and integrate\_ode\_bdf().  Torsten functions do not have a default values for these parameters. The user must explicitly pass the tuning parameters to generalOdeModel\_*().}. Users should be prepared to adjust these values. For additional information, see Stan's reference manual (section 19).
 
 \pagebreak
 
@@ -513,22 +520,22 @@ They respectively call the built-in Runge-Kutta 4th/5th order (rk45) integrator,
 In certain cases, an ODE system can be divided in two subsystems:
 
 \begin{eqnarray*}
-  y_1^\prime &=& f(t, y_1) \\
-  y_2^\prime &=& f(t, y_1, y_2)
+  y_1^\prime &=& f_1(t, y_1) \\
+  y_2^\prime &=& f_2(t, y_1, y_2)
 \end{eqnarray*} 
 
-where $y_1$, $y_2$, and $f$ are vector-valued functions, and  $y_1^\prime$ is independent of $y_2$. This structure arises, for instance, in PKPD models, where $y_1$ describes the PK of the drug and $y_2$ the PD effects. If $y_1$ has an analytical solution, we can construct a \textit{mix solver}, which analytically solves $y_1$ and numerically integrates $y_2$. This approach leads to an appreciable gain in computational efficiency. In the example of a Friberg-Karlsson semi-mechanistic model \cite{2364}, we observe an average $\sim 44\%$ speedup when using the mix solver in lieu of the numerical integrator\footnote{A manuscript on the subject is in progress.}.
+where $y_1$, $y_2$, $f_1$, and $f_2$ are vector-valued functions, and  $y_1^\prime$ is independent of $y_2$. This structure arises, for instance, in PKPD models, where $y_1$ describes the PK of the drug and $y_2$ the PD effects. If $y_1$ has an analytical solution, we can construct a \textit{mix solver}, which analytically solves $y_1$ and numerically integrates $y_2$. This approach leads to an appreciable gain in computational efficiency. In the example of a Friberg-Karlsson semi-mechanistic model \cite{2364}, we observe an average $\sim 44\%$ speedup when using the mix solver in lieu of the numerical integrator\footnote{A manuscript on the subject is in progress.}.
 
 Torsten supports the mix solver for cases where $y_1$ is either a One or Two Compartment model with a first-order absorption.
 
 The mix ODE model functions have the form:
 
-\texttt{<model\_name>(ODE\_reduced\_system, nOde, \\
+\texttt{<model\_name>(reduced\_ODE\_system, nOde, \\
 \phantom{<model\_name>} time, amt, rate, ii, evid, cmt, addl, ss, \\
 \phantom{<model\_name>} theta, biovar, tlag, \\                              
 \phantom{<model\_name>} rel\_tol, abs\_tol, max\_step)}
 
-where \texttt{ODE\_reduced\_system} is the system which gets numerically solved ($y_2$ in the above discussion) and \texttt{nOde} the number of equations in that system. Section 19.2 of the Stan user manual explains how to code an ODE system in the \texttt{functions} block of a Stan file. The function that defines a \textit{reduced system} has an almost identical signature but takes one additional argument: $y_1$, the solution to the base PK ODEs (figure~\ref{reducedODESystem}).
+where \texttt{reduced\_ODE\_system} specifies the system we  numerically solve ($y_2$ in the above discussion) and \texttt{nOde} the number of equations in that system. Section 19.2 of the Stan user manual explains how to code an ODE system in the \textbf{functions} block. The function that defines a \textit{reduced system} has an almost identical signature but takes one additional argument: $y_1$, the solution to the base PK ODEs (figure~\ref{reducedODESystem}).
 
 \begin{figure}[htbp]
 \caption{Stan language for defining a reduced ODE system}
@@ -553,7 +560,7 @@ where \texttt{ODE\_reduced\_system} is the system which gets numerically solved 
 \label{reducedODESystem}
 \end{figure}
 
- 
+ Again, the user does not specify the rates. Torsten automatically corrects the derivatives for non-zero rates.
 
 The options for \texttt{modelName} are:
 \begin{itemize}
