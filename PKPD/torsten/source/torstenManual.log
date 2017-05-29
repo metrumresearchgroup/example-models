@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  29 MAY 2017 17:03
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  29 MAY 2017 17:12
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -887,17 +887,17 @@ Underfull \hbox (badness 10000) in paragraph at lines 154--156
  []
 
 [5] [6]
-Underfull \hbox (badness 10000) in paragraph at lines 196--197
+Underfull \hbox (badness 10000) in paragraph at lines 198--199
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 225--226
+Underfull \hbox (badness 10000) in paragraph at lines 227--228
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 230--231
+Underfull \hbox (badness 10000) in paragraph at lines 232--233
 
  []
 
@@ -907,18 +907,18 @@ Underfull \hbox (badness 10000) in paragraph at lines 230--231
 File: graphics/cptModels.png Graphic file (type png)
 
 <use graphics/cptModels.png>
-Package pdftex.def Info: graphics/cptModels.png used on input line 246.
+Package pdftex.def Info: graphics/cptModels.png used on input line 248.
 (pdftex.def)             Requested size: 252.94499pt x 277.09047pt.
 
 
-LaTeX Warning: Float too large for page by 41.66953pt on input line 319.
+LaTeX Warning: Float too large for page by 41.66953pt on input line 321.
 
 <graphics/TwoCptModelPlots001.pdf, id=210, 433.62pt x 433.62pt>
 File: graphics/TwoCptModelPlots001.pdf Graphic file (type pdf)
 
 <use graphics/TwoCptModelPlots001.pdf>
 Package pdftex.def Info: graphics/TwoCptModelPlots001.pdf used on input line 32
-4.
+6.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
 <graphics/TwoCptModelPlots002.pdf, id=211, 433.62pt x 433.62pt>
@@ -926,7 +926,7 @@ File: graphics/TwoCptModelPlots002.pdf Graphic file (type pdf)
 
 <use graphics/TwoCptModelPlots002.pdf>
 Package pdftex.def Info: graphics/TwoCptModelPlots002.pdf used on input line 32
-5.
+7.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
 <graphics/TwoCptModelPlots003.pdf, id=212, 433.62pt x 433.62pt>
@@ -934,7 +934,7 @@ File: graphics/TwoCptModelPlots003.pdf Graphic file (type pdf)
 
 <use graphics/TwoCptModelPlots003.pdf>
 Package pdftex.def Info: graphics/TwoCptModelPlots003.pdf used on input line 33
-2.
+4.
 (pdftex.def)             Requested size: 325.215pt x 325.22743pt.
 
 <graphics/TwoCptModelPlots006.pdf, id=213, 433.62pt x 433.62pt>
@@ -942,30 +942,30 @@ File: graphics/TwoCptModelPlots006.pdf Graphic file (type pdf)
 
 <use graphics/TwoCptModelPlots006.pdf>
 Package pdftex.def Info: graphics/TwoCptModelPlots006.pdf used on input line 34
-0.
+2.
 (pdftex.def)             Requested size: 252.94499pt x 252.94879pt.
  [8] [9 <./graphics/cptModels.png>]
 [10] [11 <./graphics/TwoCptModelPlots001.pdf> <./graphics/TwoCptModelPlots002.p
 df> <./graphics/TwoCptModelPlots003.pdf>] [12 <./graphics/TwoCptModelPlots006.p
 df>]
-Underfull \hbox (badness 10000) in paragraph at lines 365--366
+Underfull \hbox (badness 10000) in paragraph at lines 367--368
 
  []
 
 [13
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 435--436
+Underfull \hbox (badness 10000) in paragraph at lines 437--438
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 443--444
+Underfull \hbox (badness 10000) in paragraph at lines 445--446
 
  []
 
 
-Overfull \hbox (28.23856pt too wide) in paragraph at lines 461--462
+Overfull \hbox (28.23856pt too wide) in paragraph at lines 463--464
 [] \OT1/cmr/m/n/10.95 and [] for the rk45 in-te-gra-tor and [], []
  []
 
@@ -973,13 +973,13 @@ Overfull \hbox (28.23856pt too wide) in paragraph at lines 461--462
 Underfull \vbox (badness 3635) has occurred while \output is active []
 
  [14]
-Underfull \hbox (badness 10000) in paragraph at lines 466--466
+Underfull \hbox (badness 10000) in paragraph at lines 468--468
 \OT1/cmr/m/sc/10.95 Figure 7.[]\OT1/cmr/m/n/10.95 Stan lan-guage for fit-ting a
  two com-part-ment model us-ing the
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 518--519
+Underfull \hbox (badness 10000) in paragraph at lines 520--521
 
  []
 
@@ -990,10 +990,10 @@ Underfull \vbox (badness 2142) has occurred while \output is active []
 [16]
 
 Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `\@ifnextchar' on input line 577.
+(hyperref)                removing `\@ifnextchar' on input line 579.
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 577--578
+Underfull \hbox (badness 10000) in paragraph at lines 579--580
 
  []
 
@@ -1001,149 +1001,149 @@ Underfull \hbox (badness 10000) in paragraph at lines 577--578
 File: graphics/neutrophilModel.jpg Graphic file (type jpg)
 
 <use graphics/neutrophilModel.jpg>
-Package pdftex.def Info: graphics/neutrophilModel.jpg used on input line 608.
+Package pdftex.def Info: graphics/neutrophilModel.jpg used on input line 610.
 (pdftex.def)             Requested size: 325.215pt x 122.9731pt.
 
-Underfull \hbox (badness 8056) in paragraph at lines 720--720
+Underfull \hbox (badness 8056) in paragraph at lines 722--722
 \OT1/pcr/m/n/10.95 evid\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 cmt\OT1/cmr/m/n/
 10.95 , \OT1/pcr/m/n/10.95 addl\OT1/cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 8056) in paragraph at lines 725--725
+Underfull \hbox (badness 8056) in paragraph at lines 727--727
 \OT1/pcr/m/n/10.95 evid\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 cmt\OT1/cmr/m/n/
 10.95 , \OT1/pcr/m/n/10.95 addl\OT1/cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 8056) in paragraph at lines 729--729
+Underfull \hbox (badness 8056) in paragraph at lines 731--731
 []|\OT1/pcr/m/n/10.95 time\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 amt\OT1/cmr/m
 /n/10.95 , \OT1/pcr/m/n/10.95 rate\OT1/cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 6808) in paragraph at lines 733--734
+Underfull \hbox (badness 6808) in paragraph at lines 735--736
 []|\OT1/pcr/m/n/10.95 ODE[]system\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 nCmt\O
 T1/cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 8056) in paragraph at lines 733--734
+Underfull \hbox (badness 8056) in paragraph at lines 735--736
 \OT1/pcr/m/n/10.95 time\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 amt\OT1/cmr/m/n/
 10.95 , \OT1/pcr/m/n/10.95 rate\OT1/cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 733--734
+Underfull \hbox (badness 10000) in paragraph at lines 735--736
 \OT1/pcr/m/n/10.95 ii\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 evid\OT1/cmr/m/n/1
 0.95 , \OT1/pcr/m/n/10.95 cmt\OT1/cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 8056) in paragraph at lines 733--734
+Underfull \hbox (badness 8056) in paragraph at lines 735--736
 \OT1/pcr/m/n/10.95 addl\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 ss\OT1/cmr/m/n/1
 0.95 , \OT1/pcr/m/n/10.95 theta\OT1/cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 733--734
+Underfull \hbox (badness 10000) in paragraph at lines 735--736
 \OT1/pcr/m/n/10.95 biovar\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 tlag\OT1/cmr/m
 /n/10.95 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 733--734
+Underfull \hbox (badness 10000) in paragraph at lines 735--736
 \OT1/pcr/m/n/10.95 rel[]tol\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 abs[]tol\OT1
 /cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 3838) in paragraph at lines 735--736
+Underfull \hbox (badness 3838) in paragraph at lines 737--738
 []|\OT1/cmr/m/n/10.95 Parameters that get
  []
 
 
-Overfull \hbox (7.64052pt too wide) in paragraph at lines 738--739
+Overfull \hbox (7.64052pt too wide) in paragraph at lines 740--741
 []|\OT1/pcr/m/n/10.95 reduced[]ODE[]system\OT1/cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 8056) in paragraph at lines 738--739
+Underfull \hbox (badness 8056) in paragraph at lines 740--741
 \OT1/pcr/m/n/10.95 nOde\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 time\OT1/cmr/m/n
 /10.95 , \OT1/pcr/m/n/10.95 amt\OT1/cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 8056) in paragraph at lines 738--739
+Underfull \hbox (badness 8056) in paragraph at lines 740--741
 \OT1/pcr/m/n/10.95 addl\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 ss\OT1/cmr/m/n/1
 0.95 , \OT1/pcr/m/n/10.95 theta\OT1/cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 738--739
+Underfull \hbox (badness 10000) in paragraph at lines 740--741
 \OT1/pcr/m/n/10.95 biovar\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 tlag\OT1/cmr/m
 /n/10.95 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 738--739
+Underfull \hbox (badness 10000) in paragraph at lines 740--741
 \OT1/pcr/m/n/10.95 rel[]tol\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 abs[]tol\OT1
 /cmr/m/n/10.95 ,
  []
 
 
-Overfull \hbox (7.64052pt too wide) in paragraph at lines 743--744
+Overfull \hbox (7.64052pt too wide) in paragraph at lines 745--746
 []|\OT1/pcr/m/n/10.95 reduced[]ODE[]system\OT1/cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 8056) in paragraph at lines 743--744
+Underfull \hbox (badness 8056) in paragraph at lines 745--746
 \OT1/pcr/m/n/10.95 nOde\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 time\OT1/cmr/m/n
 /10.95 , \OT1/pcr/m/n/10.95 amt\OT1/cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 8056) in paragraph at lines 743--744
+Underfull \hbox (badness 8056) in paragraph at lines 745--746
 \OT1/pcr/m/n/10.95 addl\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 ss\OT1/cmr/m/n/1
 0.95 , \OT1/pcr/m/n/10.95 theta\OT1/cmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 743--744
+Underfull \hbox (badness 10000) in paragraph at lines 745--746
 \OT1/pcr/m/n/10.95 biovar\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 tlag\OT1/cmr/m
 /n/10.95 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 743--744
+Underfull \hbox (badness 10000) in paragraph at lines 745--746
 \OT1/pcr/m/n/10.95 rel[]tol\OT1/cmr/m/n/10.95 , \OT1/pcr/m/n/10.95 abs[]tol\OT1
 /cmr/m/n/10.95 ,
  []
 
 
-Overfull \hbox (17.00488pt too wide) in paragraph at lines 713--747
+Overfull \hbox (17.00488pt too wide) in paragraph at lines 715--749
 [][] 
  []
 
 [17] [18 <./graphics/neutrophilModel.jpg>] [19] [20]
-Underfull \hbox (badness 10000) in paragraph at lines 767--769
+Underfull \hbox (badness 10000) in paragraph at lines 769--771
 
  []
 
 
 Package hyperref Warning: No destination for bookmark of \addcontentsline,
-(hyperref)                destination is added on input line 771.
+(hyperref)                destination is added on input line 773.
 
 <graphics/effCptModel.png, id=534, 637.38126pt x 584.1825pt>
 File: graphics/effCptModel.png Graphic file (type png)
 
 <use graphics/effCptModel.png>
-Package pdftex.def Info: graphics/effCptModel.png used on input line 787.
+Package pdftex.def Info: graphics/effCptModel.png used on input line 789.
 (pdftex.def)             Requested size: 252.94499pt x 231.8326pt.
 
 
 Package hyperref Warning: No destination for bookmark of \addcontentsline,
-(hyperref)                destination is added on input line 793.
+(hyperref)                destination is added on input line 795.
 
 
 Underfull \vbox (badness 7203) has occurred while \output is active []
@@ -1152,7 +1152,7 @@ Underfull \vbox (badness 7203) has occurred while \output is active []
 
 ]
 [22 <./graphics/effCptModel.png>] [23]
-Overfull \hbox (6.11554pt too wide) in paragraph at lines 894--916
+Overfull \hbox (6.11554pt too wide) in paragraph at lines 896--918
  [][] 
  []
 
@@ -1163,7 +1163,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots001.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots001.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots001.pdf us
-ed on input line 921.
+ed on input line 923.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
 <graphics/effCptModelTorsten_0.82/effCptPlots002.pdf, id=622, 433.62pt x 433.62
@@ -1172,7 +1172,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots002.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots002.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots002.pdf us
-ed on input line 922.
+ed on input line 924.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
 <graphics/effCptModelTorsten_0.82/effCptPlots003.pdf, id=623, 433.62pt x 433.62
@@ -1181,7 +1181,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots003.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots003.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots003.pdf us
-ed on input line 923.
+ed on input line 925.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
 <graphics/effCptModelTorsten_0.82/effCptPlots004.pdf, id=624, 433.62pt x 433.62
@@ -1190,7 +1190,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots004.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots004.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots004.pdf us
-ed on input line 924.
+ed on input line 926.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
 <graphics/effCptModelTorsten_0.82/effCptPlots005.pdf, id=625, 433.62pt x 433.62
@@ -1199,11 +1199,11 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots005.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots005.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots005.pdf us
-ed on input line 925.
+ed on input line 927.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
 
-LaTeX Warning: Float too large for page by 38.34004pt on input line 928.
+LaTeX Warning: Float too large for page by 38.34004pt on input line 930.
 
 
 <graphics/effCptModelTorsten_0.82/effCptPlots006.pdf, id=626, 433.62pt x 433.62
@@ -1212,7 +1212,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots006.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots006.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots006.pdf us
-ed on input line 931.
+ed on input line 933.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
 <graphics/effCptModelTorsten_0.82/effCptPlots007.pdf, id=627, 433.62pt x 433.62
@@ -1221,7 +1221,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots007.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots007.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots007.pdf us
-ed on input line 932.
+ed on input line 934.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
 <graphics/effCptModelTorsten_0.82/effCptPlots011.pdf, id=628, 433.62pt x 433.62
@@ -1230,7 +1230,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots011.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots011.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots011.pdf us
-ed on input line 938.
+ed on input line 940.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
 <graphics/effCptModelTorsten_0.82/effCptPlots012.pdf, id=629, 433.62pt x 433.62
@@ -1239,7 +1239,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots012.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots012.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots012.pdf us
-ed on input line 939.
+ed on input line 941.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
 <graphics/effCptModelTorsten_0.82/effCptPlots013.pdf, id=630, 433.62pt x 433.62
@@ -1248,7 +1248,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots013.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots013.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots013.pdf us
-ed on input line 940.
+ed on input line 942.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
 <graphics/effCptModelTorsten_0.82/effCptPlots014.pdf, id=631, 433.62pt x 433.62
@@ -1257,7 +1257,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots014.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots014.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots014.pdf us
-ed on input line 941.
+ed on input line 943.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
 <graphics/effCptModelTorsten_0.82/effCptPlots019.pdf, id=632, 433.62pt x 433.62
@@ -1266,7 +1266,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots019.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots019.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots019.pdf us
-ed on input line 942.
+ed on input line 944.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
 <graphics/effCptModelTorsten_0.82/effCptPlots020.pdf, id=633, 433.62pt x 433.62
@@ -1275,7 +1275,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots020.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots020.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots020.pdf us
-ed on input line 943.
+ed on input line 945.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
 <graphics/effCptModelTorsten_0.82/effCptPlots021.pdf, id=634, 433.62pt x 433.62
@@ -1284,7 +1284,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots021.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots021.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots021.pdf us
-ed on input line 944.
+ed on input line 946.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
 <graphics/effCptModelTorsten_0.82/effCptPlots022.pdf, id=635, 433.62pt x 433.62
@@ -1293,7 +1293,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots022.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots022.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots022.pdf us
-ed on input line 945.
+ed on input line 947.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
 <graphics/effCptModelTorsten_0.82/effCptPlots023.pdf, id=636, 433.62pt x 433.62
@@ -1302,7 +1302,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots023.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots023.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots023.pdf us
-ed on input line 951.
+ed on input line 953.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
 <graphics/effCptModelTorsten_0.82/effCptPlots024.pdf, id=637, 433.62pt x 433.62
@@ -1311,7 +1311,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots024.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots024.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots024.pdf us
-ed on input line 952.
+ed on input line 954.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
 <graphics/effCptModelTorsten_0.82/effCptPlots025.pdf, id=638, 433.62pt x 433.62
@@ -1320,7 +1320,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots025.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots025.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots025.pdf us
-ed on input line 953.
+ed on input line 955.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
 <graphics/effCptModelTorsten_0.82/effCptPlots026.pdf, id=639, 433.62pt x 433.62
@@ -1329,7 +1329,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots026.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots026.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots026.pdf us
-ed on input line 954.
+ed on input line 956.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
 <graphics/effCptModelTorsten_0.82/effCptPlots027.pdf, id=640, 433.62pt x 433.62
@@ -1338,7 +1338,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots027.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots027.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots027.pdf us
-ed on input line 955.
+ed on input line 957.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
 <graphics/effCptModelTorsten_0.82/effCptPlots028.pdf, id=641, 433.62pt x 433.62
@@ -1347,7 +1347,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots028.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots028.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots028.pdf us
-ed on input line 956.
+ed on input line 958.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
 <graphics/effCptModelTorsten_0.82/effCptPlots029.pdf, id=642, 433.62pt x 433.62
@@ -1356,7 +1356,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots029.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots029.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots029.pdf us
-ed on input line 957.
+ed on input line 959.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
 
 <graphics/effCptModelTorsten_0.82/effCptPlots030.pdf, id=643, 433.62pt x 433.62
@@ -1365,7 +1365,7 @@ File: graphics/effCptModelTorsten_0.82/effCptPlots030.pdf Graphic file (type pd
 f)
  <use graphics/effCptModelTorsten_0.82/effCptPlots030.pdf>
 Package pdftex.def Info: graphics/effCptModelTorsten_0.82/effCptPlots030.pdf us
-ed on input line 958.
+ed on input line 960.
 (pdftex.def)             Requested size: 108.405pt x 108.40472pt.
  [25 <./graphics/effCptModelTorsten_0.82/effCptPlots001.pdf> <./graphics/effCpt
 ModelTorsten_0.82/effCptPlots002.pdf> <./graphics/effCptModelTorsten_0.82/effCp
@@ -1384,7 +1384,7 @@ raphics/effCptModelTorsten_0.82/effCptPlots026.pdf> <./graphics/effCptModelTors
 ten_0.82/effCptPlots027.pdf> <./graphics/effCptModelTorsten_0.82/effCptPlots028
 .pdf> <./graphics/effCptModelTorsten_0.82/effCptPlots029.pdf> <./graphics/effCp
 tModelTorsten_0.82/effCptPlots030.pdf>]
-Underfull \hbox (badness 10000) in paragraph at lines 965--966
+Underfull \hbox (badness 10000) in paragraph at lines 967--968
 
  []
 
@@ -1398,7 +1398,7 @@ File: graphics/neutropenia_0.82/neutropeniaPopulationPlots001.pdf Graphic file
 (type pdf)
  <use graphics/neutropenia_0.82/neutropeniaPopulationPlots001.pdf>
 Package pdftex.def Info: graphics/neutropenia_0.82/neutropeniaPopulationPlots00
-1.pdf used on input line 1135.
+1.pdf used on input line 1137.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
 <graphics/neutropenia_0.82/neutropeniaPopulationPlots002.pdf, id=844, 433.62pt 
@@ -1407,7 +1407,7 @@ File: graphics/neutropenia_0.82/neutropeniaPopulationPlots002.pdf Graphic file
 (type pdf)
  <use graphics/neutropenia_0.82/neutropeniaPopulationPlots002.pdf>
 Package pdftex.def Info: graphics/neutropenia_0.82/neutropeniaPopulationPlots00
-2.pdf used on input line 1136.
+2.pdf used on input line 1138.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
 <graphics/neutropenia_0.82/neutropeniaPopulationPlots003.pdf, id=845, 433.62pt 
@@ -1416,7 +1416,7 @@ File: graphics/neutropenia_0.82/neutropeniaPopulationPlots003.pdf Graphic file
 (type pdf)
  <use graphics/neutropenia_0.82/neutropeniaPopulationPlots003.pdf>
 Package pdftex.def Info: graphics/neutropenia_0.82/neutropeniaPopulationPlots00
-3.pdf used on input line 1137.
+3.pdf used on input line 1139.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
 <graphics/neutropenia_0.82/neutropeniaPopulationPlots004.pdf, id=846, 433.62pt 
@@ -1425,7 +1425,7 @@ File: graphics/neutropenia_0.82/neutropeniaPopulationPlots004.pdf Graphic file
 (type pdf)
  <use graphics/neutropenia_0.82/neutropeniaPopulationPlots004.pdf>
 Package pdftex.def Info: graphics/neutropenia_0.82/neutropeniaPopulationPlots00
-4.pdf used on input line 1138.
+4.pdf used on input line 1140.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
 
 <graphics/neutropenia_0.82/neutropeniaPopulationPlots005.pdf, id=847, 433.62pt 
@@ -1434,7 +1434,7 @@ File: graphics/neutropenia_0.82/neutropeniaPopulationPlots005.pdf Graphic file
 (type pdf)
  <use graphics/neutropenia_0.82/neutropeniaPopulationPlots005.pdf>
 Package pdftex.def Info: graphics/neutropenia_0.82/neutropeniaPopulationPlots00
-5.pdf used on input line 1144.
+5.pdf used on input line 1146.
 (pdftex.def)             Requested size: 180.67499pt x 180.67676pt.
 
 <graphics/neutropenia_0.82/neutropeniaPopulationPlots006.pdf, id=848, 433.62pt 
@@ -1443,7 +1443,7 @@ File: graphics/neutropenia_0.82/neutropeniaPopulationPlots006.pdf Graphic file
 (type pdf)
  <use graphics/neutropenia_0.82/neutropeniaPopulationPlots006.pdf>
 Package pdftex.def Info: graphics/neutropenia_0.82/neutropeniaPopulationPlots00
-6.pdf used on input line 1145.
+6.pdf used on input line 1147.
 (pdftex.def)             Requested size: 180.67499pt x 180.67676pt.
 
 <graphics/neutropenia_0.82/neutropeniaPopulationPlots010.pdf, id=849, 433.62pt 
@@ -1452,7 +1452,7 @@ File: graphics/neutropenia_0.82/neutropeniaPopulationPlots010.pdf Graphic file
 (type pdf)
  <use graphics/neutropenia_0.82/neutropeniaPopulationPlots010.pdf>
 Package pdftex.def Info: graphics/neutropenia_0.82/neutropeniaPopulationPlots01
-0.pdf used on input line 1151.
+0.pdf used on input line 1153.
 (pdftex.def)             Requested size: 180.67499pt x 180.67676pt.
 
 <graphics/neutropenia_0.82/neutropeniaPopulationPlots011.pdf, id=850, 433.62pt 
@@ -1461,7 +1461,7 @@ File: graphics/neutropenia_0.82/neutropeniaPopulationPlots011.pdf Graphic file
 (type pdf)
  <use graphics/neutropenia_0.82/neutropeniaPopulationPlots011.pdf>
 Package pdftex.def Info: graphics/neutropenia_0.82/neutropeniaPopulationPlots01
-1.pdf used on input line 1152.
+1.pdf used on input line 1154.
 (pdftex.def)             Requested size: 180.67499pt x 180.67676pt.
 
 [29] [30] [31 <./graphics/neutropenia_0.82/neutropeniaPopulationPlots001.pdf> <
@@ -1471,45 +1471,45 @@ utropeniaPopulationPlots004.pdf>] [32 <./graphics/neutropenia_0.82/neutropeniaP
 opulationPlots005.pdf> <./graphics/neutropenia_0.82/neutropeniaPopulationPlots0
 06.pdf> <./graphics/neutropenia_0.82/neutropeniaPopulationPlots010.pdf> <./grap
 hics/neutropenia_0.82/neutropeniaPopulationPlots011.pdf>]
-Underfull \hbox (badness 10000) in paragraph at lines 1162--1164
+Underfull \hbox (badness 10000) in paragraph at lines 1164--1166
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1178--1179
+Underfull \hbox (badness 10000) in paragraph at lines 1180--1181
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1178--1179
+Underfull \hbox (badness 10000) in paragraph at lines 1180--1181
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1191--1193
+Underfull \hbox (badness 10000) in paragraph at lines 1193--1195
 
  []
 
 [33
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 1398--1400
+Underfull \hbox (badness 10000) in paragraph at lines 1400--1402
 
  []
 
 [34] (./torstenManual.bbl [35])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1423.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1425.
  [36
 
 ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1423.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1425.
  (./torstenManual.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1423.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1423.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1425.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1425.
 
 Package rerunfilecheck Info: File `torstenManual.out' has not changed.
 (rerunfilecheck)             Checksum: 161B642B5F854C17DB165BC5C9E03DC4;1656.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1423.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1425.
  ) 
 Here is how much of TeX's memory you used:
  18562 strings out of 493089
@@ -1545,7 +1545,7 @@ ic/amsfonts/cm/cmti10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/publi
 c/amsfonts/cm/cmti9.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/
 amsfonts/symbols/msbm10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw
 /courier/ucrr8a.pfb>
-Output written on torstenManual.pdf (36 pages, 2252390 bytes).
+Output written on torstenManual.pdf (36 pages, 2252771 bytes).
 PDF statistics:
  1266 PDF objects out of 1440 (max. 8388607)
  1114 compressed objects within 12 object streams

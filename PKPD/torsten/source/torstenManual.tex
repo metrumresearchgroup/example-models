@@ -181,6 +181,8 @@ Our current plans for future development of Torsten include the following:
   \item Torsten is now up to date with Stan version 2.15.0
   \item Add ``mix solver" functions
   \item Add algebraic solver
+  \item Torsten automatically corrects ODE functors when the rates are non-zero. The code carefully distinguishes the case where the rates are fixed data or random parameters. 
+  \item Fix bug that prevented Jacobians from being accurately computed for \texttt{generalOdeModel\_*} when \texttt{biovar} was passed as parameters, causing the sampler to dissolve into a quasi-random walk.
   \item Fix bug that prevented users from using a print statement inside a function that specifies an ODE system.
   \item Fixed minor bugs and report issues.
 \end{itemize}
