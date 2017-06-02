@@ -2,8 +2,11 @@
 * One and Two Compartment Model functions that compute solutions analytically
 * General Linear Compartment Model function that computes a matrix exponential solution
 * General Compartment Model functions that compute solutions numerically
-  * Runge-Kutta 4th/5th order for non-stiff ODE systems
-  * Backward Differentiation for stiff ODE systems
+  * Runge-Kutta 4th/5th (rk45) order for non-stiff ODE systems
+  * Backward Differentiation (bdf) for stiff ODE systems
+* Mixed Compartment Model functions that combine analytical and numerical solutions
+  * Computes analytical solutions for base PK One and Two compartment model
+  * Computes numerical solution using the rk45 or the bdf method
   
 ** This prototype is still under development ** and has been uploaded to facilitate working with the community of Stan developers. The current version was written by Charles Margossian, Bill Gillespie, and Metrum Research Group, LLC. We have recieved extensive help from the Stan development team.
 
@@ -57,4 +60,3 @@ Updates
 
 08/02/2016
 * Update Stan and Math branch to match stan-dev. This is important because of the recent bug fix in stan 2.10. 
-
