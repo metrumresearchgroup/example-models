@@ -1,44 +1,62 @@
-## Example Models
+<b> Torsten </b> is a library of C++ functions that support applications of Stan in Pharmacometrics. The current prototype provides:
+* One and Two Compartment Model functions that compute solutions analytically
+* General Linear Compartment Model function that computes a matrix exponential solution
+* General Compartment Model functions that compute solutions numerically
+  * Runge-Kutta 4th/5th (rk45) order for non-stiff ODE systems
+  * Backward Differentiation (bdf) for stiff ODE systems
+* Mixed Compartment Model functions that combine analytical and numerical solutions
+  * Computes analytical solutions for base PK One and Two compartment model
+  * Computes numerical solution using the rk45 or the bdf method
+  
+** This prototype is still under development ** and has been uploaded to facilitate working with the community of Stan developers. The current version was written by Charles Margossian, Bill Gillespie, and Metrum Research Group, LLC. We have recieved extensive help from the Stan development team.
 
-This repository holds open source Stan models, data simulators, and real data.  There are models translating those found in books, most of the BUGS examples, and some basic examples used in the manual.
+See the user manual (`torstenManual.pdf`) for more information and guidance on the examples. If you have any questions, please raise an issue on GitHub or send me an e-mail at charlesm@metrumrg.com. 
 
-#### Books
+Licensing
+---------
+The Torsten library is open-source and licensed under the BSD 3-clause license. 
 
-* [Applied Regression Modeling](https://github.com/stan-dev/example-models/wiki/ARM-Models) (Gelman and Hill 2007)
-* [Bayesian Cognitive Modeling](https://github.com/stan-dev/example-models/tree/master/Bayesian_Cognitive_Modeling) (Lee and Wagenmakers 2014)
-* [Bayesian Population Analysis using WinBUGS: A Hierarchical Perspective](https://github.com/stan-dev/example-models/tree/master/BPA) (Kéry and Schaub 2012)
 
-#### BUGS examples
+Install
+-------
+To install cmdStan with torsten, run the shell script script `setupTorsten.sh`.
 
-- [BUGS Models (volumes 1--3)](https://github.com/stan-dev/example-models/wiki/BUGS-Examples)
+We are working with Stan's development team to create a system to add and share Stan packages. In the mean time, users can download a forked version of Stan with Torsten from GitHub. The latest version of Torsten (v0.82) is compatible with Stan v2.14.0. Torsten is agnostic to which Stan interface you use. The setupTorsten file installs Torsten with cmdStan.
 
-#### Basics
 
-- Basic Distributions
-- Basic Estimators
+Examples
+---------
+For each model, we provide the following files:
+* *modelName*.stan
+* *modelName*.data.R
+* *modelName*.init.R
+* *modelName*Simulation.R 
 
-## Organization
+The simulation file can be used to create the data and initial estimate files. 
 
-Each example model should be organized to include the following
+There are three Stan files for the  two compartment model: `TwoCptModel`, `LinTwoCptModel`, and `GenTwoCptModel`. This is probably a good place to start. `effCptModel` tackles a PKPD model based on a linear ODE system, and the Friberg-Karlsson model a semi-mechanist model described by a nonlinear ODE system. Finally, `TwoCptModelPopulation` extends the two compartment model to the case where we have data from multiple patients with inter-individual variability in the parameters. 
 
-1.  Stan program(s) implementing the model (and variants),
-2.  program to simulate data (in R or Python),
-3.  simulated data file itself (for now in .data.R dump format). For each Stan file(s), such as foo.stan and bar.stan, there must be a foo.data.R file and a bar.data.R file in the same subdirectory as the .stan file (even if foo.data.R is the same as bar.data.R).
-4.  summary of output fit for simulated data file (text),
-    (a) check diagnostics for post-warmup iterations: n_divergent is zero for all post-warmup iterations, tree_depth < max_depth for all post-warmup iterations,
-    (b) check for all parameters (and unnormalized density lp__) that R_hat < 1.1 and n_eff > 20, and
-    (c) if diagnostics fail improve model with a note explaining the fix.
-5.  any real data sets with summary of fit (in original and Stan-readable format, with munging program from original to Stan-readable),
-    (a) check diagnostics (as above),
-    (b) check convergence (as above), and
-    (c) if fit is poor then improve model with a note explaining the fix.
-6.  citations to source for model and/or data,
-7.  documentation needed to understand the model (LaTeX, text, or HTML), including discussion of parameterizations and/or optimizations and their relations to performance (and to each other if there are multiple models),
-8.  keywords or other tags to help organize by category (e.g., from manual, from BUGS volume, from book, involving logistic regression, application area such as population model, model type such as IRT or mark-recapture, etc.)
-9.  author/copyright-holder info and open-source license info if not new BSD.
+See the manual for more assistance.
 
-The idea is to encourage people to go through *all* of these steps for their models, particularly 3 and 4, which often get overlooked. And if the example cannot be executed via rstan::stan_demo(), then something is wrong.
+Under the R directory, we provide tools to run the examples via cmdStan and look at diagnostic plots for a two compartment model and a two compartment population model.
 
-### Licensing
+C++ Code
+--------
+The C++ code for Torsten can be found on the following repos:
 
-All of the example models are copyrighted by their author(s) or assignees under the new BSD license unless another open-source license is explicitly stipulated in the directory containing the model.
+Math Library: https://github.com/charlesm93/math/tree/torsten-master
+
+Stan Grammar: https://github.com/charlesm93/stan/tree/torsten-master
+
+Updates
+-------
+03/02/2017
+* Update examples, user manual, and other files for Torsten v 0.82.
+
+10/31/2016
+* Add Linear Compartment model function.
+* Revise the user's manual.
+* Torsten is now compatible with a development version, post v 2.12. 
+
+08/02/2016
+* Update Stan and Math branch to match stan-dev. This is important because of the recent bug fix in stan 2.10. 
