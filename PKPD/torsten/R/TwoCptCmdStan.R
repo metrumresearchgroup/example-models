@@ -18,7 +18,6 @@ toolsDir <- file.path("tools")
 stanDir <- file.path("cmdstan")
 tempDir <- file.path(modelDir, modelName, "temp")
 
-# source(file.path(scriptDir, "pkgSetup.R"))
 # .libPaths(...)
 library(rstan)
 library(ggplot2)
@@ -68,6 +67,8 @@ RNGkind("L'Ecuyer-CMRG")
 mc.reset.stream()
 
 compileModel(model = file.path(modelDir, modelName), stanDir = stanDir)
+
+dir.create(file.path(modelDir, modelName, "temp"))
 
 chains <- 1:nChains
 mclapply(chains,

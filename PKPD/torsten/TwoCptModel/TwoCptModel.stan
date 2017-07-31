@@ -1,13 +1,13 @@
-## TwoCptModel.stan
-## Run two compartment model using built-in analytical solution 
-## Heavily anotated to help new users
+// TwoCptModel.stan
+// Run two compartment model using built-in analytical solution 
+// Heavily anotated to help new users
 
 data{
-  int<lower = 1> nt; # number of events
-  int<lower = 1> nObs; # number of observation
-  int<lower = 1> iObs[nObs]; # index of observation
+  int<lower = 1> nt;  // number of events
+  int<lower = 1> nObs;  // number of observation
+  int<lower = 1> iObs[nObs];  // index of observation
   
-  # NONMEM data
+  // NONMEM data
   int<lower = 1> cmt[nt];
   int evid[nt];
   int addl[nt];
@@ -17,16 +17,16 @@ data{
   real rate[nt];
   real ii[nt];
   
-  vector<lower = 0>[nObs] cObs; # observed concentration (Dependent Variable)
+  vector<lower = 0>[nObs] cObs;  // observed concentration (Dependent Variable)
 }
 
 transformed data{
   vector[nObs] logCObs = log(cObs);
-  int nTheta = 5;  # number of ODE parameters in Two Compartment Model
-  int nCmt = 3;  # number of compartments in model
+  int nTheta = 5;  // number of ODE parameters in Two Compartment Model
+  int nCmt = 3;  // number of compartments in model
 
-  # Since we're not trying to evaluate the bio-variability (F) and 
-  # the lag times, we declare them as data.
+  // Since we're not trying to evaluate the bio-variability (F) and 
+  // the lag times, we declare them as data.
   real biovar[nCmt];
   real tlag[nCmt];
 
@@ -51,7 +51,7 @@ parameters{
 }
 
 transformed parameters{
-  real theta[nTheta];  # ODE parameters
+  real theta[nTheta];  // ODE parameters
   vector<lower = 0>[nt] cHat;
   vector<lower = 0>[nObs] cHatObs;
   matrix<lower = 0>[nt, nCmt] x; 
@@ -62,23 +62,23 @@ transformed parameters{
   theta[4] = V2;
   theta[5] = ka;
 
-  # PKModelTwoCpt takes in the NONMEM data, followed by the parameter
-  # arrays abd returns a matrix with the predicted amount in each 
-  # compartment at each event.
+  // PKModelTwoCpt takes in the NONMEM data, followed by the parameter
+  // arrays abd returns a matrix with the predicted amount in each 
+  // compartment at each event.
   x = PKModelTwoCpt(time, amt, rate, ii, evid, cmt, addl, ss,
                    theta, biovar, tlag);
 
-  cHat = col(x, 2) ./ V1; # we're interested in the amount in the second compartment 
+  cHat = col(x, 2) ./ V1; // we're interested in the amount in the second compartment 
 
-  cHatObs = cHat[iObs]; # predictions for observed data recors
+  cHatObs = cHat[iObs]; // predictions for observed data recors
 
   // for(i in 1:nObs){
-  //   cHatObs[i] = cHat[iObs[i]]; ## predictions for observed data records
+  //   cHatObs[i] = cHat[iObs[i]]; //// predictions for observed data records
   // }
 }
 
 model{
-  # informative prior
+  // informative prior
   CL ~ lognormal(log(10), 0.25);
   Q ~ lognormal(log(15), 0.5);
   V1 ~ lognormal(log(35), 0.25);
