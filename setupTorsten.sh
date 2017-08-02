@@ -1,5 +1,5 @@
 # setupTorsten
-# v 1.2
+# v 1.3
 # Run this bash file in the directory where you want to install cmdstan
 # with the Torsten functions. 
 #

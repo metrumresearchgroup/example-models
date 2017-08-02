@@ -1,13 +1,13 @@
-## LinTwoCptModelExample.stan
-## Run two compartment model using matrix exponential solution
-## Heavily anotated to help new users
+// LinTwoCptModelExample.stan
+// Run two compartment model using matrix exponential solution
+// Heavily anotated to help new users
 
 data{
-  int<lower = 1> nt; # number of events
-  int<lower = 1> nObs; # number of observations
-  int<lower = 1> iObs[nObs]; # index of observation
+  int<lower = 1> nt;  // number of events
+  int<lower = 1> nObs;  // number of observations
+  int<lower = 1> iObs[nObs];  // index of observation
   
-  # NONMEM data
+  // NONMEM data
   int<lower = 1> cmt[nt];
   int evid[nt];
   int addl[nt];
@@ -17,7 +17,7 @@ data{
   real rate[nt];
   real ii[nt];
   
-  vector<lower = 0>[nObs] cObs; # observed concentration (dependent variable)
+  vector<lower = 0>[nObs] cObs;  // observed concentration (dependent variable)
 }
 
 transformed data{
@@ -60,21 +60,21 @@ transformed parameters{
   K[3, 2] = k12;
   K[3, 3] = -k21;
 
-  # linCptModel takes in the constant rate matrix, the object theta which
-  # contains the biovariability fraction and the lag time of each compartment,
-  # and the NONMEM data.
+  // linModel takes in the constant rate matrix, the object theta which
+  // contains the biovariability fraction and the lag time of each compartment,
+  // and the NONMEM data.
   x = linOdeModel(time, amt, rate, ii, evid, cmt, addl, ss,
                   K, biovar, tlag);
 
   cHat = col(x, 2) ./ V1;
 
   for(i in 1:nObs){
-    cHatObs[i] = cHat[iObs[i]]; ## predictions for observed data records
+    cHatObs[i] = cHat[iObs[i]];  // predictions for observed data records
   }
 }
 
 model{
-  # informative prior
+  // informative prior
   CL ~ lognormal(log(10), 0.25);
   Q ~ lognormal(log(15), 0.5);
   V1 ~ lognormal(log(35), 0.25);

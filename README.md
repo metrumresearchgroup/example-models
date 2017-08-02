@@ -1,5 +1,5 @@
-Example-Models
---------------
+Torsten
+-------
 
 <b> Torsten </b> is a library of C++ functions that support applications of Stan in Pharmacometrics. The current prototype provides:
 * Analytical solution for the one and two linear compartment model with a first-order absorption

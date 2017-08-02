@@ -4,8 +4,6 @@ gc()
 modelName <- "TwoCptModel"
 # modelName <- "LinTwoCptModel"
 # modelName <- "GenTwoCptModel"
-# modelName <- "TwoCptModel_fixed"
-# modelName <- "fOneCpt"
 
 ## Adjust directories to your settings.
 scriptDir <- getwd()
@@ -51,13 +49,13 @@ init <- function()
        ka = exp(rnorm(1, log(1), 0.2)),
        sigma = runif(1, 0.5, 2))
 
-dir.create(tempDir)  ## directory to store initial estimates for each chain
+# dir.create(tempDir)  ## directory to store initial estimates for each chain
 
 ################################################################################################
 ## run Stan
 nChains <- 4 # 4
 nPost <- 1000 # 1000 ## Number of post-burn-in samples per chain after thinning
-nBurn <- 1000  # 1000 ## Number of burn-in samples per chain after thinning
+nBurn <- 1000 # 1000 ## Number of burn-in samples per chain after thinning
 nThin <- 1
 
 nIter <- nPost * nThin

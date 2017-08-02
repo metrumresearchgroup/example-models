@@ -1,33 +1,33 @@
-## GenTwoCptModelExample.stan
-## Run two compartment model using numerical solution
-## Heavily anotated to help new users
+// GenTwoCptModelExample.stan
+// Run two compartment model using numerical solution
+// Heavily anotated to help new users
 
 functions{
   
-  # define ODE system for two compartmnt model
+  // define ODE system for two compartmnt model
   real[] twoCptModelODE(real t,
 			real[] x,
 			real[] parms,
-			real[] rate, # in this example, rate is treated as data
+			real[] rate,  // in this example, rate is treated as data
 			int[] dummy){
 			  
-    # Parameters
+    // Parameters
     real CL = parms[1];
     real Q = parms[2];
     real V1 = parms[3];
     real V2 = parms[4];
     real ka = parms[5];
     
-    # Re-parametrization
+    // Re-parametrization
     real k10 = CL / V1;
     real k12 = Q / V1;
     real k21 = Q / V2;
     
-    # Return object (derivative)
-    real y[3]; # 1 element per compartment of
-               # the model
+    // Return object (derivative)
+    real y[3];  // 1 element per compartment of
+                // the model
 
-    # PK component of the ODE system
+    // PK component of the ODE system
     y[1] = -ka*x[1];
     y[2] = ka*x[1] - (k10 + k12)*x[2] + k21*x[3];
     y[3] = k12*x[2] - k21*x[3];
@@ -37,11 +37,11 @@ functions{
   
 }
 data{
-  int<lower = 1> nt; # number of events
-  int<lower = 1> nObs; # number of observations
-  int<lower = 1> iObs[nObs]; # index of observation
+  int<lower = 1> nt;  // number of events
+  int<lower = 1> nObs;  // number of observations
+  int<lower = 1> iObs[nObs];  // index of observation
   
-  # NONMEM data
+  // NONMEM data
   int<lower = 1> cmt[nt];
   int evid[nt];
   int addl[nt];
@@ -51,13 +51,13 @@ data{
   real rate[nt];
   real ii[nt];
   
-  vector<lower = 0>[nObs] cObs; # observed concentration (dependent variable)
+  vector<lower = 0>[nObs] cObs;  // observed concentration (dependent variable)
 }
 
 transformed data{
   vector[nObs] logCObs = log(cObs);
-  int nTheta = 5;  # number of parameters
-  int nCmt = 3;  # number of compartments
+  int nTheta = 5;   // number of parameters
+  int nCmt = 3;   // number of compartments
   real biovar[nCmt];
   real tlag[nCmt];
 
@@ -88,13 +88,13 @@ transformed parameters{
   theta[4] = V2;
   theta[5] = ka;
 
-  # generalCptModel takes in the ODE system, the number of compartment 
-  # (here we have a two compartment model with first order absorption, so
-  # three compartments), the parameters matrix, the NONEM data, and the tuning
-  # parameters (relative tolerance, absolute tolerance, and maximum number of steps)
-  # of the ODE integrator. The user can choose between the bdf and the rk45 integrator. 
-  # Returns a matrix with the predicted amount in each compartment 
-  # at each event.
+  // generalCptModel takes in the ODE system, the number of compartment 
+  // (here we have a two compartment model with first order absorption, so
+  // three compartments), the parameters matrix, the NONEM data, and the tuning
+  // parameters (relative tolerance, absolute tolerance, and maximum number of steps)
+  // of the ODE integrator. The user can choose between the bdf and the rk45 integrator.
+  // Returns a matrix with the predicted amount in each compartment 
+  // at each event.
 
 //  x = generalOdeModel_bdf(twoCptModelODE, 3,
 //                          time, amt, rate, ii, evid, cmt, addl, ss,
@@ -109,12 +109,12 @@ transformed parameters{
   cHat = col(x, 2) ./ V1;
 
   for(i in 1:nObs){
-    cHatObs[i] = cHat[iObs[i]]; ## predictions for observed data records
+    cHatObs[i] = cHat[iObs[i]];  // predictions for observed data records
   }
 }
 
 model{
-  # informative prior
+  // informative prior
   CL ~ lognormal(log(10), 0.25);
   Q ~ lognormal(log(15), 0.5);
   V1 ~ lognormal(log(35), 0.25);
