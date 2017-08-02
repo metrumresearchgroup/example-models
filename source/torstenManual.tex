@@ -33,7 +33,7 @@
 \evensidemargin 0in
 
 %\definecolor{MRGGreen}{rgb}{0,0.655,0.212}
-\definecolor{MRGGreen}{rgb}{0, 0.350, 0.125}
+\definecolor{MRGGreen}{rgb}{0, 0.350, 0.200}
 \parskip 10pt
 \parindent 0em
 
@@ -59,8 +59,8 @@ billgm@metrumrg.com \` metrumrg.com \\
 }
 {\Huge \textcolor{MRGGreen}{\textbf{Torsten}} \\ \ \\  \huge A Prototype Library for Bayesian Pharmacometrics Modeling in Stan \\ \ \\
 User Manual \\ \ \\ \ \\ \ \\
-\Large Torsten Version 0.83 beta \\ for Stan Version 2.16.0 \\ \ \\
-\large July 2017 }
+\Large Torsten Version 0.83 \\ for Stan Version 2.16.0 \\ \ \\
+\large August 2017 }
 \end{center}
 
 \clearpage
@@ -71,11 +71,14 @@ User Manual \\ \ \\ \ \\ \ \\
 \pagebreak
 
 \section*{Development Team}
-Charles Margossian \\
-\texttt{charles.margossian@columbia.edu}
-
 Bill Gillespie \\
 \texttt{billg@metrumrg.com} \\
+Metrum Research Group, LLC
+
+Charles Margossian \\
+\texttt{charles.margossian@columbia.edu} \\
+Columbia University, Department of Statistics \\
+(formally Metrum Research Group, LLC)
 
 \section*{Acknowledgements}
 
@@ -112,16 +115,16 @@ Torsten is licensed under the BSD 3-clause license.
 
 \begin{fmpage}{\textwidth}
 {\bf WARNING:} The current version of Torsten is a {\em prototype}. It is being released for review and comment, and to support limited research applications. It has not been rigorously tested and should not be used for critical applications without further testing or cross-checking by comparison with other methods. \\ \ \\
-We encourage interested users to try Torsten out and are happy to assist. Please report issues, bugs, and feature requests on our GitHub page: \url{https://github.com/charlesm93/stan}.
+We encourage interested users to try Torsten out and are happy to assist. Please report issues, bugs, and feature requests on our GitHub page: \url{https://github.com/metrumresearchgroup/stan}.
 \end{fmpage}
 
 
 \subsection{Installing Torsten}  \ \\ \ \\  
-Installation files are available on GitHub: \url{https://github.com/charlesm93/example-models/tree/torsten-0.82/PKPD/torsten}
+Installation files are available on GitHub: \url{https://github.com/metrumresearchgroup/example-models}
 
 There is currently no mechanism to install Torsten on top of your version of Stan. This is still a work in progress. In the meantime, we offer a version of Stan with Torsten built inside of it. Torsten 0.83 works with Stan 2.16.0. Torsten is built inside the Stan and Stan-math repositories and is agnostic to the interface. We offer support to install Torsten with RStan and CmdStan.
 
-\subsubsection{Intalling Torsten with RStan} The easiest way to install the RStan interface with Stan and Torsten is to run the script \texttt{R/setupRTorsten.R}. You'll need to make a few minor adjustments, notably by specifying the location at which you wish to install RStan (and its dependency StanHeaders). You may run into difficulty if Torsten is not up to date with Stan's last release\footnote{See issue \#3 on our GitHub issue tracker: \url{https://github.com/charlesm93/example-models/issues/3}}.
+\subsubsection{Intalling Torsten with RStan} The easiest way to install the RStan interface with Stan and Torsten is to run the script \texttt{R/setupRTorsten.R}. You'll need to make a few minor adjustments, notably by specifying where you wish to install RStan (and its dependency StanHeaders). You may run into difficulty if Torsten is not up to date with Stan's last release\footnote{See issue \#3 on our GitHub issue tracker: \url{https://github.com/charlesm93/example-models/issues/3}}.
 
 If you already have these packages installed, the script will not automatically overwrite them, which is why you should remove them prior to running \texttt{setupRTorsten.R}. 
 
@@ -130,7 +133,7 @@ The script currently doesn't install all the dependencies for RStan\footnote{See
 \subsubsection{Installing Torsten with CmdStan} Similarly, you can install the CmdStan interface with Stan and Torsten using the bash file \texttt{setupTorsten.sh}\footnote{To get the development version of Torsten use \texttt{setupTorsten-dev.sh}.}.
 
 \subsection{Overview} \ \\ \ \\
-Torsten is a prototype Pharmacokinetic/Pharmacodynamic (PK/PD) model library for use in Stan 2.16.0. The current version includes:
+Torsten is a prototype pharmacometrics model library for use in Stan 2.16.0. The current version includes:
 \begin{itemize}
   \item Specific linear compartment models:
   \begin{itemize}
@@ -139,7 +142,7 @@ Torsten is a prototype Pharmacokinetic/Pharmacodynamic (PK/PD) model library for
   \end{itemize}
   \item General linear compartment model described by a system of first-order \underline{linear} Ordinary Differential Equations (ODEs).
   \item General compartment model described by a system of first order ODEs
-  \item Mix compartment model with forcing PK function described by a One or Two compartment model, and forced states described by a system of first-order ODEs.
+  \item Mix compartment model with forcing a PK function described by a One or Two compartment model, and forced states described by a system of first-order ODEs.
  \end{itemize}
 
 The models and data format are based on NONMEM\textregistered\footnote{NONMEM\textregistered\ is licensed and distributed by ICON Development Solutions.}/NMTRAN/PREDPP conventions including:
@@ -152,15 +155,19 @@ The models and data format are based on NONMEM\textregistered\footnote{NONMEM\te
   \item Handles single dose and multiple dose histories
   \item Handles steady state dosing histories
   \begin{itemize}
-    \item For functions which use a numerical integrator (the general and mix compartment models) the following limitations apply when calculating a steady state solution:
-    \begin{itemize}
-      \item The infusion time must be shorter than the inter-dose interval.
-      \item In the case of a multiple truncated infusion dosing regimen, the bioavailability (F) must be fixed,
-      \item The rate vector must be fixed,
-    \end{itemize}
+      \item Note: The infusion time must be shorter than the inter-dose interval.
   \end{itemize}
   \item Implemented NMTRAN data items include: TIME, EVID, CMT, AMT, RATE, ADDL, II, SS
 \end{itemize}
+
+In general, all continuous variables may be passed as parameters. A few exceptions apply \textit{to functions which use a numerical integrator} (i.e. the general and the mix compartment models). The below listed cases present technical difficulties, which we expect to overcome in Torsten's next release:
+\begin{itemize}
+  \item The RATE and TIME arguments must be fixed
+  \item In the case of a multiple truncated infusion rate dosing regimen:
+  \begin{itemize}
+    \item The bioavailability (F) and the amount (AMT) must be fixed.
+  \end{itemize}
+\end{itemize}   
 
 This library provides Stan language functions that calculate amounts in each compartment, given an event schedule and an ODE system.
     
@@ -170,7 +177,7 @@ This library provides Stan language functions that calculate amounts in each com
   \item All functions are programmed in C++ and are compatible with the Stan-math automatic differentiation library \cite{AD}
   \item All functions can be called directly in a Stan file in a manner identical to other built-in functions
   \item One and two compartment models: hand-coded analytical solutions
-  \item General linear compartment models with semi-analytical solutions using a built-in Matrix Exponential function
+  \item General linear compartment models with semi-analytical solutions using the built-in Matrix Exponential function
   \item General compartment models with numerical solutions using built-in ODE integrators in Stan. The tuning parameters of the solver are adjustable. The steady state solution is calculated using a numerical algebraic solver (expected in Stan 2.17).
   \item Mix compartment model: the forcing PK function is solved analytically and the forced ODE system is solved numerically.
 \end{itemize}
@@ -180,7 +187,8 @@ This library provides Stan language functions that calculate amounts in each com
 \subsection{Development plans} \ \\ \ \\
 Our current plans for future development of Torsten include the following:
 \begin{itemize}
-  \item A system to easily share packages of Stan functions (written in C++ or in the Stan language)
+  \item Build a system to easily share packages of Stan functions (written in C++ or in the Stan language)
+  \item Allow numerical methods to handle RATE, AMT, TIME, and the bioavailability fraction (F) as parameters in all cases.
   \item Optimize Matrix exponential functions
   \begin{itemize}
     \item Function for the action of Matrix Exponential on a vector
@@ -204,10 +212,10 @@ Our current plans for future development of Torsten include the following:
 \subsection{Updates since Torsten 0.82}
 \begin{itemize}
   \item Torsten is now up to date with Stan version 2.16.0
-  \item Steady state solution for general compartment model
-  \item Add ``mix solver" functions
+  \item Add steady state solution for general compartment model, with some limitations
+  \item Add ``mixed solver" functions
   \item Add algebraic solver
-  \item Torsten automatically corrects ODE functors when the rates are non-zero. The code carefully distinguishes the case where the rates are fixed data or random parameters. 
+  \item Torsten automatically corrects ODE functors when the rates are non-zero. The code carefully distinguishes cases where the rates are fixed data or parameters. 
   \item Fix bug that prevented Jacobians from being accurately computed for \texttt{generalOdeModel\_*} when \texttt{biovar} was passed as parameters, causing the sampler to dissolve into a quasi-random walk.
   \item Fix bug that prevented users from using a print statement inside a function that specifies an ODE system.
   \item Fixed minor bugs and report issues.
@@ -219,7 +227,7 @@ Our current plans for future development of Torsten include the following:
 
 The reader should have a basic understanding of how Stan works before reading this chapter. There are excellent resources online to get started with Stan (\url{http://mc-stan.org/documentation/}). 
 
-In this section we go through the different functions Torsten adds to Stan. It will be helpful to apply these functions to a simple example. We have uploaded code and data on \url{https://github.com/charlesm93/example-models/tree/torsten-0.82/PKPD/torsten}.
+In this section we go through the different functions Torsten adds to Stan. It will be helpful to apply these functions to a simple example. We have uploaded code and data on \url{https://github.com/metrumresearchgroup/example-models}.
 
 \subsection{Example 1: Two Compartment Model} \ \\
 
@@ -239,9 +247,7 @@ The plasma concentration ($c$) are simulated according to the following equation
   \sigma^2 &=& 0.01
 \end{eqnarray*}
 
-
-
-and the drug concentration is given by $c = \frac{y_2}{V_2}$.
+and the drug concentration is given by $c = y_2/V_2$.
 
 where the mass of drug in the central compartment ($y_2$) is obtained by solving the system of ordinary differential equations (ODEs):
 \begin{eqnarray}
@@ -253,7 +259,7 @@ where the mass of drug in the central compartment ($y_2$) is obtained by solving
   \label{eq:TwoCpt}
 \end{eqnarray}
 
-The data are generated using the R package \textit{mrgsolve} \cite{mrgsolve2017}, see \texttt{TwoCptModelSimulation.R}. We show the results obtained when using the function \texttt{PKModelTwoCpt}, which computes solutions to the ODEs analytically.
+The data are generated using the R package \textit{mrgsolve} \cite{mrgsolve2017}, see \texttt{TwoCptModelSimulation.R}. We use this example to demonstrate use of several functions in the Torsten library.
 
 \subsection{Linear One and Two Compartment Model Function} \ \\
 
@@ -273,7 +279,7 @@ The options for \textit{model name} are:
   \item PKModelOneCpt
   \item PKModelTwoCpt
 \end{itemize}
-which respectively correspond to the one and two compartment model with first order absorption (figure~\ref{cptModels}). A vector in \texttt{theta} is expected to contain parameters $CL$, $V_2$, and $ka$ for the one compartment case, and $CL$, $Q$, $V_2$, $V_3$, and $ka$ for the two compartments case, \underline{in this order}. Setting $ka$ to 0 eliminates the fist-order absoprtion. \texttt{biovar} contains the bioavailability fraction of each compartment (non-effective if set to 1) and \texttt{tlag} the lag time in each compartment (non-effective if set to 0).
+which respectively correspond to the one and two compartment model with a first order absorption (figure~\ref{cptModels}). An array in \texttt{theta} is expected to contain parameters $CL$, $V_2$, and $ka$ for the one compartment case, and $CL$, $Q$, $V_2$, $V_3$, and $ka$ for the two compartments case, \underline{in this order}. Setting $ka$ to 0 eliminates the fist-order absoprtion. \texttt{biovar} contains the bioavailability fraction of each compartment (non-effective if set to 1) and \texttt{tlag} the lag time in each compartment (non-effective if set to 0).
 
 \begin{figure}[htbp]
 \includegraphics[width=3.5in,trim=0in 0in 0 0in]{graphics/cptModels.png}
@@ -281,7 +287,7 @@ which respectively correspond to the one and two compartment model with first or
 \label{cptModels}
 \end{figure}
 
-\texttt{PKModelTwoCpt} can be used to fit example 1, see \texttt{TwoCptModel.stan}. We are interested in evaluating the ODE parameters, stored in \texttt{theta}. The bioavailability fraction and the lag times on the other hand are fixed, and we therefore declare \texttt{biovar} and \texttt{tlag} in the transformed data block. Three MCMC chains of 2000 iterations were simulated. The first 1000 iteration of each chain were discarded. Thus 1000 MCMC samples were used for the subsequent analyses.
+\texttt{PKModelTwoCpt} can be used to fit example 1, see \texttt{TwoCptModel.stan}. We are interested in evaluating the ODE parameters, stored in \texttt{theta}. The bioavailability fraction and the lag times on the other hand are fixed, and we therefore declare \texttt{biovar} and \texttt{tlag} in the \textbf{transformed data} block. Three MCMC chains of 2000 iterations were simulated. The first 1000 iteration of each chain were discarded. Thus 1000 MCMC samples were used for the subsequent analyses.
 
 \begin{figure}[htbp]
 \begin{center}
@@ -399,7 +405,7 @@ CL & 4.82 & 0.002 & 0.0901 & 4.64 & 4.76 & 4.82 & 4.88 & 5.00 & 2464.73 & 1.00 \
 
 A general linear ODE model refers to a model that may be described in terms of a system of first order linear differential equations with (piecewise) constant coefficients, i.e., a differential equation of the form: \\
 $$ y^\prime\left(t\right) = Ky\left(t\right) $$ \\
-where $K$ is a matrix. For example $K$m for a two compartment model (equation~\ref{eq:TwoCpt}) with first order absorption is: \\
+where $K$ is a matrix. For example $K$ for a two compartment model (equation~\ref{eq:TwoCpt}) with first order absorption is: \\
 $$   K = \left[\begin{array}{ccc}
 	-k_a & 0 & 0 \\
 	k_a & -\left(k_{10} + k_{12}\right) & k_{21} \\
@@ -493,12 +499,16 @@ The options for \texttt{model\_name} are:
 
 They respectively call the built-in Runge-Kutta 4th/5th order (rk45) integrator, recommended for non-stiff ODEs, and the Backward Differentiation (BDF) integrator, recommended for stiff ODEs. Which value to use for the tuning parameters depends on the integrator and the specifics of the ODE system. Reducing the tolerance parameters and increasing the number of steps make for a more robust integrator but can significantly slow down the algorithm. The following can be used as a starting point:  \mbox{\texttt{rel\_tol = 1e-6}}, \mbox{\texttt{abs\_tol = 1e-6}} and \mbox{\texttt{max\_step = 1e+6}} for the rk45 integrator and \mbox{\texttt{rel\_tol = 1e-10}}, \mbox{\texttt{abs\_tol = 1e-10}} and \mbox{\texttt{max\_step = 1e+8}} for the bdf integrator\footnote{These are the default tuning parameters for integrate\_ode\_rk45() and integrate\_ode\_bdf().  Torsten functions do not have a default values for these parameters. The user must explicitly pass the tuning parameters to generalOdeModel\_*().}. Users should be prepared to adjust these values. For additional information, see Stan's reference manual (section 19).
 
-Torsten can compute the steady state solution for a general compartment model, with a few notable exceptions, which will return an error message. To compute a steady state solution, the following conditions should be met:
+A few notable restrictions apply to \texttt{generalOdeModel\_*}:
 \begin{itemize}
-  \item the \texttt{rate} argument is passed as an array of fixed data
-  \item the infusion time ($amt/rate$) is \underline{shorter} than the inter-dose interval ($ii$)
-  \item in the case of a multiple trunctaed infusions dosing regimen, \texttt{biovar} is an array of fixed data.
+  \item \texttt{rate} and \texttt{time} cannot be passed as parameters.
+  \item In the case of a multiple truncated infusion rate dosing regimen:
+  \begin{itemize}
+    \item The bioavailability (\texttt{biovar}) and the amount (\texttt{amt}) cannot be passed as parameters.
+  \end{itemize}
 \end{itemize}
+
+These restrictions apply to \texttt{mixOde\#Cpt\_*} functions, discussed in the next section.
 
 \clearpage
 
@@ -574,7 +584,7 @@ The mix ODE model functions have the form:
 \phantom{<model\_name>} theta, biovar, tlag, \\                              
 \phantom{<model\_name>} rel\_tol, abs\_tol, max\_step)}
 
-where \texttt{reduced\_ODE\_system} specifies the system we  numerically solve ($y_2$ in the above discussion) and \texttt{nOde} the number of equations in that system. The function that defines a \textit{reduced system} has an almost identical signature to that used for a full system, but takes one additional argument: $y_1$, the PK states, i.e. solution to the PK ODEs (figure~\ref{reducedODESystem}).
+where \texttt{reduced\_ODE\_system} specifies the system we  numerically solve ($y_2$ in the above discussion, also called the \textit{reduced system}) and \texttt{nOde} the number of equations in the \underline{reduced} system. The function that defines a reduced system has an almost identical signature to that used for a full system, but takes one additional argument: $y_1$, the PK states, i.e. solution to the PK ODEs (figure~\ref{reducedODESystem}).
 
 \begin{figure}[htbp]
 \caption{Stan language for defining a reduced ODE system}
@@ -610,6 +620,8 @@ The options for \texttt{modelName} are:
 \end{itemize}
 
 These four functions correspond to all the permutations we can obtain when using a forcing One or Two Compartment function, and the Runge-Kutta 4th/5th order (rk45) or Backward Differentiation (BDF) integration method. The mixed ODE functions can be used to compute the steady state solutions supported by the general ODE model functions.
+
+Restrictions regarding which arguments may be passed as parameters for \texttt{generalOdeModel\_*} also apply to \texttt{mixOde\#CptModel\_*}.
 
 We cannot apply the mixed solver to the Two Compartment example we have been using so far. Instead, we will consider the model which motivated the implementation of the method in the first place.
 
@@ -711,6 +723,17 @@ The ODEs specifying the Two Compartment Model (equation~\ref{eq:TwoCpt}) do not 
 \begin{small}
 \begin{fmpage}{\textwidth - .75in}
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily,mathescape=true,flexiblecolumns=true,frame=single,escapeinside=`']
+functions {
+  real[] `\textcolor{red}{FK\_ODE}' {
+                  $\vdots$	
+  }
+}
+
+transformed date {
+int `\textcolor{red}{nOde}' = 5;
+                  $\vdots$
+}
+
 transformed parameters {
   vector[nt] cHat;
   vector[nObsPK] cHatObs;
@@ -729,7 +752,7 @@ transformed parameters {
   theta[8] = alpha;
   theta[9] = gamma;
 
-  x = `\textcolor{red}{mixOde2CptModel\_rk45}'(FK_ODE, nOde,
+  x = `\textcolor{red}{mixOde2CptModel\_rk45}'(`\textcolor{red}{FK\_ODE}', `\textcolor{red}{nOde}',
                                    time, amt, rate, ii, evid, cmt, addl, ss,
                                    theta, biovar, tlag,
                                    1e-6, 1e-6, 1e+6);
@@ -796,7 +819,7 @@ model & name & names & in {\tt theta}\\
 
 \section{Additional Examples}
 
-Code for examples can be found on GitHub: \url{https://github.com/charlesm93/example-models/tree/torsten-0.82/PKPD/torsten}.
+Code for examples can be found on GitHub: \url{https://github.com/metrumresearchgroup/example-models}.
 
 All the files to run a model are stored under the directory that bears the model's name. There are four files per example:
 \begin{itemize}
@@ -806,7 +829,7 @@ All the files to run a model are stored under the directory that bears the model
   \item \texttt{<model name>Simulation.R}
 \end{itemize}
 
-\texttt{data.R} contains the data we fit the model to and \texttt{init.R} the initial estimates of the parameters. These two files are generated using \texttt{Simulation.R}. The \texttt{R} folder contains R scripts to compile and run the models, as well as code to output diagnostic plots and statistics.
+\texttt{data.R} contains the data we fit the model to and \texttt{init.R} an initial estimate of the parameters. These two files are generated using \texttt{Simulation.R}. The \texttt{R} folder contains R scripts to compile and run the models, as well as code to output diagnostic plots and statistics.
 
 \subsection {Example 3: Effect Compartment Population Model} \ \\ \ \\
 Let us expand example 1 to a population model fitted to the combined data from phase I and phase IIa studies. The parameters exhibit inter-individual variations (IIV), due to both random effects and to the patients' body weight, treated as a covariate and denoted $bw$:
@@ -1035,7 +1058,7 @@ The PK and the PD data are simulated using the following treatment.
   \end{itemize}
 \end{itemize}
 
-Once again, we simultaneously fit the model to the PK and the PD data. From a computational perspective, this is a much more difficult problem than the one we dealt with in previous example. The nonlinear nature of the ODEs forces us to use a numerical solver, which is significantly slower than the linear methods we have employed so far. Because the ODE system of interest is non-stiff, we use the \textit{rk45} version of \texttt{genOdeModel}.
+Once again, we simultaneously fit the model to the PK and the PD data. Note that from a computational perspective, this is a much more difficult problem than the one we dealt with in the previous example. The nonlinear nature of the ODEs forces us to use a numerical solver, which is significantly slower than the linear methods we have employed so far. Because the ODE system of interest is non-stiff, we use the \textit{rk45} version of \texttt{genOdeModel}.
 
 It pays off to construct informative priors. For instance, we could fit the PK data first, as was done in  example 1, and get informative priors on the PK parameters. The PD parameters are drug independent, so we can use information from the neutropenia literature. In this example, we choose to use weakly informative priors on the PK parameters and strongly informative priors on the PD parameters. 
 
@@ -1149,7 +1172,7 @@ transformed parameters {
 \label{FKCode}
 \end{figure}
 
-\subsubsection*{Results} The MCMC history plots are not as convincing as in the previous examples, mostly because the number of iterations is small (100 versus 1000 in the previous example). It does however look as though the chains are converging to a common distribution, and we see little auto-correlation (in particular, we  expect that if we had run the model for 1000 iterations, we would obtain the desired "fuzzy caterpillar" look). The plots of the marginal posterior distributions clearly show that the chains have not (yet) converged to a common distribution, but they do not disagree significantly. Still, the need for more iterations is evident. The model fits the data, and the credible interval reflect the noise in the data. The parameters estimation reflects the real value of the parameters.
+\subsubsection*{Results} The MCMC history plots are not as convincing as in the previous examples, mostly because the number of iterations is small (100 versus 1000 in the previous example). It does however look as though the chains are converging to a common distribution, and we see little auto-correlation (in particular, we  expect that if we had run the model for 1000 iterations, we would obtain the desired ``fuzzy caterpillar" look). The plots of the marginal posterior distributions clearly show that the chains have not (yet) converged to a common distribution, but they do not disagree significantly. Still, the need for more iterations is evident. The model fits the data, and the credible interval reflect the noise in the data. The parameters estimation reflects the real value of the parameters.
 
 {\tiny
 \begin{table}[!htb]
@@ -1448,12 +1471,12 @@ The Stan code is open-source and available on GitHub. It is compartmentalized in
 Regularly, we merge Stan's latest release into Torsten.
 
 \subsubsection*{Modifications in math}
-All Torsten files are located in the \texttt{Torsten} directory, under \texttt{stan/math}. The code can be found on GitHub: \url{https://github.com/charlesm93/math} 
+All Torsten files are located in the \texttt{Torsten} directory, under \texttt{stan/math}. The code can be found on GitHub: \url{https://github.com/metrumresearchgroup/math} 
 
 \subsubsection*{Modifications in Stan}
 We do further modifications in \texttt{stan} to expose Torsten's functions. We edit \texttt{function\_signatures.h} to expose \texttt{PKModelOneCpt}, \texttt{PKModelTwoCpt}, and \texttt{linOdeModel}. The general ODE model functions are higher-order functions (i.e. they take another function as one of their arguments). They are exposed by directly modifying the grammar files, following closely the example of \texttt{integrate\_ode\_rk45} and \texttt{integrate\_ode\_bdf}.
 
-The code can be found on GitHub:  \url{https://github.com/charlesm93/stan}.
+The code can be found on GitHub:  \url{https://github.com/metrumresearchgroup/stan}.
 
 
 
