@@ -1,14 +1,17 @@
+Example-Models
+--------------
+
 <b> Torsten </b> is a library of C++ functions that support applications of Stan in Pharmacometrics. The current prototype provides:
 * Analytical solution for the one and two linear compartment model with a first-order absorption
 * Matrix exponential solution for a general linear compartment model
 * Numerical solution for general compartment model using built-in integrators:
   * Runge-Kutta 4th/5th (rk45) order for non-stiff ODE systems
   * Backward Differentiation (bdf) for stiff ODE systems
-* Mixed solver for general compartment model functions with a forcing PK function:
+* Mixed solver for general compartment model with a forcing PK function:
   * Computes analytical solutions for forcing PK One and Two compartment model with a first-order absorption
-  * Computes numerical solution for the forced compartment model using the rk45 or the bdf method
+  * Computes numerical solution for the forced compartment model using the rk45 or bdf method
   
-** This prototype is still under development ** and has been uploaded to facilitate working with the community of Stan developers. The current version was written by Charles Margossian, Bill Gillespie, and Metrum Research Group, LLC. We have recieved extensive help from the Stan development team.
+__This prototype is still under development__ and has been uploaded to facilitate working with the community of Stan developers. The current version was written by Charles Margossian (@charlesm93), Bill Gillespie (@billgillespie), and Metrum Research Group, LLC. We have recieved extensive help from the Stan development team.
 
 See the user manual (`torstenManual.pdf`) for more information and guidance on the examples. If you have any questions, please raise an issue on GitHub or send us an e-mail at billg@metrumrg.com. 
 
@@ -45,6 +48,6 @@ C++ Code
 --------
 The C++ code for Torsten can be found on the following repos:
 
-Math Library: https://github.com/metrumresearchgroup/math/torsten-master
+Math Library: https://github.com/metrumresearchgroup/math
 
-Stan Grammar: https://github.com/metrumresearchgroup/stan/torsten-master
+Stan Grammar: https://github.com/metrumresearchgroup/stan
