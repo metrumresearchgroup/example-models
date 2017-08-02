@@ -50,7 +50,7 @@ parametersToPlot <- c("lp__", parametersToPlot)
 
 ################################################################################################
 ## run Stan
-nChains <- 3
+nChains <- 4
 nPost <- 1000 ## Number of post-burn-in samples per chain after thinning
 nBurn <- 1000 ## Number of burn-in samples per chain after thinning
 nThin <- 1
@@ -110,3 +110,4 @@ p1 + geom_line(aes(x = time, y = median)) +
   geom_ribbon(aes(ymin = lb, ymax = ub), alpha = 0.25)
 
 dev.off()
+
