@@ -3,6 +3,7 @@
 # Run this bash file in the directory where you want to install cmdstan
 # with the Torsten functions. 
 #
+# update 1.3: download cmdStan v2.16.0 with torsten v0.83.
 # update 1.2: download cmdStan v2.14.0 and the master version of 
 #             torsten-stan and torsten-math.
 # update 1.1: download last version of cmdStan/dev with which Torsten
@@ -11,15 +12,13 @@
 #!/bin/bash
 git clone https://github.com/stan-dev/cmdstan.git
 cd cmdstan
-git checkout release/v2.14.0
-git clone https://github.com/charlesm93/stan.git
-rm -r stan_2.14.0
-mv stan stan_2.14.0
-cd stan_2.14.0
-git checkout torsten-master
-mkdir lib
+git checkout release/v2.16.0
+git clone https://github.com/metrumresearchgroup/stan.git
+cd stan
+# git checkout torsten-develop
 cd lib
-git clone https://github.com/charlesm93/math.git
-mv math stan_math_2.14.0
-cd stan_math_2.14.0
-git checkout torsten-master
+git rm -r stan_math
+git clone https://github.com/metrumresearchgroup/math.git
+mv math stan_math
+cd stan_math
+# git checkout torsten-develop
