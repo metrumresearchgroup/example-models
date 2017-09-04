@@ -4,51 +4,47 @@ The top-level auxiliary file: torstenManual.aux
 The style file: custom.bst
 Database file #1: alpha.bib
 Database file #2: custom.bib
-Warning--entry type for "eigen" isn't style-file defined
---line 11 of file custom.bib
-Warning--I didn't find a database entry for "mrgsolve2017"
-Warning--I didn't find a database entry for "mixedSolver"
-Warning--can't use both author and editor fields in dogleg
-Warning--empty chapter and pages in dogleg
-You've used 7 entries,
+Warning--empty pages in Margossian:2017
+Warning--empty pages in Powell:1970
+You've used 16 entries,
             2377 wiz_defined-function locations,
-            566 strings with 5330 characters,
-and the built_in function-call counts, 2278 in all, are:
-= -- 141
-> -- 82
-< -- 1
-+ -- 32
-- -- 25
-* -- 130
-:= -- 288
-add.period$ -- 19
-call.type$ -- 7
-change.case$ -- 5
+            621 strings with 7036 characters,
+and the built_in function-call counts, 4656 in all, are:
+= -- 294
+> -- 146
+< -- 2
++ -- 59
+- -- 43
+* -- 237
+:= -- 598
+add.period$ -- 48
+call.type$ -- 16
+change.case$ -- 18
 chr.to.int$ -- 0
-cite$ -- 9
-duplicate$ -- 219
-empty$ -- 232
-format.name$ -- 30
-if$ -- 495
+cite$ -- 18
+duplicate$ -- 468
+empty$ -- 505
+format.name$ -- 52
+if$ -- 1022
 int.to.chr$ -- 0
-int.to.str$ -- 7
-missing$ -- 57
-newline$ -- 39
-num.names$ -- 7
-pop$ -- 90
+int.to.str$ -- 16
+missing$ -- 118
+newline$ -- 86
+num.names$ -- 18
+pop$ -- 193
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 45
+skip$ -- 94
 stack$ -- 0
-substring$ -- 79
-swap$ -- 142
-text.length$ -- 1
+substring$ -- 113
+swap$ -- 278
+text.length$ -- 2
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
 warning$ -- 2
-while$ -- 11
-width$ -- 8
-write$ -- 74
-(There were 5 warnings)
+while$ -- 22
+width$ -- 18
+write$ -- 169
+(There were 2 warnings)

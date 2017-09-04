@@ -16,7 +16,21 @@
 \BOOKMARK [1][-]{section.3}{3. Additional Examples}{}% 16
 \BOOKMARK [2][-]{subsection.3.1}{3.1. Example 3: Effect Compartment Population Model}{section.3}% 17
 \BOOKMARK [2][-]{subsection.3.2}{3.2. Example 4: Friberg-Karlsson Semi-Mechanistic Population Model}{section.3}% 18
-\BOOKMARK [1][-]{section.4}{4. Appendix}{}% 19
-\BOOKMARK [2][-]{subsection.4.1}{4.1. Solving Systems of Algebraic Equations}{section.4}% 20
-\BOOKMARK [2][-]{subsection.4.2}{4.2. Implementing Torsten}{section.4}% 21
-\BOOKMARK [1][-]{section*.12}{References}{}% 22
+\BOOKMARK [1][-]{section*.10}{TECHNICAL APPENDIX}{}% 19
+\BOOKMARK [1][-]{appendix.A}{Appendix A. Bayesian Data Analysis with Stan}{}% 20
+\BOOKMARK [2][-]{subsection.A.1}{A.1. Hamiltonian Monte Carlo}{appendix.A}% 21
+\BOOKMARK [2][-]{subsection.A.2}{A.2. Automatic Differentiation}{appendix.A}% 22
+\BOOKMARK [1][-]{appendix.B}{Appendix B. Ordinary Differential Equations in Pharmacometrics}{}% 23
+\BOOKMARK [2][-]{subsection.B.1}{B.1. When do ordinary differential equations arise?}{appendix.B}% 24
+\BOOKMARK [2][-]{subsection.B.2}{B.2. An example: ODE system for the Two Compartment Model}{appendix.B}% 25
+\BOOKMARK [2][-]{subsection.B.3}{B.3. Overview of Tools for Solving Differential Equations}{appendix.B}% 26
+\BOOKMARK [2][-]{subsection.B.4}{B.4. The Event Schedule}{appendix.B}% 27
+\BOOKMARK [1][-]{appendix.C}{Appendix C. Solving Ordinary Differential Equations}{}% 28
+\BOOKMARK [2][-]{subsection.C.1}{C.1. Analytical Solution}{appendix.C}% 29
+\BOOKMARK [2][-]{subsection.C.2}{C.2. The Matrix Exponential}{appendix.C}% 30
+\BOOKMARK [2][-]{subsection.C.3}{C.3. Numerical Integrators}{appendix.C}% 31
+\BOOKMARK [2][-]{subsection.C.4}{C.4. Mixed Solvers}{appendix.C}% 32
+\BOOKMARK [2][-]{subsection.C.5}{C.5. Rates}{appendix.C}% 33
+\BOOKMARK [2][-]{subsection.C.6}{C.6. Steady State Solution}{appendix.C}% 34
+\BOOKMARK [1][-]{appendix.D}{Appendix D. Code Implementation of Torsten}{}% 35
+\BOOKMARK [1][-]{section*.11}{References}{}% 36
