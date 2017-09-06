@@ -25,7 +25,8 @@
 \contentsline {section}{\tocsection {}{4}{Appendix}}{33}{section.4}
 \contentsline {subsection}{\tocsubsection {}{4.1}{Solving Systems of Algebraic Equations}}{33}{subsection.4.1}
 \contentsline {subsubsection}{\tocsubsubsection {}{4.1.1}{Example}}{33}{subsubsection.4.1.1}
-\contentsline {subsection}{\tocsubsection {}{4.2}{Implementing Torsten}}{34}{subsection.4.2}
+\contentsline {subsection}{\tocsubsection {}{4.2}{Piecewise linear interpolation}}{34}{subsection.4.2}
+\contentsline {subsection}{\tocsubsection {}{4.3}{Implementing Torsten}}{35}{subsection.4.3}
 \contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in math}}{35}{section*.10}
 \contentsline {subsubsection}{\tocsubsubsection {}{}{Modifications in Stan}}{35}{section*.11}
 \contentsline {section}{\tocsection {}{}{References}}{35}{section*.12}
