@@ -25,6 +25,15 @@ Carpenter, B., Hoffman, M.D., Brubaker, M.A., Lee, D., Li, P. and Betancourt,
 \newblock The stan math library: Reverse-mode automatic differentiation in c++.
 \newblock \emph{arXiv 1509.07164.}  (2015).
 
+\bibitem{mrgsolve2017}
+Baron, K.T., Hindmarsh, A.C., Petzold, L.R., Gillespie, W.R., Margossian, C.C.
+  and Pastoor, D.
+\newblock \emph{mrgsolve: Simulate from ODE-Based Population PK/PD and Systems
+  Pharmacology Models}.
+\newblock Metrum Research Group (2017).
+\newblock R package version 0.8.9.
+\newline\urlprefix\url{https://cran.r-project.org/package=mrgsolve}
+
 \bibitem{eigen}
 Guennebaud, G., Jacob, B. and et~al.
 \newblock Eigen version 3 (2010).
@@ -38,7 +47,8 @@ Jorge J.~More, Burton S.~Garbow, K.E.H.
 
 \bibitem{dogleg}
 Powell, M.J.D.
-\newblock \emph{A Hybrid Method for Nonlinear Equations} (Gordon and Breach,
-  1970), pages 87 -- 114.
+\newblock A hybrid method for nonlinear equations.
+\newblock \emph{Numerical Methods for Nonlinear Algebraic Equations} \textbf{7}
+  (1970):87--114.
 
 \end{thebibliography}

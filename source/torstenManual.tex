@@ -1312,6 +1312,102 @@ where $(y_1, y_2) = (0.9, 1.1)$. We would code this in Stan as follows:
 \label{algebraStan}
 \end{figure}
 
+
+\subsection{Piecewise linear interpolation}\ \\ \ \\
+Torsten provides a function for piecewise linear interpolation over a
+set of x, y pairs. It returns the values of a piecewise linear
+function at specified values ({\tt xout}) of the first function argument. The
+function is specified in terms of a set of x, y pairs. The x values
+must be in increasing order. All 3 arguments may be data or
+parameters. 
+
+The Stan function linear\_interpolation implements the following function.
+\begin{align*}
+  y_\text{out}  &= \left\{\begin{array}{ll}
+                 y_1, & x_\text{out} < x_1 \\
+                 y_i + \frac{y_{i+1} - y_i}{x_{i+1} - x_i}
+                 \left(x_\text{out} - x_i\right), & x_\text{out} \in [x_i, x_{i+1}) \\
+                 y_n, & x_\text{out} \ge x_n 
+                          \end{array} \right. \\
+\text{where} \\
+x &= \{x_1, x_2, \ldots, x_n\} \\
+y &= \{y_1, y_2, \ldots, y_n\} \\
+x_{i+1} &> x_i\ \forall\ \ i
+\end{align*}
+
+The following function signatures are currently implemented:
+
+{\tt real linear\_interpolation(real xout, real[] x, real[] y)} \\
+{\tt real[] linear\_interpolation(real[] xout, real[] x, real[]
+  y)} 
+
+Use of linear\_interpolation is illustrated in a Stan model shown in
+Figure \ref{linearInterpolation} for fitting a piecewise linear
+function to a data set consisting of a set of x, y pairs. Complete
+code for an example using that model is available on GitHub:
+\url{https://github.com/metrumresearchgroup/example-models}. The
+example is named testInterp2.
+
+\begin{figure}[htbp]
+\caption{Stan language model illustrating use of the
+  linear\_interpolation function.}
+\begin{center}
+\begin{small}
+\begin{fmpage}{\textwidth - .75in}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily,mathescape=true,flexiblecolumns=true,frame=single,escapeinside=`']
+data{
+  int nObs;
+  real xObs[nObs];
+  real yObs[nObs];
+  int nx;
+  int nPred;
+  real xPred[nPred];
+}
+
+transformed data{
+  real xmin = min(xObs);
+  real xmax = max(xObs);
+}
+
+parameters{
+  real y[nx];
+  real<lower = 0> sigma;
+  simplex[nx - 1] xSimplex;
+}
+
+transformed parameters{
+  real yHat[nObs];
+  real x[nx];
+
+  x[1] = xmin;
+  x[nx] = xmax;
+  for(i in 2:(nx-1))
+    x[i] = x[i-1] + xSimplex[i-1] * (xmax - xmin);
+
+  yHat = linear_interpolation(xObs, x, y);
+}
+
+model{
+  xSimplex ~ dirichlet(rep_vector(1, nx - 1));
+  y ~ normal(0, 25);
+  yObs ~ normal(yHat, sigma);
+}
+
+generated quantities{
+  real yHatPred[nPred];
+  real yPred[nPred];
+
+  yHatPred = linear_interpolation(xPred, x, y);
+  for(i in 1:nPred)
+    yPred[i] = normal_rng(yHatPred[i], sigma);
+}
+\end{lstlisting}
+\end{fmpage}
+\end{small}
+\end{center}
+\label{linearInterpolation}
+\end{figure}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \iffalse
 The details we cover here are not required to use Torsten but may be of interest to developers and advanced users. Our goal is to motivate the development of Torsten by looking at common challenges in pharmacometrics. The problems we address are mostly mathematical in nature but scientifically motivated. We discuss why Stan strikes us as a powerful tool to analyse data; and which needs in pharmacometrics Torsten answers. We then go over the algorithms and programming techniques we deploy in Torsten. 
