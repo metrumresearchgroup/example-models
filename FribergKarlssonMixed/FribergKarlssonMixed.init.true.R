@@ -1,0 +1,11 @@
+alpha <- 3e-04
+circ0 <- 5
+CL <- 10
+gamma <- 0.17
+ka <- 2
+mtt <- 125
+Q <- 15
+sigma <- 1e-05
+sigmaNeut <- 1e-05
+VC <- 35
+VP <- 105
