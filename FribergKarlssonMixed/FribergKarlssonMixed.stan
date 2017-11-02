@@ -107,7 +107,7 @@ transformed parameters{
 }
 
 model{
-  // Priors for PK parameters (weakly informative)
+  // Priors for PK parameters (informative)
   CL ~ normal(0, 20);
   Q ~ normal(0, 20);
   VC ~ normal(0, 100);
@@ -115,7 +115,7 @@ model{
   ka ~ normal(0, 5);
   sigma ~ cauchy(0, 1);
 
-  // Priors for PD parameters (weakly informative)
+  // Priors for PD parameters (informative)
   mtt ~ lognormal(log(100), 20);
   circ0 ~ lognormal(log(5), 10);
   alpha ~ lognormal((2E-4), 1.5E-4);
