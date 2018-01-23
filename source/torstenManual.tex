@@ -771,6 +771,27 @@ transformed parameters {
 \end{figure}
 
 
+\subsection{Piecewise Linear Interpolation} \ \\
+Torsten also provides linear interpolation given data points
+$x = (x_1, x_2, \dots, x_n)$ and $y = (y_1, y_2, \dots,
+y_n)$. To find the interpolated value $y_0$ at point
+$x_0$, one can do
+
+\begin{verbatim}
+y0 = linear_interpolation(x0, x, y)
+\end{verbatim}
+
+Here $x_0$ can also be a vector. In this case, $y_0$ will be
+the vector of the same size consisting of interpolated values.
+
+Note that $x$ must be of strictly ascending order. When
+$x_0$ is outside of the range of $x$, $y_0$ will take
+corresponding limit value of $y$. Namely, $y_0 = y_1$ when
+$x_0<x_1$, and $y_0=y_n$ when $x_0 > x_n$.
+
+
+\subsection{Univariate integral} \ \\
+
 \begin{table}[!htb] %[htdp]
 \caption{Summary: Arguments of Torsten functions.}
 \begin{center}
