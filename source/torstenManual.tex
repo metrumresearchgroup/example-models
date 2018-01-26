@@ -771,26 +771,109 @@ transformed parameters {
 \end{figure}
 
 
-\subsection{Piecewise Linear Interpolation} \ \\
-Torsten also provides linear interpolation given data points
+\subsection{Linear Interpolation} \ \\
+Torsten also provides peicewise linear interpolation function
+\texttt{linear\_interpolation}. Given data points
 $x = (x_1, x_2, \dots, x_n)$ and $y = (y_1, y_2, \dots,
-y_n)$. To find the interpolated value $y_0$ at point
+y_n)$, to find the interpolated value $y_0$ at point
 $x_0$, one can do
 
 \begin{verbatim}
 y0 = linear_interpolation(x0, x, y)
 \end{verbatim}
 
-Here $x_0$ can also be a vector. In this case, $y_0$ will be
-the vector of the same size consisting of interpolated values.
-
-Note that $x$ must be of strictly ascending order. When
-$x_0$ is outside of the range of $x$, $y_0$ will take
+When $x_0$ is within the interval $[x_i, x_j]$,
+$0\le i, j \le n$, $y_0$ is calculated by linear
+interpolation using $y_i$ and $y_j$. On the other hand,
+when $x_0$ is outside of the range of $x$, $y_0$ will take
 corresponding limit value of $y$. Namely, $y_0 = y_1$ when
 $x_0<x_1$, and $y_0=y_n$ when $x_0 > x_n$.
 
+Note that $x_0$ can also be a vector. In this case, $y_0$ will be
+the vector of the same size consisting of interpolated values.
+Also note that $x$ must be of strictly ascending order. 
+
 
 \subsection{Univariate integral} \ \\
+Based on the ODE solver capability in Stan, Torsten is able
+to calculate the integral of a univariate
+function. Following the naming pattern of the ODE
+solvers, the integral of function $f$ is given by
+
+\begin{verbatim}
+integral = univariate_integral_rk45(f, y0, theta)
+\end{verbatim}
+using 4th-order Runge-Kutta integrator(for nonstiff problems), or by
+
+\begin{verbatim}
+integral = univariate_integral_bdf(f, y0, theta)
+\end{verbatim}
+
+using BDF integrator(for stiff problems). Here $f$ is a
+vector-value function, $y0$ is a vector of corresponding
+size for integral constant, and $\theta$ contains the
+integral limit, so that the output of
+\texttt{univariate\_integral\_} is 
+
+\begin{equation*}
+  y_0 + \int_{\theta[0]}^{\theta[1]}{f}.
+\end{equation*}
+
+The integrand function $f$ must follow the the following
+form (figure \ref{fig:univariate_integrand}).
+\begin{figure}[htbp]
+\caption{Stan language for defining a univariate integrand}
+\begin{center}
+\begin{small}
+\begin{fmpage}{\textwidth - .75in}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily,mathescape=true,flexiblecolumns=true,frame=single,escapeinside=`']
+`\bf{functions}'{
+  real[] f(real t){
+                                    $\vdots$			       
+  }
+}
+\end{lstlisting}
+\end{fmpage}
+\end{small}
+\end{center}
+\label{fig:univariate_integrand}
+\end{figure}
+
+Figure \ref{fig:univariate_int_example} shows an example using
+\texttt{univariate\_integral\_rk45} to calculate the
+integral of a quadratic function.
+\begin{figure}[htbp]
+\caption{Stan language for defining a univariate integrand}
+\begin{center}
+\begin{small}
+\begin{fmpage}{\textwidth - .75in}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily,mathescape=true,flexiblecolumns=true,frame=single,escapeinside=`']
+`\bf{functions}'{
+  real[] func(real t) {
+    real a = 2.3;
+    real b = 2.0;
+    real c = 1.5;
+    real res[1];
+    res[1] = a + b * t + c * t * t;
+    return res;
+  }
+}
+`\bf{data}' {
+  real y0[1];
+  real theta[2];
+}
+`\bf{transformed data}' {
+  real univar_integral[1];
+  univar_integral = univariate_integral_rk45(func, y0, theta);
+}
+                                    $\vdots$			       
+\end{lstlisting}
+\end{fmpage}
+\end{small}
+\end{center}
+\label{fig:univariate_int_example}
+\end{figure}
+
 
 \begin{table}[!htb] %[htdp]
 \caption{Summary: Arguments of Torsten functions.}
