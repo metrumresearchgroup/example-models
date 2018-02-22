@@ -1,7 +1,7 @@
-Torsten 0.83
+Torsten 0.84
 ------------
 
-<b> Torsten </b> is a library of C++ functions that support applications of Stan in Pharmacometrics. The current prototype provides:
+<b> Torsten </b> is a library of C++ functions that support applications of Stan in Pharmacometrics. The current version provides:
 * Analytical solution for the one and two linear compartment model with a first-order absorption
 * Matrix exponential solution for a general linear compartment model
 * Numerical solution for general compartment model using built-in integrators:
@@ -11,7 +11,11 @@ Torsten 0.83
   * Computes analytical solutions for forcing PK One and Two compartment model with a first-order absorption
   * Computes numerical solution for the forced compartment model using the rk45 or bdf method
   
-__This prototype is still under development__ and has been uploaded to facilitate working with the community of Stan developers. The current version was written by Charles Margossian (@charlesm93), Bill Gillespie (@billgillespie), and Metrum Research Group, LLC. We have recieved extensive help from the Stan development team.
+__This prototype is still under development__ and has been uploaded to
+facilitate working with the community of Stan developers. The current
+version was written by Charles Margossian (@charlesm93), Yi Zhang
+(@yizhang-cae), Bill Gillespie (@billgillespie), and Metrum Research
+Group, LLC (@metrumresearchgroup. We have recieved extensive help from the Stan development team.
 
 See the user manual (`torstenManual.pdf`) for more information and guidance on the examples. If you have any questions, please raise an issue on GitHub or send us an e-mail at billg@metrumrg.com. 
 
@@ -22,10 +26,17 @@ The Torsten library is open-source and licensed under the BSD 3-clause license.
 
 Install
 -------
-To install cmdStan with torsten, run the shell script script `setupTorsten.sh`.
-To install RStan with torsten, run the R script `R/setupRTorsten.R`.
+To install CmdStan with Torsten, run the shell script script `setupTorsten.sh`.
+To install RStan with Torsten, install the R package TorstenHeaders
+(https://github.com/metrumresearchgroup/TorstenHeaders) and run
+install_torsten():
+```r
+devtools::install_github('metrumresearchgroup/TorstenHeaders')
+library(torstenHeaders)
+install_torsten()
+```
 
-We are working with Stan's development team to create a system to add and share Stan packages. In the mean time, users can download a forked version of Stan with Torsten from GitHub. The latest version of Torsten (v0.83) is compatible with Stan v2.16.0. Torsten is agnostic to which Stan interface you use.
+We are working with Stan's development team to create a system to add and share Stan packages. In the mean time, users can download a forked version of Stan with Torsten from GitHub. The latest version of Torsten (v0.84) is compatible with Stan v2.17.1. Torsten is agnostic to which Stan interface you use.
 
 
 Examples
