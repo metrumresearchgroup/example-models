@@ -42,7 +42,10 @@
 
 \lstset{columns=fullflexible, basicstyle=\ttfamily, xleftmargin=0.5cm, frame=tlbr,framesep=4pt, framerule=0pt}
 
-%\usepackage[nottoc]{tocbibind}
+\newcommand{\torstenversion}{0.84}
+\newcommand{\stanversion}{2.17.1}
+
+% \usepackage[nottoc]{tocbibind}
 %\usepackage[colorlinks=true,linkcolor=blue]{hyperref}
 %\setcounter{tocdepth}{0}
 
@@ -62,7 +65,7 @@ billgm@metrumrg.com \` metrumrg.com \\
 }
 {\Huge \textcolor{MRGGreen}{\textbf{Torsten}} \\ \ \\  \huge Torsten: A Pharmacokinetic/Pharmacodynamic Model Library for Stan \\ \ \\
 User Manual \\ \ \\ \ \\ \ \\
-\Large Torsten Version 0.84 \\ for Stan Version 2.17.1 \\ \ \\
+\Large Torsten Version \torstenversion \\ for Stan Version \stanversion \\ \ \\
 \large February 2018}
 \end{center}
 
@@ -151,8 +154,9 @@ not be used for critical applications without further testing or
 cross-checking by comparison with other methods. \\ 
 \ \\
 We encourage interested users to try Torsten out and are happy to
-assist. Please report issues, bugs, and feature requests on our GitHub
-page: \url{https://github.com/metrumresearchgroup/stan}.
+assist. Please report issues, bugs, and feature requests on
+\href{https://github.com/metrumresearchgroup/stan}{our GitHub
+page}: \url{https://github.com/metrumresearchgroup/stan}.
 \end{fmpage}
 
 
@@ -162,8 +166,8 @@ Installation files are available on GitHub:\\
 
 There is currently no mechanism to install Torsten on top of your
 version of Stan. This is still a work in progress. In the meantime, we
-offer a version of Stan with Torsten built inside of it. Torsten 0.84
-works with Stan 2.17.1. Torsten is built inside the Stan and Stan-math
+offer a version of Stan with Torsten built inside of it. Torsten \torstenversion{}
+works with Stan \stanversion{}. Torsten is built inside the Stan and Stan-math
 repositories and is agnostic to the interface. We offer support to
 install Torsten with rstan and CmdStan.
 
@@ -240,7 +244,7 @@ in each compartment, given an event schedule and an ODE system.
     
 \subsection{Implementation details}
 \begin{itemize}
-\item Stan version 2.17.1
+\item Stan version \stanversion
 \item All functions are programmed in C++ and are compatible with the
   Stan math automatic differentiation library \cite{AD}
 \item All functions can be called directly in a Stan file in a manner
@@ -795,7 +799,7 @@ integrates $y_2$. This approach leads to an appreciable gain in
 computational efficiency. In the example of a Friberg-Karlsson
 semi-mechanistic model \cite{2364}, we observe an average speedup of
 $\sim 47 \pm 18 \%$ when using the mix solver in lieu of the numerical
-integrator \cite{mixedSolver}. Torsten supports the mixed solver for
+integrator. Torsten supports the mixed solver for
 cases where $y_1$ solves the ODEs for a One or Two Compartment model
 with a first-order absorption.
 
@@ -863,7 +867,7 @@ We cannot apply the mixed solver to the Two Compartment example we
 have been using so far. Instead, we will consider the model which
 motivated the implementation of the method in the first place.
 
-\subsection{Example 2: Friberg-Karlsson Semi-Mechanistic Model \cite{2364}} \ \\
+\subsection{Example 2: Friberg-Karlsson Semi-Mechanistic Model} \ \\
 
 In this second example, we add to our two Compartment model a PD
 effect, described by a system of nonlinear ODEs.
@@ -877,7 +881,7 @@ result, the neutrophil count goes down. After the drug clears out, the
 feedback mechanism kicks in and brings the neutrophil count back to
 baseline.
 
-{\bf Friberg-Karlsson Model for drug-induced myelosuppression ($ANC$)}
+{\bf Friberg-Karlsson Model for drug-induced myelosuppression ($ANC$) \cite{2364}}
 
 \begin{eqnarray*}
   \log(ANC_i) &\sim& N(\log(Circ), \sigma^2_{ANC})  \\
@@ -1066,7 +1070,7 @@ Figure \ref{fig:univariate_int_example} shows an example using
 \texttt{univariate\_integral\_rk45} to calculate the
 integral of a quadratic function.
 \begin{figure}[htbp]
-\caption{Stan language for defining a univariate integrand}
+\caption{Stan language for performing univariate integration using \texttt{univariate\_integral\_rk45}}
 \begin{center}
 \begin{small}
 \begin{fmpage}{\textwidth - .75in}
@@ -1090,7 +1094,8 @@ integral of a quadratic function.
 }
 `\bf{transformed data}' {
   real univar_integral;
-  univar_integral = univariate_integral_rk45(func, t0, t1, dtheta, x_r, x_i);
+  univar_integral = univariate_integral_rk45(func, t0, t1, dtheta, 
+                          x_r, x_i);
 }
                                     $\vdots$			       
 \end{lstlisting}
