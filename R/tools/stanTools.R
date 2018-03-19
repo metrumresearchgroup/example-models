@@ -25,11 +25,11 @@ mcmcHistory <- function(fit, pars = names(fit), nParPerPage = 6){
                              stringsAsFactors = FALSE)
     posterior <- posterior %>% left_join(parameters)
     posterior$chain <- as.factor(posterior$chain)
-    
+
     for(i in 1:nPages){
         xplot <- subset(posterior, page == i)
         p1 <- ggplot(xplot, aes(x = iteration, y = value))
-        print(p1 + aes(color = chain) + geom_line() + 
+        print(p1 + aes(color = chain) + geom_line() +
                   labs(x = "iteration", y = "value") +
                       theme(text = element_text(size = 12), axis.text = element_text(size = 12),
                             legend.position = "none", strip.text = element_text(size = 8)) +
@@ -42,7 +42,7 @@ mcmcDensity <- function(fit, pars = names(fit), byChain = FALSE, nParPerPage = 1
     require(dplyr)
     require(tidyr)
     require(ggplot2)
-    simsTable <- getSimsTable(fit, pars = pars)  
+    simsTable <- getSimsTable(fit, pars = pars)
     posterior <- simsTable %>%
       gather(key = parameter, value = value, -chain, -iteration)
     simsTable <- getSimsTable(fit, pars = pars)
@@ -57,12 +57,12 @@ mcmcDensity <- function(fit, pars = names(fit), byChain = FALSE, nParPerPage = 1
     posterior$chain <- as.factor(posterior$chain)
 
     if(!is.null(prior)) prior <- prior %>% left_join(parameters)
-    
+
     for(i in 1:nPages){
         xplot <- subset(posterior, page == i)
         p1 <- ggplot(xplot, aes(x = value))
         if(byChain) p1 <- p1 + aes(color = chain)
-        p1 <- p1 + geom_density() + 
+        p1 <- p1 + geom_density() +
                   labs(x = "value", y = "density") +
                       theme(text = element_text(size = 12), axis.text = element_text(size = 8),
                             legend.position = "none", strip.text = element_text(size = 8)) +
@@ -75,16 +75,16 @@ mcmcDensity <- function(fit, pars = names(fit), byChain = FALSE, nParPerPage = 1
     NULL
 }
 
-summary.mcmc.list <- function (object, quantiles = c(0.025, 0.25, 0.5, 0.75, 0.975), 
-    ...) 
+summary.mcmc.list <- function (object, quantiles = c(0.025, 0.25, 0.5, 0.75, 0.975),
+    ...)
 {
     x <- mcmc.list(object)
     statnames <- c("Mean", "SD", "Naive SE", "Time-series SE")
-    varstats <- matrix(nrow = nvar(x), ncol = length(statnames), 
+    varstats <- matrix(nrow = nvar(x), ncol = length(statnames),
         dimnames = list(varnames(x), statnames))
     xtsvar <- matrix(nrow = nchain(x), ncol = nvar(x))
     if (is.matrix(x[[1]])) {
-        for (i in 1:nchain(x)) for (j in 1:nvar(x)) xtsvar[i, 
+        for (i in 1:nchain(x)) for (j in 1:nvar(x)) xtsvar[i,
             j] <- coda:::safespec0(x[[i]][, j])
         xlong <- do.call("rbind", x)
     }
@@ -102,7 +102,7 @@ summary.mcmc.list <- function (object, quantiles = c(0.025, 0.25, 0.5, 0.75, 0.9
     varstats[, 4] <- sqrt(xtsvar/(niter(x) * nchain(x)))
     varquant <- drop(varquant)
     varstats <- drop(varstats)
-    out <- list(statistics = varstats, quantiles = varquant, 
+    out <- list(statistics = varstats, quantiles = varquant,
         start = start(x), end = end(x), thin = thin(x), nchain = nchain(x))
     class(out) <- "summary.mcmc"
     return(out)
@@ -117,4 +117,43 @@ colVars <- function(a) {
     for (n in 1:ncol(a))
         vars[n] <- var(a[,n])
     return(vars)
+}
+
+outputmcmc <- function(fit, data, outpath, par) {
+    figDir <- file.path(outpath, "figure")
+    tabDir <- file.path(outpath, "table")
+    dir.create(figDir, recursive=TRUE)
+    dir.create(tabDir, recursive=TRUE)
+
+    ptable <- parameterTable(fit, par)
+    write.csv(ptable, file = file.path(tabDir, "ParameterTable.csv"))
+
+    ## open graphics device
+    pdf(file = file.path(figDir, "Plots%03d.pdf"), width = 6, height = 6, onefile = F)
+
+    mcmcHistory(fit, par, 4)
+    mcmcDensity(fit, par, byChain = TRUE)
+    mcmcDensity(fit, par)
+    pairs(fit, pars = par)
+
+    dev.off()
+
+    ## prediction plots
+    pred_data <- data.frame(data$cObs, data$time[-1])
+    pred_data <- plyr::rename(pred_data, c("data.cObs" = "cObs", "data.time..1." = "time"))
+    pred <- as.data.frame(fit, pars = "cObsPred") %>%
+        gather(factor_key = TRUE) %>%
+        group_by(key) %>%
+        summarize(lb = quantile(value, probs = 0.05),
+                  median = quantile(value, probs = 0.5),
+                  ub = quantile(value, probs = 0.95)) %>%
+        bind_cols(pred_data)
+    p1 <- ggplot(pred, aes(x = time, y = cObs))
+    p1 <- p1 + geom_point() +
+        labs(x = "time (h)", y = "plasma concentration (mg/L)") +
+        theme(text = element_text(size = 12), axis.text = element_text(size = 12),
+              legend.position = "none", strip.text = element_text(size = 8))
+    p1 + geom_line(aes(x = time, y = median)) +
+        geom_ribbon(aes(ymin = lb, ymax = ub), alpha = 0.25)
+    ggsave(file.path(figDir, "prediction.pdf"))
 }
