@@ -1,19 +1,12 @@
-rm(list = ls())
-gc()
+demo_twocpt_cmd <- function(model_path, stan_path) {
 
 modelName <- "TwoCptModel"
-# modelName <- "LinTwoCptModel"
-# modelName <- "GenTwoCptModel"
 
-## Adjust directories to your settings.
 scriptDir <- getwd()
 projectDir <- dirname(scriptDir)
-figDir <- file.path("deliv", "figure", modelName)
-tabDir <- file.path("deliv", "table", modelName)
-modelDir <- file.path(projectDir, modelName)
-outDir <- file.path(modelDir, modelName)
+modelDir <- file.path(model_path)
 toolsDir <- file.path("tools")
-stanDir <- file.path("cmdstan")
+stanDir <- file.path(stan_path)
 tempDir <- file.path(modelDir, modelName, "temp")
 
 # .libPaths(...)
@@ -41,7 +34,7 @@ parameters <- c(parametersToPlot, otherRVs)
 parametersToPlot <- c("lp__", parametersToPlot)
 
 ## Randomly generate initial estimates
-init <- function() 
+init <- function()
   list(CL = exp(rnorm(1, log(10), 0.2)),
        Q = exp(rnorm(1, log(20), 0.2)),
        V1 = exp(rnorm(1, log(70), 0.2)),
@@ -78,7 +71,7 @@ mclapply(chains,
                                                               "init.R")))
            runModel(model = model, data = data,
                     iter = iter, warmup = warmup, thin = thin,
-                    init = file.path(tempDir, "init.R"), 
+                    init = file.path(tempDir, "init.R"),
                     seed = sample(1:999999, 1),
                     chain = chain, refresh = 100,
                                adapt_delta = 0.95, stepsize = 0.01)
@@ -91,46 +84,10 @@ mclapply(chains,
 
 fit <- read_stan_csv(file.path(modelDir, modelName, paste0(modelName, chains, ".csv")))
 
-dir.create(outDir)
-save(fit, file = file.path(outDir, paste(modelName, "Fit.Rsave", sep = "")))
+return(fit)
 
-################################################################################################
-## posterior distributions of parameters
-dir.create(figDir)
-dir.create(tabDir)
+}
 
-## open graphics device
-pdf(file = file.path(figDir, paste(modelName,"Plots%03d.pdf", sep = "")),
-    width = 6, height = 6, onefile = F)
-
-mcmcHistory(fit, parametersToPlot)
-mcmcDensity(fit, parametersToPlot, byChain = TRUE)
-mcmcDensity(fit, parametersToPlot)
-pairs(fit, pars = parametersToPlot)
-
-ptable <- parameterTable(fit, parametersToPlot)
-write.csv(ptable, file = file.path(tabDir, paste(modelName, "ParameterTable.csv", sep = "")))
-
-################################################################################################
-## posterior predictive plot
-data <- read_rdump(file.path(modelDir, paste0(modelName,".data.R")))
-data <- data.frame(data$cObs, data$time[-1])
-data <- plyr::rename(data, c("data.cObs" = "cObs", "data.time..1." = "time"))
-
-pred <- as.data.frame(fit, pars = "cObsPred") %>%
-  gather(factor_key = TRUE) %>%
-  group_by(key) %>%
-  summarize(lb = quantile(value, probs = 0.05),
-            median = quantile(value, probs = 0.5),
-            ub = quantile(value, probs = 0.95)) %>%
-  bind_cols(data)
-
-p1 <- ggplot(pred, aes(x = time, y = cObs))
-p1 <- p1 + geom_point() +
-  labs(x = "time (h)", y = "plasma concentration (mg/L)") +
-  theme(text = element_text(size = 12), axis.text = element_text(size = 12),
-        legend.position = "none", strip.text = element_text(size = 8)) 
-p1 + geom_line(aes(x = time, y = median)) +
-  geom_ribbon(aes(ymin = lb, ymax = ub), alpha = 0.25)
-
-dev.off()
+fit <- demo_twocpt_cmd("/Users/yiz/Work/Torsten/example-models/TwoCptModel", "~/Work/Torsten/cmdstan")
+data <- read_rdump(file.path("../TwoCptModel", paste0("TwoCptModel",".data.R")))
+outputmcmc(fit, data, "deliv/TwoCptModel", c("CL", "Q", "lp__", "V1", "V2", "ka", "sigma"))

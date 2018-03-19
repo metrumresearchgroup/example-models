@@ -69,4 +69,4 @@ return(fit)
 
 fit <- demo_twocpt("../TwoCptModel")
 data <- read_rdump(file.path("../TwoCptModel", paste0("TwoCptModel",".data.R")))
-outputmcmc(fit, data, "deliv/TwoCptModel", c("CL", "Q", "V1", "V2", "ka", "sigma"))
+outputmcmc(fit, data, "deliv/TwoCptModel", c("CL", "Q", "lp__", "V1", "V2", "ka", "sigma"))
