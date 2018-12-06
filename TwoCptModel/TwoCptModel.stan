@@ -27,17 +27,9 @@ transformed data{
 
   // Since we're not trying to evaluate the bio-variability (F) and 
   // the lag times, we declare them as data.
-  real biovar[nCmt];
-  real tlag[nCmt];
+  real biovar[nCmt] = rep_array(1.0, nCmt);
+  real tlag[nCmt] = rep_array(0.0, nCmt);
 
-  biovar[1] = 1;
-  biovar[2] = 1;
-  biovar[3] = 1;
-
-  tlag[1] = 0;
-  tlag[2] = 0;
-  tlag[3] = 0;
-  
 }
 
 parameters{
@@ -51,16 +43,10 @@ parameters{
 }
 
 transformed parameters{
-  real theta[nTheta];  // ODE parameters
+  real theta[nTheta] = {CL, Q, V1, V2, ka};  // ODE parameters
   vector<lower = 0>[nt] cHat;
   vector<lower = 0>[nObs] cHatObs;
   matrix<lower = 0>[nt, nCmt] x; 
-
-  theta[1] = CL;
-  theta[2] = Q;
-  theta[3] = V1;
-  theta[4] = V2;
-  theta[5] = ka;
 
   // PKModelTwoCpt takes in the NONMEM data, followed by the parameter
   // arrays abd returns a matrix with the predicted amount in each 
@@ -71,19 +57,25 @@ transformed parameters{
   cHat = col(x, 2) ./ V1; // we're interested in the amount in the second compartment 
 
   cHatObs = cHat[iObs]; // predictions for observed data recors
-
-  // for(i in 1:nObs){
-  //   cHatObs[i] = cHat[iObs[i]]; //// predictions for observed data records
-  // }
 }
 
 model{
   // informative prior
+/*
   CL ~ lognormal(log(10), 0.25);
   Q ~ lognormal(log(15), 0.5);
   V1 ~ lognormal(log(35), 0.25);
   V2 ~ lognormal(log(105), 0.5);
   ka ~ lognormal(log(2.5), 1);
+  sigma ~ cauchy(0, 1);
+*/
+
+// weakly informative priors
+  CL ~ normal(0, 50);
+  Q ~ normal(0, 50);
+  V1 ~ normal(0, 100);
+  V2 ~ normal(0, 500);
+  ka ~ normal(0, 10);
   sigma ~ cauchy(0, 1);
 
   logCObs ~ normal(log(cHatObs), sigma);
