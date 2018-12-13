@@ -21,13 +21,12 @@ data{
 }
 
 transformed data{
-  vector[nObs] logCObs = log(cObs);
   int nTheta = 5;  // number of ODE parameters in Two Compartment Model
   int nCmt = 3;  // number of compartments in model
 
-  // Since we're not trying to evaluate the bio-variability (F) and 
+  // Since we're not trying to evaluate the bioavailability (F) and 
   // the lag times, we declare them as data.
-  real biovar[nCmt] = rep_array(1.0, nCmt);
+  real F[nCmt] = rep_array(1.0, nCmt);
   real tlag[nCmt] = rep_array(0.0, nCmt);
 
 }
@@ -52,11 +51,11 @@ transformed parameters{
   // arrays abd returns a matrix with the predicted amount in each 
   // compartment at each event.
   x = PKModelTwoCpt(time, amt, rate, ii, evid, cmt, addl, ss,
-                   theta, biovar, tlag);
+                   theta, F, tlag);
 
   cHat = col(x, 2) ./ V1; // we're interested in the amount in the second compartment 
 
-  cHatObs = cHat[iObs]; // predictions for observed data recors
+  cHatObs = cHat[iObs]; // predictions for observed data records
 }
 
 model{
@@ -78,14 +77,14 @@ model{
   ka ~ normal(0, 10);
   sigma ~ cauchy(0, 1);
 
-  logCObs ~ normal(log(cHatObs), sigma);
+  cObs ~ lognormal(log(cHatObs), sigma);
 }
 
 generated quantities{
   real cObsPred[nObs];
 
   for(i in 1:nObs){
-      cObsPred[i] = exp(normal_rng(log(cHatObs[i]), sigma));
+      cObsPred[i] = lognormal_rng(log(cHatObs[i]), sigma);
     }
 			 
 }
