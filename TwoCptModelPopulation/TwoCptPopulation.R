@@ -2,6 +2,7 @@ rm(list = ls())
 gc()
 
 modelName <- "TwoCptModelPopulation"
+simModelName <- paste0(modelName, "Sim")
 
 useRStan <- TRUE
 
@@ -28,23 +29,133 @@ library(parallel)
 source(file.path(toolsDir, "stanTools.R"))
 if(!useRStan) source(file.path(toolsDir, "cmdStanTools.R"))
 
+qnorm.trunc = function(p,mean=0,sd=1,lower=-Inf,upper=Inf)
+  qnorm(p*pnorm(upper,mean,sd)+(1-p)*pnorm(lower,mean,sd),mean,sd)
+
+rnorm.trunc = function(n,mean=0,sd=1,lower=-Inf,upper=Inf)
+  qnorm.trunc(runif(n),mean,sd,lower,upper)
+
 rstan_options(auto_write = TRUE)
 set.seed(11191951) ## not required but assures repeatable results
+set.seed(10271998)
 
-## read data
-data <- read_rdump(file.path(modelDir, paste0(modelName,".data.R")))
-data$nIIV <- NULL
+## Set up data structure for simulation
+
+## Parameter values
+
+ka = 2.0
+CL = 10 # L/h
+Q = 15 # L/h
+V1 = 35 # L
+V2 = 105 # L
+sigma = 0.1
+omega <- c(0.2, 0.3, 0.2, 0.3, 0.25)
+rho <- diag(length(omega))
+
+## Observation and dosing times
+doseTimes <- seq(0, 168, by = 12)
+xpk <- c(0, 0.083, 0.167, 0.25, 0.5, 0.75, 1, 1.5, 2,3,4,6,8)
+xpk <- c(xpk, xpk + 12, seq(24, 156, by = 12), c(xpk, 12, 18, 24) + 168)
+time <- sort(unique(c(xpk, doseTimes)))
+
+nId <- 10 ## Number of individuals
+weight = rnorm.trunc(nId, 70, 15, 50, 100)
+
+## Assemble data set for simulation using Stan
+obsData <- data.frame(time = time) %>%
+  mutate(amt = 0,
+         cmt = 1,
+         evid = 0)
+
+doseData <- data.frame(time = doseTimes) %>%
+  mutate(amt = 80 * 1000, # mcg
+         cmt = 1,
+         evid = 1)
+
+allData <- doseData %>%
+  bind_rows(obsData) %>%
+  merge(data.frame(id = 1:nId)) %>%
+  arrange(id, time, desc(evid))
+
+nt <- nrow(allData)
+start <- (1:nt)[!duplicated(allData$id)]
+end <- c(start[-1] - 1, nt)
+
+dataSim <- with(allData,
+                list(nId = nId,
+                     nt = nt,
+                     amt = amt,
+                     cmt = cmt,
+                     evid = evid,
+                     time = time,
+                     start = start,
+                     end = end,
+                     weight = weight,
+                     CLHat = CL,
+                     QHat = Q,
+                     V1Hat = V1,
+                     V2Hat = V2,
+                     kaHat = ka,
+                     nRandom = length(omega),
+                     omega = omega,
+                     rho = rho,
+                     sigma = sigma))
+
+## Using Stan simulate plasma drug concentrations
+
+sim <- stan(file = file.path(modelDir, paste(simModelName, ".stan", sep = "")),
+            data = dataSim,
+            algorithm = "Fixed_param",
+            iter = 1,
+            chains = 1)
+
+## Assemble data set for fitting via Stan
+
+xdata <- allData %>%
+  bind_cols(as.data.frame(sim, pars = "cObs") %>%
+              gather(factor_key = TRUE) %>%
+              select(cObs = value))
+
+xdata <- xdata %>%
+  mutate(cObs = ifelse(time %in% xpk & time != 0 & evid == 0, cObs, NA))
+
+head(xdata)
+
+nt <- nrow(xdata)
+start <- (1:nt)[!duplicated(xdata$id)]
+end <- c(start[-1] - 1, nt)
+
+## Indices of records containing observed concentrations
+iObs <- with(xdata, (1:nrow(xdata))[!is.na(cObs) & evid == 0])
+nObs <- length(iObs)
+
+## create Stan data set
+data <- with(xdata,
+             list(nId = nId,
+                  nt = nt,
+                  nObs = nObs,
+                  iObs = iObs,
+                  amt = amt,
+                  cmt = cmt,
+                  evid = evid,
+                  time = time,
+                  start = start,
+                  end = end,
+                  weight = weight,
+                  cObs = cObs[iObs]
+             ))
+
 
 ## create initial estimates
 init <- function()
-  list(CLHat = exp(rnorm(1, log(10), 0.2)),
-       QHat = exp(rnorm(1, log(20), 0.2)),
-       V1Hat = exp(rnorm(1, log(70), 0.2)),
-       V2Hat = exp(rnorm(1, log(70), 0.2)),
-       kaHat = exp(rnorm(1, log(1), 0.2)),
+  list(CLHat = exp(rnorm(1, log(CL), 0.2)),
+       QHat = exp(rnorm(1, log(Q), 0.2)),
+       V1Hat = exp(rnorm(1, log(V1), 0.2)),
+       V2Hat = exp(rnorm(1, log(V2), 0.2)),
+       kaHat = exp(rnorm(1, log(ka), 0.2)),
        sigma = runif(1, 0.5, 2),
        L = diag(5),
-       eta = matrix(rep(0, 5 * data$nSubjects), nrow = 5),
+       eta = matrix(rep(0, 5 * data$nId), nrow = 5),
        omega = runif(5, 0.5, 2))
 
 ## Specify the variables for which you want history and density plots

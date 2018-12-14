@@ -6,6 +6,7 @@ gc()
 
 modelName <- "TwoCptModelPopulation"
 
+.libPaths("../lib")
 library(rstan)
 library(mrgsolve)
 
@@ -35,7 +36,7 @@ double V3i = exp(log(V3) + ETA(4));
 double KAi = exp(log(KA) + ETA(5));
 
 $OMEGA  name="IIV"
-0.0025 0.0025 0.0025 0.0025 0.0025
+0.04 0.09 0.04 0.09 0.04
 
 $SIGMA 0.01
 
@@ -112,7 +113,7 @@ init <- function()
        sigma = runif(1, 0.5, 2),
        L = diag(nIIV),
        etaStd = matrix(rep(0, nIIV * data$nSubjects), nrow = nIIV),
-       omega = runif(nIIV, 0.5, 2),
+       omega = runif(nIIV, 0.05, 1),
        logtheta = matrix(rep(log(c(exp(rnorm(1, log(10), 0.2)),
                                    exp(rnorm(1, log(20), 0.2)),
                                    exp(rnorm(1, log(70), 0.2)),

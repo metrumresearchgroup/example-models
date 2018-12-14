@@ -1,22 +1,23 @@
 data{
-  int<lower = 1> nSubjects;
+  int<lower = 1> nId;
   int<lower = 1> nt;
   int<lower = 1> nObs;
   int<lower = 1> iObs[nObs];
   real<lower = 0> amt[nt];
   int<lower = 1> cmt[nt];
   int<lower = 0> evid[nt];
-  real<lower = 0> rate[nt];
-  real<lower = 0> ii[nt];
-  int<lower = 0> addl[nt];
-  int<lower = 0> ss[nt];
-  int<lower = 1> start[nSubjects];
-  int<lower = 1> end[nSubjects];
+  int<lower = 1> start[nId];
+  int<lower = 1> end[nId];
+  real<lower = 0> weight[nId];
   real<lower = 0> time[nt];
   vector<lower = 0>[nObs] cObs;
 }
 
 transformed data{
+  real<lower = 0> rate[nt] = rep_array(0.0, nt);
+  real<lower = 0> ii[nt] = rep_array(0.0, nt);
+  int<lower = 0> addl[nt] = rep_array(0, nt);
+  int<lower = 0> ss[nt] = rep_array(0, nt);
   // Integers required to specify dimensions
   int<lower = 1> nRandom = 5; // Number of random effects
   int<lower = 1> nCmt = 3; // Number of model compartments
@@ -45,8 +46,8 @@ parameters{
   real<lower = 0> sigma;
   
   // Individual-level model parameters
-  //  vector[nRandom] logtheta[nSubjects];
-  matrix[nRandom, nSubjects] eta;
+  //  vector[nRandom] logtheta[nId];
+  matrix[nRandom, nId] eta;
 }
 
 transformed parameters{
@@ -54,21 +55,20 @@ transformed parameters{
   vector<lower = 0>[nRandom] thetaHat = [CLHat, QHat, V1Hat, V2Hat, kaHat]';
 
   // Matrix of individual-level model parameters
-  matrix<lower = 0>[nSubjects, nRandom] theta;
+  matrix<lower = 0>[nId, nRandom] theta;
 
   // Individual-level model parameters with recognizable names, e.g.,
-  real<lower = 0> CL[nSubjects];
-  real<lower = 0> Q[nSubjects];
-  real<lower = 0> V1[nSubjects];
-  real<lower = 0> V2[nSubjects];
-  real<lower = 0> ka[nSubjects];
+  real<lower = 0> CL[nId];
+  real<lower = 0> Q[nId];
+  real<lower = 0> V1[nId];
+  real<lower = 0> V2[nId];
+  real<lower = 0> ka[nId];
   
   // Covariance matrix
   //  cov_matrix[nRandom] Omega;
 
   // Predicted concentrations (without residual variation)
   vector<lower = 0>[nt] cHat; // All events
-  vector<lower = 0>[nObs] cHatObs; // Observation events
 
   // Amounts in each compartment at each event
   matrix[nt, nCmt] x;
@@ -77,16 +77,16 @@ transformed parameters{
   real<lower = 0> parms[nParms];
 
   //  Omega = quad_form_diag(rho, omega); // diag_matrix(omega) * rho * diag_matrix(omega)
-  theta = (rep_matrix(thetaHat, nSubjects) .* 
+  theta = (rep_matrix(thetaHat, nId) .* 
           exp(diag_pre_multiply(omega, L * eta)))';
 
-  for(j in 1:nSubjects){
+  for(j in 1:nId){
     
     // Calculation of individual parameter values given logtheta and covariates, e.g.
-    CL[j] = theta[j, 1];
-    Q[j] = theta[j, 2];
-    V1[j] = theta[j, 3];
-    V2[j] = theta[j, 4];
+    CL[j] = theta[j, 1] * (weight[j] / 70)^0.75;
+    Q[j] = theta[j, 2] * (weight[j] / 70)^0.75;
+    V1[j] = theta[j, 3] * weight[j] / 70;
+    V2[j] = theta[j, 4] * weight[j] / 70;
     ka[j] = theta[j, 5];
 
     // Pack individual PK parameters into parms array, e.g.
@@ -108,8 +108,6 @@ transformed parameters{
 
     cHat[start[j]:end[j]] = x[start[j]:end[j], 2] ./ V1[j];
   }
-
-  cHatObs = cHat[iObs]; // predictions for observed data records
 }
 
 model{
@@ -128,9 +126,10 @@ model{
   QHat ~ normal(0, 50);
   V1Hat ~ normal(0, 100);
   V2Hat ~ normal(0, 500);
-  kaHat ~ normal(0, 10);
-  sigma ~ cauchy(0, 2);
-
+  kaHat ~ normal(0, 5);
+  sigma ~ cauchy(0, 1);
+  omega ~ cauchy(0, 1);
+  
   //  rho ~ lkj_corr(1); 
   L ~ lkj_corr_cholesky(1);
   
@@ -138,47 +137,47 @@ model{
   //  logtheta ~ multi_normal(log(thetaHat), Omega);
   to_vector(eta) ~ normal(0, 1);
 
-  cObs ~ lognormal(log(cHatObs), sigma);
+  cObs ~ lognormal(log(cHat[iObs]), sigma);
 }
 
 generated quantities{
-  //  vector[nRandom] logthetaPred[nSubjects];
-  matrix[nRandom, nSubjects] etaPred;
-  matrix<lower = 0>[nSubjects, nRandom] thetaPred;
+  //  vector[nRandom] logthetaPred[nId];
+  matrix[nRandom, nId] etaPred;
+  matrix<lower = 0>[nId, nRandom] thetaPred;
   corr_matrix[nRandom] rho;
   vector<lower = 0>[nt] cHatPred;
   vector[nt] cObsCond;
   vector[nt] cObsPred;
 
   // Individual-level model parameters with recognizable names, e.g.,
-  real<lower = 0> CLPred[nSubjects];
-  real<lower = 0> QPred[nSubjects];
-  real<lower = 0> V1Pred[nSubjects];
-  real<lower = 0> V2Pred[nSubjects];
-  real<lower = 0> kaPred[nSubjects];
+  real<lower = 0> CLPred[nId];
+  real<lower = 0> QPred[nId];
+  real<lower = 0> V1Pred[nId];
+  real<lower = 0> V2Pred[nId];
+  real<lower = 0> kaPred[nId];
 
   matrix[nt, nCmt] xPred;
   real<lower = 0> parmsPred[nParms];
 
   rho = L * L';
-  for(j in 1:nSubjects) 
+  for(j in 1:nId) 
     for(i in 1:nRandom)
       etaPred[i, j] = normal_rng(0, 1);
 
-  thetaPred = (rep_matrix(thetaHat, nSubjects) .* 
+  thetaPred = (rep_matrix(thetaHat, nId) .* 
               exp(diag_pre_multiply(omega, L * etaPred)))';
 
-  for(j in 1:nSubjects){
+  for(j in 1:nId){
 
     // Population predictions
 
     //    logthetaPred[j] = multi_normal_rng(log(thetaHat), Omega);
 
     // Calculation of individual parameter values given logtheta and covariates, e.g.
-    CLPred[j] = thetaPred[j, 1];
-    QPred[j] = thetaPred[j, 2];
-    V1Pred[j] = thetaPred[j, 3];
-    V2Pred[j] = thetaPred[j, 4];
+    CLPred[j] = thetaPred[j, 1] * (weight[j] / 70)^0.75;
+    QPred[j] = thetaPred[j, 2] * (weight[j] / 70)^0.75;
+    V1Pred[j] = thetaPred[j, 3] * weight[j] / 70;
+    V2Pred[j] = thetaPred[j, 4] * weight[j] / 70;
     kaPred[j] = thetaPred[j, 5];
 
     // Pack individual PK parameters into parms array, e.g.

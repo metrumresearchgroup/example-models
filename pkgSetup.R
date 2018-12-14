@@ -1,6 +1,7 @@
 pkgs <- c('ggplot2', 'bayesplot', 'devtools',
           'plyr', 'dplyr', 'tidyr',
-          'KernSmooth', 'xml2', 'rvest')
+          'KernSmooth', 'xml2', 'rvest',
+          'mrgsolve')
 
 parentScriptDir <- getwd()  ## You may need to mod this to be in the top level of scriptDir
 pkgDir <- file.path(parentScriptDir, "pkg")
