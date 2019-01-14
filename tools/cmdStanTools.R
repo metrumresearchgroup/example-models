@@ -49,6 +49,23 @@ runModel <- function(model, data, iter, warmup, thin, init, seed, chain = 1,
                sep = ""))
 }
 
+runModelMPI <- function(model, data, iter, warmup, thin, init, seed, chain = 1,
+                     stepsize = 1, adapt_delta = 0.8, max_depth = 10, refresh = 100, tag=NULL,
+                     nslaves = 2){
+  if(! is.null(tag)) output <- paste0(model, "_", tag, "_") else output=model
+  system(paste("mpirun -np ", nslaves, " ", model, " sample algorithm=hmc engine=nuts",
+               " max_depth=", max_depth,
+               " stepsize=", stepsize,
+               " num_samples=", iter - warmup,
+               " num_warmup=", warmup, " thin=",  thin,
+               " adapt delta=", adapt_delta, 
+               " data file=", data,
+               " init=", init, " random seed=", seed,
+               " output file=", paste(output, chain, ".csv", sep = ""),
+               " refresh=", refresh,
+               sep = ""))
+}
+
 runDiagnose <- function(model, data, init, seed, chain = 1, refresh=100){
   modelName <- basename(model)
   model <- file.path(model, modelName)
