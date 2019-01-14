@@ -4,7 +4,7 @@ gc()
 modelName <- "TwoCptModelPopulation"
 simModelName <- paste0(modelName, "Sim")
 
-useRStan <- TRUE
+useRStan <- FALSE
 
 ## Adjust directories to your settings.
 scriptDir <- getwd()
@@ -200,17 +200,19 @@ if(useRStan){
            function(chain, model, data, iter, warmup, thin, init) {
              outDir <- file.path(outDir, chain)
              dir.create(outDir)
+             with(data, stan_rdump(ls(data), file = file.path(outDir,
+                                                              "data.R")))
              inits <- init()
              with(inits, stan_rdump(ls(inits), file = file.path(outDir,
                                                                 "init.R")))
-             runModel(model = model, data = data,
+             runModel(model = model, data = file.path(outDir, "data.R"),
                       iter = iter, warmup = warmup, thin = thin,
                       init = file.path(outDir, "init.R"),
                       seed = sample(1:999999, 1),
                       chain = chain)
            },
            model = file.path(outDir, modelName),
-           data = file.path(modelDir, paste0(modelName, ".data.R")),
+           data = data,
            init = init,
            iter = nIter, warmup = nBurnin, thin = nThin,
            mc.cores = min(nChains, detectCores()))
@@ -219,6 +221,7 @@ if(useRStan){
 }
 
 save(fit, file = file.path(outDir, paste(modelName, "Fit.Rsave", sep = "")))
+load(file = file.path(outDir, paste(modelName, "Fit.Rsave", sep = "")))
 
 ################################################################################################
 ## posterior distributions of parameters
@@ -294,7 +297,7 @@ p1 + geom_point() +
        y = "plasma concentration (mg/L)") +
   theme(text = element_text(size = 12),
         axis.text = element_text(size = 12),
-        legend.position = c(0.8, 0.25),
+        legend.position = c(0.8, 0.15),
         strip.text = element_text(size = 8)) +
   facet_wrap(~ id)
 
