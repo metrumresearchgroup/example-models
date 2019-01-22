@@ -5,7 +5,7 @@ modelName <- "TwoCptModelPopulationMPI"
 simModelName <- paste0(modelName, "Sim")
 
 useRStan <- FALSE
-nslaves = 40
+nslaves = 2
 
 ## Adjust directories to your settings.
 scriptDir <- getwd()
@@ -26,7 +26,7 @@ library(bayesplot)
 library(dplyr)
 library(tidyr)
 library(parallel)
-library(Rmpi)
+##library(Rmpi)
 
 source(file.path(toolsDir, "stanTools.R"))
 if(!useRStan) source(file.path(toolsDir, "cmdStanTools.R"))
@@ -199,7 +199,7 @@ if(useRStan){
             file.path(outDir, paste0(modelName, ".stan")))
   compileModel(model = file.path(outDir, modelName), stanDir = stanDir)
   
-  mpi.spawn.Rslaves(nslaves = nslaves)
+  ##  mpi.spawn.Rslaves(nslaves = nslaves)
   RNGkind("L'Ecuyer-CMRG")
   mc.reset.stream()
   
@@ -214,12 +214,17 @@ if(useRStan){
              inits <- init()
              with(inits, stan_rdump(ls(inits), file = file.path(outDir,
                                                                 "init.R")))
-             runModelMPI(model = model, data = file.path(outDir, "data.R"),
-                         iter = iter, warmup = warmup, thin = thin,
-                         init = file.path(outDir, "init.R"),
-                         seed = sample(1:999999, 1),
-                         chain = chain,
-                         nslaves = nslaves / nChains)
+             runModel(model = model, data = file.path(outDir, "data.R"),
+                      iter = iter, warmup = warmup, thin = thin,
+                      init = file.path(outDir, "init.R"),
+                      seed = sample(1:999999, 1),
+                      chain = chain)
+             ##             runModelMPI(model = model, data = file.path(outDir, "data.R"),
+             ##                         iter = iter, warmup = warmup, thin = thin,
+             ##                         init = file.path(outDir, "init.R"),
+             ##                         seed = sample(1:999999, 1),
+             ##                         chain = chain,
+             ##                         nslaves = nslaves)
            },
            model = file.path(outDir, modelName),
            data = data,
@@ -229,7 +234,7 @@ if(useRStan){
   endTime <- Sys.time()
   elapsedTime <- endTime - startTime
   elapsedTime
-  mpi.close.Rslaves()
+  ##  mpi.close.Rslaves()
   
   fit <- read_stan_csv(file.path(outDir, paste0(modelName, chains, ".csv")))
 }

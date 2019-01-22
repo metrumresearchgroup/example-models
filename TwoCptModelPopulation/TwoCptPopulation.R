@@ -205,11 +205,17 @@ if(useRStan){
              inits <- init()
              with(inits, stan_rdump(ls(inits), file = file.path(outDir,
                                                                 "init.R")))
-             runModel(model = model, data = file.path(outDir, "data.R"),
-                      iter = iter, warmup = warmup, thin = thin,
-                      init = file.path(outDir, "init.R"),
-                      seed = sample(1:999999, 1),
-                      chain = chain)
+##             runModel(model = model, data = file.path(outDir, "data.R"),
+##                      iter = iter, warmup = warmup, thin = thin,
+##                      init = file.path(outDir, "init.R"),
+##                      seed = sample(1:999999, 1),
+##                      chain = chain)
+             runModelMPI(model = model, data = file.path(outDir, "data.R"),
+                         iter = iter, warmup = warmup, thin = thin,
+                         init = file.path(outDir, "init.R"),
+                         seed = sample(1:999999, 1),
+                         chain = chain,
+                         nslaves = 1)
            },
            model = file.path(outDir, modelName),
            data = data,
@@ -221,7 +227,7 @@ if(useRStan){
 }
 
 save(fit, file = file.path(outDir, paste(modelName, "Fit.Rsave", sep = "")))
-load(file = file.path(outDir, paste(modelName, "Fit.Rsave", sep = "")))
+##load(file = file.path(outDir, paste(modelName, "Fit.Rsave", sep = "")))
 
 ################################################################################################
 ## posterior distributions of parameters

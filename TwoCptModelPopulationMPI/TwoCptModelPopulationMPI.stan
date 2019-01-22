@@ -9,14 +9,17 @@ functions{
     int cmt[nt] = x_i[(1+nt+1):(1+nt+nt)];
     int addl[nt] = x_i[(1+2*nt+1):(1+2*nt+nt)];
     int ss[nt] = x_i[(1+3*nt+1):(1+3*nt+nt)];
+/*
     real time[nt] = x_r[1:nt];
     real amt[nt] = x_r[(nt+1):(nt+nt)];
     real rate[nt] = x_r[(2*nt+1):(2*nt+nt)];
     real ii[nt] = x_r[(3*nt+1):(3*nt+nt)];
-    matrix[nt, 3] x;
     real F[3] = rep_array(1.0, 3);
     real tLag[3] = rep_array(0.0, 3);
+*/
+    matrix[nt, 3] x;
 
+/*
     x = PKModelTwoCpt(time, 
 					amt,
 					rate,
@@ -26,8 +29,8 @@ functions{
 					addl,
 					ss,
 					to_array_1d(theta), F, tLag);
+*/
 
-/*
     x = PKModelTwoCpt(x_r[1:nt], 
 					x_r[(nt+1):(nt+nt)],
 					x_r[(2*nt+1):(2*nt+nt)],
@@ -39,7 +42,6 @@ functions{
 					to_array_1d(theta), 
 					x_r[(4*nt + 1):(4*nt + 3)], 
 					x_r[(4*nt + 4):(4*nt + 6)]);
-*/
 
     return to_vector(x[,2] ./ theta[3]);
   }
